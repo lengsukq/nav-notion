@@ -4,14 +4,23 @@
     <div class="w-full max-w-7xl">
 
       <!-- Header -->
-      <header class="text-center mb-12 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 rounded-3xl p-6 shadow-xl">
+      <header class="text-center mb-12 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 rounded-3xl p-6 shadow-xl relative">
         <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 drop-shadow-lg">导航中心</h1>
         <p class="text-gray-700 dark:text-gray-300 text-lg">从 Notion 数据库获取的链接集合</p>
       </header>
 
-      <!-- 引入搜索框组件 -->
-      <!-- 确保 SearchBox 组件被包含在一个有 z-index 的容器中 -->
-      <SearchBox />
+      <!-- 引入搜索框组件和设置按钮 -->
+      <div class="flex items-center justify-center mb-6">
+        <button 
+          @click="() => { console.log('Settings button clicked'); settingsStore.toggleSettings() }"
+          class="bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 p-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-lg flex items-center space-x-1 z-index-100 mr-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </button>
+        <SearchBox />
+      </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center h-64 mt-8">
@@ -27,48 +36,31 @@
       </div>
 
       <!-- Navigation Links Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
-        <div
+      <div v-else :class="cardSizeMode === 'small' ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-8' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8'">
+        <NavigationCard
           v-for="(item, index) in navigationLinks"
           :key="index"
-          class="glassmorphic-card"
-          :style="{ '--delay': `${index * 50}ms` }"
-        >
-          <div class="p-6 flex flex-col justify-between h-full">
-            <div>
-              <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-4 shadow-lg">
-                  <span class="text-2xl text-blue-600 dark:text-blue-300 font-extrabold">{{ item.name.charAt(0) }}</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ item.name }}</h3>
-              </div>
-              <p class="text-gray-700 dark:text-gray-300 text-sm mb-5 leading-relaxed">{{ item.description }}</p>
-              <div class="flex flex-wrap gap-2 mb-5">
-                <span v-for="(tag, tagIndex) in item.tags" :key="tagIndex" class="text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-600">
-                  {{ tag }}
-                </span>
-              </div>
-            </div>
-            <a
-              :href="item.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="mt-auto text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-semibold flex items-center transition-colors duration-300 ease-in-out"
-            >
-              访问链接
-              <svg class="w-4 h-4 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6v6m0 0v6m0-6h-6"></path>
-              </svg>
-            </a>
-          </div>
-        </div>
+          :name="item.name"
+          :description="item.description"
+          :tags="item.tags"
+          :url="item.url"
+          :delay="`${index * 50}ms`"
+          :size="cardSizeMode"
+        />
       </div>
+      <SettingsModal />
     </div>
-  </div>
+
+
+    </div>
 </template>
 
 <script setup>
-import SearchBox from './SearchBox.vue'; // 确保路径正确
+import SearchBox from './SearchBox.vue';
+import SettingsModal from './SettingsModal.vue';
+import { useSettingsStore } from '../store/settings';
+import { storeToRefs } from 'pinia';
+import NavigationCard from './NavigationCard.vue'; // 导入新的导航卡片组件
 
 import { ref, onMounted } from 'vue';
 
@@ -76,6 +68,9 @@ import { ref, onMounted } from 'vue';
 const navigationLinks = ref([]);
 const loading = ref(true);
 const error = ref(null);
+// 从Pinia store获取设置状态
+const settingsStore = useSettingsStore();
+const { cardSizeMode } = storeToRefs(settingsStore);
 
 // Get environment variables
 const NOTION_TOKEN = import.meta.env.VITE_APP_NOTION_TOKEN;
@@ -203,47 +198,7 @@ body {
   background-color: #f0f2f5; /* 默认背景，会被App.vue中的渐变覆盖 */
 }
 
-/*DarkMode 颜色辅助 (如果 TailwindCSS 正常工作，这些可能不需要，除非你想覆盖)*/
-/*
-.dark {
-  --tw-bg-opacity: 1;
-  background-color: rgb(17 24 39 / var(--tw-bg-opacity)); // gray-900
-}
-.dark h1, .dark h2, .dark h3, .dark p, .dark span, .dark a, .dark li, .dark div {
-  color: #e5e7eb; // dark gray-300
-}
-.dark .text-gray-900 { color: #e5e7eb; }
-.dark .text-gray-600 { color: #9ca3af; }
-.dark .text-gray-400 { color: #9ca3af; }
-*/
-
 /* 毛玻璃和圆角样式 (这些也在 SearchBox.vue 和 App.vue 中重复使用，可以考虑移到全局 CSS) */
-/* 毛玻璃和圆角样式 - App.vue Card */
-.glassmorphic-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
-.glassmorphic-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
-}
-.glassmorphic-card {
-  animation: fadeInUp 0.6s var(--delay, 0s) forwards cubic-bezier(0.25, 0.8, 0.25, 1);
-  opacity: 0;
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 /* Header 的毛玻璃 */
 header {
   backdrop-filter: blur(15px);
@@ -289,19 +244,6 @@ button:hover, a.text-blue-500:hover {
   --tw-gradient-from: #1f2937; /* gray-800 */
 }
 
-/*
-  z-index 管理:
-  .global-search-container (z-index: 100)
-    > SearchBox (component)
-      > .search-box (position: relative, z-index: 10)
-        > .engine-selector-container (position: relative, z-index: 10)
-          > .engine-dropdown (position: absolute, z-index: 30) <- Highest inside searchbox
-        > .search-input-container (position: relative)
-          > .search-history (position: absolute, z-index: 25) <- High inside searchbox
-*/
-
-/* 修正: 确保 SearchBox 的父容器是定位的，以便其内部的绝对定位元素受其 z-index 影响 */
-/* App.vue 中引入 SearchBox 的那个 div 需要有这个样式 */
 .app-search-wrapper {
   position: relative;
   z-index: 100; /* 确保搜索框及下拉菜单层级高于页面卡片 */
