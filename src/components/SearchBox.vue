@@ -56,7 +56,7 @@ const searchEngines = {
   yahoo: { name: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
   duckduckgo: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
   baidu: { name: '百度', url: 'https://www.baidu.com/s?wd=' },
-  mieta: { name: '密塔搜索', url: 'https://www.mietasearch.com/search?q=' }
+  mieta: { name: '密塔搜索', url: 'https://metaso.cn/?q=' }
 };
 
 // 搜索历史记录
