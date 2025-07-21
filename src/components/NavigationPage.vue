@@ -9,6 +9,19 @@
         <p class="text-gray-700 dark:text-gray-300 text-lg">{{ databaseInfo.description }}</p>
       </header>
 
+      <!-- Tag Filter Section -->
+      <div class="flex flex-wrap justify-center gap-2 mb-8 p-4 bg-white/20 dark:bg-gray-800/20 rounded-2xl">
+        <span
+          v-for="tag in availableTags"
+          :key="tag.name"
+          @click="toggleTag(tag.name)"
+          :class="[selectedTags.includes(tag.name) ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200', 'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors duration-300 hover:shadow-md']"
+          :style="selectedTags.includes(tag.name) ? { backgroundColor: getTagColor(tag.color) } : {}"
+        >
+          {{ tag.name }}
+        </span>
+      </div>
+
       <!-- 引入搜索框组件和设置按钮 -->
       <div class="flex items-center justify-center mb-6">
         <button 
@@ -38,7 +51,7 @@
       <!-- Navigation Links Grid -->
       <div v-else :class="cardSizeMode === 'small' ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-8' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8'">
         <NavigationCard
-          v-for="(item, index) in navigationLinks"
+          v-for="(item, index) in filteredLinks"
           :key="index"
           :name="item.name"
           :description="item.description"
@@ -61,14 +74,15 @@ import SettingsModal from './SettingsModal.vue';
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import NavigationCard from './NavigationCard.vue'; // 导入新的导航卡片组件
-
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 // State management
 const navigationLinks = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const databaseInfo = ref({ title: '导航中心', description: '从 Notion 数据库获取的链接集合' });
+const availableTags = ref([]);
+const selectedTags = ref([]);
 // 从Pinia store获取设置状态
 const settingsStore = useSettingsStore();
 const { cardSizeMode } = storeToRefs(settingsStore);
@@ -78,6 +92,41 @@ const NOTION_TOKEN = import.meta.env.VITE_APP_NOTION_TOKEN;
 const NOTION_VERSION = import.meta.env.VITE_APP_NOTION_VERSION || '2022-06-28';
 const NOTION_DATABASE_ID = import.meta.env.VITE_APP_NOTION_DATABASE_ID;
 const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
+
+// Get tag color mapping
+const getTagColor = (color) => {
+  const colorMap = {
+    red: '#ff4d4f',
+    pink: '#ff85c0',
+    blue: '#1890ff',
+    gray: '#78909c',
+    yellow: '#faad14',
+    green: '#52c41a',
+    purple: '#722ed1',
+    orange: '#fa8c16',
+    default: '#78909c'
+  };
+  return colorMap[color] || colorMap.default;
+};
+
+// Toggle tag selection
+const toggleTag = (tagName) => {
+  if (selectedTags.value.includes(tagName)) {
+    selectedTags.value = selectedTags.value.filter(tag => tag !== tagName);
+  } else {
+    selectedTags.value = [...selectedTags.value, tagName];
+  }
+};
+
+// Filter links based on selected tags
+const filteredLinks = computed(() => {
+  if (selectedTags.value.length === 0) {
+    return navigationLinks.value;
+  }
+  return navigationLinks.value.filter(link => 
+    selectedTags.value.every(tag => link.tags.includes(tag))
+  );
+});
 
 // Process Notion API response to extract useful data
 const processNotionResponse = (data) => {
@@ -142,6 +191,13 @@ const fetchDatabaseMetadata = async () => {
     const data = await response.json();
     databaseInfo.value.title = data.title[0]?.plain_text || '导航中心';
     databaseInfo.value.description = data.description[0]?.plain_text || '从 Notion 数据库获取的链接集合';
+    // Extract tags from database properties
+    if (data.properties.tag && data.properties.tag.type === 'multi_select') {
+      availableTags.value = data.properties.tag.multi_select.options.map(option => ({
+        name: option.name,
+        color: option.color
+      }));
+    }
   } catch (err) {
     console.error('获取数据库元数据失败:', err);
   }
