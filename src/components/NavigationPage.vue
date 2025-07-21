@@ -5,8 +5,8 @@
 
       <!-- Header -->
       <header class="text-center mb-12 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 rounded-3xl p-6 shadow-xl relative">
-        <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 drop-shadow-lg">导航中心</h1>
-        <p class="text-gray-700 dark:text-gray-300 text-lg">从 Notion 数据库获取的链接集合</p>
+        <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 drop-shadow-lg">{{ databaseInfo.title }}</h1>
+        <p class="text-gray-700 dark:text-gray-300 text-lg">{{ databaseInfo.description }}</p>
       </header>
 
       <!-- 引入搜索框组件和设置按钮 -->
@@ -68,6 +68,7 @@ import { ref, onMounted } from 'vue';
 const navigationLinks = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const databaseInfo = ref({ title: '导航中心', description: '从 Notion 数据库获取的链接集合' });
 // 从Pinia store获取设置状态
 const settingsStore = useSettingsStore();
 const { cardSizeMode } = storeToRefs(settingsStore);
@@ -121,6 +122,29 @@ const processNotionResponse = (data) => {
         tags
       };
     });
+};
+
+// Fetch database metadata
+const fetchDatabaseMetadata = async () => {
+  if (!NOTION_TOKEN) {
+    error.value = '未配置 Notion API Token。';
+    return;
+  }
+  try {
+    const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${NOTION_TOKEN}`,
+        'Notion-Version': NOTION_VERSION,
+      },
+    });
+    if (!response.ok) throw new Error('获取数据库信息失败');
+    const data = await response.json();
+    databaseInfo.value.title = data.title[0]?.plain_text || '导航中心';
+    databaseInfo.value.description = data.description[0]?.plain_text || '从 Notion 数据库获取的链接集合';
+  } catch (err) {
+    console.error('获取数据库元数据失败:', err);
+  }
 };
 
 // Fetch data from Notion API
@@ -185,6 +209,7 @@ const fetchNotionData = async () => {
 
 // Fetch data when component mounts
 onMounted(() => {
+  fetchDatabaseMetadata();
   fetchNotionData();
 });
 </script>
