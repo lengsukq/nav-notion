@@ -3,20 +3,24 @@
     <div class="glassmorphic-card" :style="{ '--delay': delay }" :class="size === 'small' ? 'small-card' : 'large-card'">
     <div class="p-6 flex flex-col justify-between h-full">
       <div>
-        <div class="flex items-center mb-4">
+        <!-- 只在大卡显示图标和名称容器 -->
+        <div v-if="size === 'large'" class="flex items-center mb-4">
           <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-4 shadow-lg">
             <span class="text-2xl text-blue-600 dark:text-blue-300 font-extrabold">{{ name.charAt(0) }}</span>
           </div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ name }}</h3>
         </div>
-        <p class="text-gray-700 dark:text-gray-300 text-sm mb-5 leading-relaxed">{{ description }}</p>
-        <div class="flex flex-wrap gap-2 mb-5">
+        <!-- 小卡只显示名称并垂直居中 -->
+        <h3 v-else class="text-xl font-bold text-gray-900 dark:text-white flex items-center justify-center h-full">{{ name }}</h3>
+        <!-- 只在大卡显示描述 -->
+        <p v-if="size === 'large'" class="text-gray-700 dark:text-gray-300 text-sm mb-5 leading-relaxed">{{ description }}</p>
+        <!-- 只在大卡显示标签 -->
+        <div v-if="size === 'large'" class="flex flex-wrap gap-2 mb-5">
           <span v-for="(tag, tagIndex) in tags" :key="tagIndex" class="text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-600">
             {{ tag }}
           </span>
         </div>
       </div>
-      <!-- 移除单独的链接元素 -->
     </div>
   </div>
 </a>
@@ -68,12 +72,16 @@ defineProps({
 }
 
 /* 小卡样式 */
-.small-card .p-6 {
-  padding: 6px;
-}
+.small-card {
+  padding: 0.5rem;
+  height: auto;
+  min-height: 80px;
+  margin-bottom: 0;
+}/* 固定小卡高度以确保垂直居中效果 */
 
 .small-card h3 {
-  font-size: 13px;
+  font-size: 17px;
+  color: #3A3A3C;
   margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -127,5 +135,13 @@ defineProps({
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* 移动端响应式布局 */
+@media (max-width: 768px) {
+  .small-card {
+    width: calc(50% - 0.5rem);
+    display: inline-block;
+  }
 }
 </style>

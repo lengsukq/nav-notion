@@ -77,7 +77,7 @@ const searchEngines = {
   bing: { name: 'Bing', url: 'https://www.bing.com/search?q=' },
   google: { name: 'Google', url: 'https://www.google.com/search?q=' },
   yahoo: { name: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
-  duckduckgo: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
+  duck: { name: 'Duck', url: 'https://duckduckgo.com/?q=' },
   baidu: { name: '百度', url: 'https://www.baidu.com/s?wd=' },
   mieta: { name: '密塔搜索', url: 'https://metaso.cn/?q=' }
 };
