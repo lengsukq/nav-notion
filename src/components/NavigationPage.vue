@@ -74,7 +74,7 @@ import SettingsModal from './SettingsModal.vue';
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import NavigationCard from './NavigationCard.vue'; // 导入新的导航卡片组件
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import color from 'color';
 
 // State management
@@ -257,6 +257,14 @@ onMounted(() => {
   fetchDatabaseMetadata();
   fetchNotionData();
 });
+// 修复watch监听器访问ref对象的正确方式
+watch(
+  () => databaseInfo.value.title,
+  (newTitle) => {
+    document.title = newTitle;
+  },
+  { immediate: true }
+);
 </script>
 
 <style>
