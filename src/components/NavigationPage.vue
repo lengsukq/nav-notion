@@ -11,28 +11,30 @@
 
       <!-- Tag Filter Section -->
       <div class="flex flex-wrap justify-center gap-2 mb-8 p-4 bg-white/20 dark:bg-gray-800/20 rounded-2xl">
-        <span
+        <FilterTag
           v-for="tag in availableTags"
           :key="tag.name"
-          @click="toggleTag(tag.name)"
-          :class="[selectedTags.includes(tag.name) ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200', 'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors duration-300 hover:shadow-md']"
-          :style="selectedTags.includes(tag.name) ? { backgroundColor: getTransparentColor(tag.color, 0.7), color: 'white' } : { backgroundColor: getTransparentColor(tag.color, 0.4) }"
-        >
-          {{ tag.name }}
-        </span>
+          :tag-name="tag.name"
+          :tag-color="tag.color"
+          :is-selected="selectedTags.includes(tag.name)"
+          @tag-click="toggleTag"
+        />
       </div>
 
       <!-- 引入搜索框组件和设置按钮 -->
       <div class="flex items-center justify-center mb-6">
-        <button 
-          @click="() => { console.log('Settings button clicked'); settingsStore.toggleSettings() }"
+        <button
+          @click="settingsStore.toggleSettings()"
           class="bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 p-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-lg flex items-center space-x-1 z-index-100 mr-2"
+          aria-label="Settings"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </button>
-        <SearchBox />
+        <!-- Pass filteredLinks to SearchBox if it needs to display results -->
+        <!-- Assuming SearchBox internally handles filtering or receives the current search term -->
+        <SearchBox @search="handleSearch" />
       </div>
 
       <!-- Loading State -->
@@ -49,9 +51,9 @@
       </div>
 
       <!-- Navigation Links Grid -->
-      <div v-else :class="cardSizeMode === 'small' ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-8' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8'">
+      <div v-else :class="cardContainerClasses">
         <NavigationCard
-          v-for="(item, index) in filteredLinks"
+          v-for="(item, index) in processedLinks"
           :key="index"
           :name="item.name"
           :description="item.description"
@@ -61,42 +63,80 @@
           :size="cardSizeMode"
         />
       </div>
+
       <SettingsModal />
     </div>
-
-
-    </div>
+  </div>
 </template>
 
 <script setup>
-import SearchBox from './SearchBox.vue';
-import SettingsModal from './SettingsModal.vue';
-import { useSettingsStore } from '../store/settings';
+import SearchBox from './SearchBox.vue'; // Make sure this path is correct
+import SettingsModal from './SettingsModal.vue'; // Make sure this path is correct
+import NavigationCard from './NavigationCard.vue'; // Make sure this path is correct
+import FilterTag from './FilterTag.vue'; // Make sure this path is correct
+import { useSettingsStore } from '../store/settings'; // Make sure this path is correct
 import { storeToRefs } from 'pinia';
-import NavigationCard from './NavigationCard.vue'; // 导入新的导航卡片组件
 import { ref, onMounted, computed, watch } from 'vue';
-import color from 'color';
+import color from 'color'; // Make sure 'color' library is installed
 
-// State management
+// --- State Management ---
 const navigationLinks = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const databaseInfo = ref({ title: '导航中心', description: '从 Notion 数据库获取的链接集合' });
 const availableTags = ref([]);
 const selectedTags = ref([]);
-// 从Pinia store获取设置状态
+const searchQuery = ref(''); // State for the search query
+
+// Pinia Store
 const settingsStore = useSettingsStore();
 const { cardSizeMode } = storeToRefs(settingsStore);
 
-// Get environment variables
+// --- Environment Variables ---
 const NOTION_TOKEN = import.meta.env.VITE_APP_NOTION_TOKEN;
 const NOTION_VERSION = import.meta.env.VITE_APP_NOTION_VERSION || '2022-06-28';
 const NOTION_DATABASE_ID = import.meta.env.VITE_APP_NOTION_DATABASE_ID;
 const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
 
-const getTransparentColor = (colorValue, alpha) => {
-  return color(colorValue).alpha(alpha).rgb().string();
-};
+// --- Computed Properties ---
+
+// Grid classes based on cardSizeMode
+const cardContainerClasses = computed(() => {
+  const baseClasses = 'gap-4 mt-8'; // Base gap and margin-top
+
+  if (cardSizeMode.value === 'small') {
+    // Small cards: At least two per row on small screens, expanding on larger ones
+    return `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 ${baseClasses}`;
+  } else { // large
+    // Large cards: Fewer per row
+    return `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${baseClasses}`;
+  }
+});
+
+// Filter links based on selected tags and search query
+const processedLinks = computed(() => {
+  let filtered = navigationLinks.value;
+
+  // Apply tag filtering
+  if (selectedTags.value.length > 0) {
+    filtered = filtered.filter(link =>
+      selectedTags.value.every(tag => link.tags.includes(tag))
+    );
+  }
+
+  // Apply search filtering
+  if (searchQuery.value.trim()) {
+    const lowerCaseQuery = searchQuery.value.trim().toLowerCase();
+    filtered = filtered.filter(link =>
+      link.name.toLowerCase().includes(lowerCaseQuery) ||
+      link.description.toLowerCase().includes(lowerCaseQuery)
+    );
+  }
+
+  return filtered;
+});
+
+// --- Methods ---
 
 // Toggle tag selection
 const toggleTag = (tagName) => {
@@ -107,50 +147,32 @@ const toggleTag = (tagName) => {
   }
 };
 
-// Filter links based on selected tags
-const filteredLinks = computed(() => {
-  if (selectedTags.value.length === 0) {
-    return navigationLinks.value;
-  }
-  return navigationLinks.value.filter(link => 
-    selectedTags.value.every(tag => link.tags.includes(tag))
-  );
-});
+// Update search query from SearchBox component
+const handleSearch = (query) => {
+  searchQuery.value = query;
+};
 
-// Process Notion API response to extract useful data
+// Process Notion API response
 const processNotionResponse = (data) => {
-  // 确保 data.results 存在且是一个数组
   if (!data || !Array.isArray(data.results)) {
     console.error('API 返回的数据格式不正确，缺少 results 数组');
-    return []; // 返回空数组以防止后续错误
+    return [];
   }
 
   return data.results
-    .filter(item => item.object === 'page') // 只处理 object 为 'page' 的项目
+    .filter(item => item.object === 'page' && item.properties)
     .map(item => {
       const properties = item.properties;
 
-      // 提取名称 - Notion API 的 title 属性
-      // 属性名称是 "name"
       const name = properties['name']?.title?.[0]?.plain_text || '未命名';
-
-      // 提取 URL - Notion API 的 rich_text 属性
-      // 属性名称是 "url"，且链接可能嵌套在 text.link.url 中
+      // Use 'url' property for the link destination
       const url = properties['url']?.rich_text?.[0]?.text?.link?.url || properties['url']?.rich_text?.[0]?.plain_text || '#';
-
-      // 提取描述 - Notion API 的 rich_text 属性
-      // 属性名称是 "description"
       const description = properties['description']?.rich_text?.[0]?.plain_text || '无描述';
 
-      // 提取标签 - 根据你提供的示例，'tag' 字段类型是 'multi_select'
-      // 属性名称是 "tag"
+      // Assume 'tag' property is of type 'multi_select'
       let tags = [];
       if (properties['tag'] && properties['tag'].type === 'multi_select') {
-        // 如果你的 Notion 数据库 'tag' 字段是 'multi_select'，请使用此逻辑
         tags = properties['tag'].multi_select.map(tag => tag.name);
-      } else {
-        // 其他未知类型，或者字段不存在
-        tags = [];
       }
 
       return {
@@ -162,10 +184,10 @@ const processNotionResponse = (data) => {
     });
 };
 
-// Fetch database metadata
+// Fetch database metadata (title, description, tags)
 const fetchDatabaseMetadata = async () => {
-  if (!NOTION_TOKEN) {
-    error.value = '未配置 Notion API Token。';
+  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) {
+    console.warn('Notion credentials not fully configured. Skipping metadata fetch.');
     return;
   }
   try {
@@ -176,42 +198,33 @@ const fetchDatabaseMetadata = async () => {
         'Notion-Version': NOTION_VERSION,
       },
     });
-    if (!response.ok) throw new Error('获取数据库信息失败');
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
-    databaseInfo.value.title = data.title[0]?.plain_text || '导航中心';
-    databaseInfo.value.description = data.description[0]?.plain_text || '从 Notion 数据库获取的链接集合';
-    // Extract tags from database properties
-    if (data.properties.tag && data.properties.tag.type === 'multi_select') {
+
+    // Update database info
+    databaseInfo.value.title = data.title?.[0]?.plain_text || '导航中心';
+    // Notion API doesn't directly provide a database description field in the database object itself.
+    // You might need to manually add a "Database Description" property to your Notion page if you want this.
+    // For now, we'll keep the default description.
+
+    // Extract available tags from the 'tag' property (assuming it's multi_select)
+    if (data.properties?.tag?.type === 'multi_select') {
       availableTags.value = data.properties.tag.multi_select.options.map(option => ({
         name: option.name,
-        color: option.color
+        color: option.color // Notion's color for the tag
       }));
     }
   } catch (err) {
-    console.error('获取数据库元数据失败:', err);
+    console.error('Failed to fetch Notion database metadata:', err);
+    // Optionally set an error message for metadata fetching
   }
 };
 
 // Fetch data from Notion API
 const fetchNotionData = async () => {
-  // 检查 Notion Token 是否已配置
-  if (!NOTION_TOKEN) {
-    console.error('未配置 Notion API Token (VITE_APP_NOTION_TOKEN)。请在 .env 文件中设置。');
-    error.value = '未配置 Notion API Token。';
-    loading.value = false;
-    return;
-  }
-  // 检查 PROXY_URL 是否已配置
-  if (!PROXY_URL) {
-    console.error('未配置 Notion API Proxy URL (VITE_APP_PROXY_URL)。请在 .env 文件中设置。');
-    error.value = '未配置 Notion API Proxy URL。';
-    loading.value = false;
-    return;
-  }
-  // 检查 NOTION_DATABASE_ID 是否已配置
-  if (!NOTION_DATABASE_ID) {
-    console.error('未配置 Notion Database ID (VITE_APP_NOTION_DATABASE_ID)。请在 .env 文件中设置。');
-    error.value = '未配置 Notion Database ID。';
+  // Check if all necessary environment variables are set
+  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) {
+    error.value = '请检查 .env 文件中是否已配置 Notion API Token, Database ID 和 Proxy URL。';
     loading.value = false;
     return;
   }
@@ -220,20 +233,19 @@ const fetchNotionData = async () => {
   error.value = null;
 
   try {
-    // Notion API 查询需要 POST 请求，并且 body 中指定了要查询的条件
     const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
-      method: 'POST', // 查询数据库使用 POST
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${NOTION_TOKEN}`, // Notion API 的认证头
+        'Authorization': `Bearer ${NOTION_TOKEN}`,
         'Notion-Version': NOTION_VERSION,
         'Content-Type': 'application/json'
       },
     });
 
     if (!response.ok) {
-        const errorData = await response.json(); // 尝试解析 Notion API 返回的错误信息
-        console.error('Notion API 错误详情:', errorData);
-        const errorMessage = errorData.message || `HTTP 错误: ${response.status}`;
+        const errorData = await response.json();
+        console.error('Notion API Error Details:', errorData);
+        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
         throw new Error(`无法获取数据: ${errorMessage}`);
     }
 
@@ -241,91 +253,100 @@ const fetchNotionData = async () => {
     navigationLinks.value = processNotionResponse(data);
 
     if (navigationLinks.value.length === 0) {
-        error.value = '从 Notion 数据库未找到任何导航链接。请检查数据库内容、字段名称以及 "是否显示" 属性。';
+        error.value = '未从 Notion 数据库找到任何导航链接。请检查数据库内容、字段名称以及您是否设置了 "是否显示" 属性（如果需要）。';
     }
 
   } catch (err) {
     error.value = err.message;
-    console.error('获取 Notion 数据时出错:', err);
+    console.error('Error fetching Notion data:', err);
   } finally {
     loading.value = false;
   }
 };
 
-// Fetch data when component mounts
+// --- Lifecycle Hooks ---
 onMounted(() => {
-  fetchDatabaseMetadata();
-  fetchNotionData();
+  fetchDatabaseMetadata(); // Fetch metadata first
+  fetchNotionData();      // Then fetch the actual data
 });
-// 修复watch监听器访问ref对象的正确方式
+
+// Update document title based on database title
 watch(
   () => databaseInfo.value.title,
   (newTitle) => {
-    document.title = newTitle;
+    document.title = newTitle || '导航中心';
   },
-  { immediate: true }
+  { immediate: true } // Run on initial load
 );
 </script>
 
 <style>
-/* 全局样式，用于设置背景渐变和内容居中 */
-/* (如果你的项目有全局 CSS 文件，这些也可以放在那里) */
+/* Global styles if not in App.vue or main.css */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  background-color: #f0f2f5; /* 默认背景，会被App.vue中的渐变覆盖 */
 }
 
-/* 毛玻璃和圆角样式 (这些也在 SearchBox.vue 和 App.vue 中重复使用，可以考虑移到全局 CSS) */
-/* Header 的毛玻璃 */
+/* Header Glassmorphism */
 header {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-/* Logo 区域的圆角和阴影 */
-.flex.items-center.mb-4 > div {
-  border-radius: 16px !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+/* Filter Tag Hover Effect - Inherited from FilterTag component */
+
+/* Settings Button and Search Box Wrapper */
+.flex.items-center.justify-center.mb-6 {
+  position: relative; /* For z-index context */
+  z-index: 100; /* Ensure it's above cards if they have shadows */
 }
-/* 标签的圆角 */
-.flex.flex-wrap.gap-2 span {
-  border-radius: 10px !important;
+
+/* Error State Card Styles */
+.bg-red-100 { /* Example: Overriding Tailwind if needed for specific styling */
+  background-color: rgba(254, 202, 202, 1); /* Red-100 */
 }
-/* loading 动画粗细 */
-.animate-spin { border-width: 4px; }
-/* error 状态的圆角和背景 */
-.error-state-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border-radius: 20px;
+.dark .bg-red-900 {
+  background-color: rgba(127, 29, 29, 1); /* Red-900 */
 }
-/* 统一按钮和链接的圆角和阴影 */
-button, a.text-blue-500 {
+.border-red-300 {
+  border-color: rgba(239, 68, 68, 1); /* Red-300 */
+}
+.dark .border-red-700 {
+  border-color: rgba(185, 28, 28, 1); /* Red-700 */
+}
+/* Add more specific overrides if needed */
+
+/* Global button/link styles for consistency */
+button,
+.FilterTag { /* Assuming FilterTag has a base class for styling */
   border-radius: 12px !important;
+  transition: all 0.3s ease-in-out;
 }
-button:hover, a.text-blue-500:hover {
+button:hover,
+.FilterTag:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
-/* 背景渐变 */
+.dark button:hover,
+.dark .FilterTag:hover {
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+
+/* Background Gradient Styles (if not handled by App.vue) */
+/* Example: If you want to apply it directly here, but usually it's better in App.vue or a layout component */
+/*
 .bg-gradient-to-br {
-  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
-  --tw-gradient-from: #a78bfa; /* purple-300 */
-  --tw-gradient-from: #93c5fd; /* blue-200 */
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-from: #93c5fd; // blue-200
+  --tw-gradient-to: #a78bfa; // purple-300
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to));
 }
 .dark .bg-gradient-to-br {
-  --tw-gradient-from: #374151; /* gray-700 */
-  --tw-gradient-from: #1f2937; /* gray-800 */
+  --tw-gradient-from: #1f2937; // gray-800
+  --tw-gradient-to: #374151; // gray-700
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to));
 }
-
-.app-search-wrapper {
-  position: relative;
-  z-index: 100; /* 确保搜索框及下拉菜单层级高于页面卡片 */
-}
-
+*/
 </style>
-
