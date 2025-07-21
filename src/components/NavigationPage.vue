@@ -16,7 +16,7 @@
           :key="tag.name"
           @click="toggleTag(tag.name)"
           :class="[selectedTags.includes(tag.name) ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200', 'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors duration-300 hover:shadow-md']"
-          :style="selectedTags.includes(tag.name) ? { backgroundColor: getTagColor(tag.color) } : {}"
+          :style="selectedTags.includes(tag.name) ? { backgroundColor: getTransparentColor(tag.color, 0.7), color: 'white' } : { backgroundColor: getTransparentColor(tag.color, 0.4) }"
         >
           {{ tag.name }}
         </span>
@@ -75,6 +75,7 @@ import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import NavigationCard from './NavigationCard.vue'; // 导入新的导航卡片组件
 import { ref, onMounted, computed } from 'vue';
+import color from 'color';
 
 // State management
 const navigationLinks = ref([]);
@@ -93,20 +94,8 @@ const NOTION_VERSION = import.meta.env.VITE_APP_NOTION_VERSION || '2022-06-28';
 const NOTION_DATABASE_ID = import.meta.env.VITE_APP_NOTION_DATABASE_ID;
 const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
 
-// Get tag color mapping
-const getTagColor = (color) => {
-  const colorMap = {
-    red: '#ff4d4f',
-    pink: '#ff85c0',
-    blue: '#1890ff',
-    gray: '#78909c',
-    yellow: '#faad14',
-    green: '#52c41a',
-    purple: '#722ed1',
-    orange: '#fa8c16',
-    default: '#78909c'
-  };
-  return colorMap[color] || colorMap.default;
+const getTransparentColor = (colorValue, alpha) => {
+  return color(colorValue).alpha(alpha).rgb().string();
 };
 
 // Toggle tag selection
@@ -331,3 +320,4 @@ button:hover, a.text-blue-500:hover {
 }
 
 </style>
+
