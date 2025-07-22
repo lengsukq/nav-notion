@@ -5,13 +5,20 @@
         <!-- 仅在大卡显示图标和名称容器 -->
         <div v-if="size === 'large'" class="large-card-header">
           <div class="icon-container">
-            <span class="icon-text">{{ name.charAt(0) }}</span>
+            <img v-if="icon" :src="icon.trim()" alt="{{ name }}" class="icon-svg">
+            <span v-else class="icon-text">{{ name.charAt(0) }}</span>
           </div>
           <h3 class="large-card-title">{{ name }}</h3>
         </div>
 
         <!-- 小卡：仅显示名称，垂直居中 -->
-        <h3 v-else class="small-card-title">{{ name }}</h3>
+        <div v-else class="small-card-header">
+          <div class="icon-container small-icon">
+            <img v-if="icon" :src="icon.trim()" alt="{{ name }}" class="icon-svg">
+            <span v-else class="icon-text">{{ name.charAt(0) }}</span>
+          </div>
+          <h3 class="small-card-title">{{ name }}</h3>
+        </div>
 
         <!-- 仅在大卡显示描述 -->
         <p v-if="size === 'large'" class="large-card-description">{{ description }}</p>
@@ -38,6 +45,11 @@ const props = defineProps({
   description: {
     type: String,
     required: false
+  },
+  icon: {
+    type: Object,
+    required: false,
+    default: null
   },
   tags: {
     type: Array,
@@ -194,9 +206,27 @@ const cardClasses = computed(() => {
 }
 
 /* 小卡样式 */
+.small-card-header {
+  display: flex;
+  align-items: center;
+}
+
+.small-icon {
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
+  font-size: 1rem; /* text-base */
+  margin-right: 0.5rem;
+}
+
 .small-card .content-wrapper {
   padding: 0.75rem 0.5rem; /* 调整小卡内边距 */
   justify-content: center; /* 确保名称垂直居中 */
+}
+
+.icon-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .small-card-title {

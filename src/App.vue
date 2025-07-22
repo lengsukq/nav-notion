@@ -1,9 +1,10 @@
 <script setup>
-import NavigationPage from './components/NavigationPage.vue'
+import { Toaster } from 'vue-sonner'
 </script>
 
 <template>
-  <NavigationPage />
+  <Toaster/>
+ <RouterView />
 </template>
 
 <style scoped>

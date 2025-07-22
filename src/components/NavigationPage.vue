@@ -59,6 +59,7 @@
           :description="item.description"
           :tags="item.tags"
           :url="item.url"
+          :icon="item.icon"
           :delay="`${index * 50}ms`"
           :size="cardSizeMode"
         />
@@ -132,7 +133,7 @@ const processedLinks = computed(() => {
       link.description.toLowerCase().includes(lowerCaseQuery)
     );
   }
-
+  console.log('filtered',filtered);
   return filtered;
 });
 
@@ -168,7 +169,8 @@ const processNotionResponse = (data) => {
       // Use 'url' property for the link destination
       const url = properties['url']?.rich_text?.[0]?.text?.link?.url || properties['url']?.rich_text?.[0]?.plain_text || '#';
       const description = properties['description']?.rich_text?.[0]?.plain_text || '无描述';
-
+      const icon = properties['icon']?.phone_number;
+      
       // Assume 'tag' property is of type 'multi_select'
       let tags = [];
       if (properties['tag'] && properties['tag'].type === 'multi_select') {
@@ -179,6 +181,7 @@ const processNotionResponse = (data) => {
         name,
         url,
         description,
+        icon,
         tags
       };
     });
@@ -201,13 +204,10 @@ const fetchDatabaseMetadata = async () => {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
-    // Update database info
-    databaseInfo.value.title = data.title?.[0]?.plain_text || '导航中心';
-    // Notion API doesn't directly provide a database description field in the database object itself.
-    // You might need to manually add a "Database Description" property to your Notion page if you want this.
-    // For now, we'll keep the default description.
-
-    // Extract available tags from the 'tag' property (assuming it's multi_select)
+    databaseInfo.value.title = data.title?.[0]?.plain_text || 'nav-notion';
+    databaseInfo.value.description = data.description?.[0]?.plain_text || 'nav-notion';
+    console.log('data',data);
+    
     if (data.properties?.tag?.type === 'multi_select') {
       availableTags.value = data.properties.tag.multi_select.options.map(option => ({
         name: option.name,
@@ -216,7 +216,6 @@ const fetchDatabaseMetadata = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch Notion database metadata:', err);
-    // Optionally set an error message for metadata fetching
   }
 };
 
