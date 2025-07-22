@@ -134,8 +134,8 @@ const cardClasses = computed(() => {
   width: 3rem; /* 48px */
   height: 3rem; /* 48px */
   border-radius: 1rem; /* 16px */
-  background-color: #E0E7FF; /* bg-blue-100 */
-  color: #3B82F6; /* text-blue-600 */
+  background-color: var(--primary-color-light, #E0E7FF); /* 使用主题色的浅色变体 */
+  color: var(--primary-color); /* 使用主题色变量 */
   font-weight: 900; /* extrabold */
   font-size: 1.5rem; /* text-2xl -> 24px */
   display: flex;
@@ -146,8 +146,8 @@ const cardClasses = computed(() => {
 }
 
 .dark .icon-container {
-  background-color: #1E3A8A; /* dark:bg-blue-900 */
-  color: #93C5FD; /* dark:text-blue-300 */
+  background-color: var(--primary-color-dark, #1E3A8A); /* 深色模式下的主题色变体 */
+  color: var(--primary-color-light, #93C5FD); /* 浅色文本变体 */
 }
 
 .large-card-title {
