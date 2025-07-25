@@ -33,11 +33,11 @@ defineEmits(['tag-click']);
 const tagVariant = computed(() => {
   // 根据颜色属性选择合适的标签变体
   if (props.tagColor === 'primary' || props.tagColor === 'blue') {
-    return props.isSelected ? 'tag-primary' : 'tag-default';
+    return props.isSelected ? 'tag-primary-selected' : 'tag-default';
   } else if (props.tagColor === 'danger' || props.tagColor === 'red') {
-    return 'tag-danger';
+    return props.isSelected ? 'tag-danger-selected' : 'tag-danger';
   } else {
-    return 'tag-default';
+    return props.isSelected ? 'tag-custom-selected' : 'tag-default';
   }
 });
 
@@ -51,12 +51,34 @@ const tagStyle = computed(() => {
   try {
     // 使用 color.js 解析颜色并设置透明度
     const color = new Color(props.tagColor);
-    const alpha = props.isSelected ? 0.7 : 0.3;
+    const alpha = props.isSelected ? 0.9 : 0.3;
     color.alpha = alpha;
+    
+    // 选中状态添加更明显的样式
+    if (props.isSelected) {
+      return { 
+        backgroundColor: color.toString(),
+        color: 'white',
+        fontWeight: 'bold',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        border: `2px solid ${new Color(props.tagColor).toString({format: 'hex'})}`
+      };
+    }
     return { backgroundColor: color.toString() };
   } catch (e) {
     // 如果颜色解析失败，回退到原始颜色值
     console.warn(`Invalid color value: ${props.tagColor}`);
+    
+    // 选中状态添加更明显的样式
+    if (props.isSelected) {
+      return { 
+        backgroundColor: props.tagColor,
+        color: 'white',
+        fontWeight: 'bold',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        border: `2px solid ${props.tagColor}`
+      };
+    }
     return { backgroundColor: props.tagColor };
   }
 });

@@ -5,7 +5,8 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     cardSizeMode: localStorage.getItem('cardSizeMode') || 'large',
     isSettingsOpen: false,
-    themeColor: localStorage.getItem('themeColor') || '#3B82F6'
+    themeColor: localStorage.getItem('themeColor') || '#3B82F6',
+    tagFilterMode: localStorage.getItem('tagFilterMode') || 'single'
   }),
   actions: {
     setCardSizeMode(mode) {
@@ -22,6 +23,10 @@ export const useSettingsStore = defineStore('settings', {
       document.documentElement.style.setProperty('--primary-color-dark', darkColor);
       this.saveSettings();
     },
+    setTagFilterMode(mode) {
+      this.tagFilterMode = mode;
+      this.saveSettings();
+    },
     toggleSettings() {
       console.log('toggleSettings called, current state:', this.isSettingsOpen);
       this.isSettingsOpen = !this.isSettingsOpen;
@@ -36,11 +41,13 @@ export const useSettingsStore = defineStore('settings', {
     saveSettings() {
       localStorage.setItem('cardSizeMode', this.cardSizeMode);
       localStorage.setItem('themeColor', this.themeColor);
+      localStorage.setItem('tagFilterMode', this.tagFilterMode);
     },
     resetSettings() {
       // 恢复默认设置
       this.cardSizeMode = 'large';
       this.themeColor = '#3B82F6';
+      this.tagFilterMode = 'single';
       // 更新CSS变量
       document.documentElement.style.setProperty('--primary-color', this.themeColor);
       const lightColor = this.lightenColor(this.themeColor, 0.2);

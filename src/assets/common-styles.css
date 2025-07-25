@@ -39,6 +39,19 @@
   @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
 }
 
+/* 选中状态的标签样式 */
+.tag-primary-selected {
+  @apply bg-blue-500 text-white dark:bg-blue-600 dark:text-white font-bold shadow-lg ring-2 ring-blue-300 ring-offset-2;
+}
+
+.tag-danger-selected {
+  @apply bg-red-500 text-white dark:bg-red-600 dark:text-white font-bold shadow-lg ring-2 ring-red-300 ring-offset-2;
+}
+
+.tag-custom-selected {
+  @apply text-white font-bold shadow-lg ring-2 ring-white ring-offset-2;
+}
+
 /* 通用导航链接样式 */
 .nav-link {
   @apply px-4 py-3 rounded-2xl font-medium transition-all duration-300 backdrop-blur-lg;

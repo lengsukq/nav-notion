@@ -152,7 +152,7 @@ const toggleTag = (tagName) => {
   }
   selectedTags.value = newSelectedTags;
   // 当标签改变时，需要重置分页并从头开始加载数据
-  fetchNotionData(selectedTags.value, null);
+  fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
 };
 
 // 更新搜索查询文本
@@ -216,7 +216,7 @@ const fetchDatabaseMetadata = async () => {
 };
 
 // 获取 Notion 数据库的链接数据，支持标签过滤和分页
-const fetchNotionData = async (tagsToFilter = [], startCursor = null) => {
+const fetchNotionData = async (tagsToFilter = [], startCursor = null, tagFilterMode = settingsStore.tagFilterMode) => {
   // 检查 Notion API 配置是否完整
   if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) {
     error.value = '请检查 .env 文件中是否已配置 Notion API Token, Database ID 和 Proxy URL。';
@@ -259,9 +259,18 @@ const fetchNotionData = async (tagsToFilter = [], startCursor = null) => {
       },
     }));
 
-    body.filter = {
-      and: filterPredicates, // 必须包含所有选中的标签
-    };
+    // 根据tagFilterMode决定使用AND还是OR逻辑
+    if (tagFilterMode === 'multiple') {
+      // 多选模式：必须包含所有选中的标签 (AND)
+      body.filter = {
+        and: filterPredicates,
+      };
+    } else {
+      // 单选模式：包含任一选中的标签 (OR)
+      body.filter = {
+        or: filterPredicates,
+      };
+    }
   }
 
   // 如果提供了 startCursor，则添加到请求体中以获取下一页
@@ -301,7 +310,12 @@ const fetchNotionData = async (tagsToFilter = [], startCursor = null) => {
 
     // 根据加载结果设置错误信息
     if (navigationLinks.value.length === 0 && tagsToFilter.length > 0) {
-        error.value = `未找到包含所有选中标签 (${tagsToFilter.join(', ')}) 的导航链接。`;
+        // 根据tagFilterMode显示不同的错误信息
+        if (tagFilterMode === 'multiple') {
+            error.value = `未找到包含所有选中标签 (${tagsToFilter.join(', ')}) 的导航链接。`;
+        } else {
+            error.value = `未找到包含任一选中标签 (${tagsToFilter.join(', ')}) 的导航链接。`;
+        }
     } else if (navigationLinks.value.length === 0 && tagsToFilter.length === 0) {
         // 这种情况也可能是由于配置错误，保留原来的提示
         error.value = '未从 Notion 数据库找到任何导航链接。请检查数据库内容、字段名称以及您是否设置了 "是否显示" 属性（如果需要）。';
@@ -330,7 +344,7 @@ const handleScroll = () => {
     window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
   ) {
     // 请求下一页数据
-    fetchNotionData(selectedTags.value, nextCursor.value);
+    fetchNotionData(selectedTags.value, nextCursor.value, settingsStore.tagFilterMode);
   }
 };
 
@@ -358,6 +372,17 @@ watch(
     document.title = newTitle || '导航中心';
   },
   { immediate: true } // 立即执行一次，设置初始页面标题
+);
+
+// 监听标签筛选模式的变化，当模式切换时重置标签筛选状态
+watch(
+  () => settingsStore.tagFilterMode,
+  () => {
+    // 重置选中的标签
+    selectedTags.value = [];
+    // 重新加载数据
+    fetchNotionData([], null, settingsStore.tagFilterMode);
+  }
 );
 
 // 监听 selectedTags 的变化。
