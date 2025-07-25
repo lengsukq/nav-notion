@@ -44,13 +44,14 @@
   @apply bg-blue-500 text-white dark:bg-blue-600 dark:text-white font-bold shadow-lg ring-2 ring-blue-300 ring-offset-2;
 }
 
-.tag-danger-selected {
+/* 移除不再使用的样式 */
+/*.tag-danger-selected {
   @apply bg-red-500 text-white dark:bg-red-600 dark:text-white font-bold shadow-lg ring-2 ring-red-300 ring-offset-2;
 }
 
 .tag-custom-selected {
   @apply text-white font-bold shadow-lg ring-2 ring-white ring-offset-2;
-}
+}*/
 
 /* 通用导航链接样式 */
 .nav-link {

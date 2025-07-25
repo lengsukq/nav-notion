@@ -31,13 +31,18 @@ const props = defineProps({
 defineEmits(['tag-click']);
 
 const tagVariant = computed(() => {
-  // 根据颜色属性选择合适的标签变体
-  if (props.tagColor === 'primary' || props.tagColor === 'blue') {
-    return props.isSelected ? 'tag-primary-selected' : 'tag-default';
-  } else if (props.tagColor === 'danger' || props.tagColor === 'red') {
-    return props.isSelected ? 'tag-danger-selected' : 'tag-danger';
+  // 统一使用相同的选中样式
+  if (props.isSelected) {
+    return 'tag-primary-selected';
   } else {
-    return props.isSelected ? 'tag-custom-selected' : 'tag-default';
+    // 根据颜色属性选择合适的标签变体
+    if (props.tagColor === 'primary' || props.tagColor === 'blue') {
+      return 'tag-primary';
+    } else if (props.tagColor === 'danger' || props.tagColor === 'red') {
+      return 'tag-danger';
+    } else {
+      return 'tag-default';
+    }
   }
 });
 

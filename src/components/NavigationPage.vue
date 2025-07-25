@@ -143,13 +143,27 @@ const processedLinks = computed(() => {
 // 切换标签的选中状态，并根据选中的标签重新请求数据
 const toggleTag = (tagName) => {
   let newSelectedTags;
-  if (selectedTags.value.includes(tagName)) {
-    // 如果标签已选中，则移除
-    newSelectedTags = selectedTags.value.filter(tag => tag !== tagName);
+  
+  // 在单选模式下，只允许选中一个标签
+  if (settingsStore.tagFilterMode === 'single') {
+    if (selectedTags.value.includes(tagName)) {
+      // 如果点击已选中的标签，则取消选中
+      newSelectedTags = [];
+    } else {
+      // 如果点击未选中的标签，则只选中该标签
+      newSelectedTags = [tagName];
+    }
   } else {
-    // 否则，添加新标签
-    newSelectedTags = [...selectedTags.value, tagName];
+    // 多选模式保持原有逻辑
+    if (selectedTags.value.includes(tagName)) {
+      // 如果标签已选中，则移除
+      newSelectedTags = selectedTags.value.filter(tag => tag !== tagName);
+    } else {
+      // 否则，添加新标签
+      newSelectedTags = [...selectedTags.value, tagName];
+    }
   }
+  
   selectedTags.value = newSelectedTags;
   // 当标签改变时，需要重置分页并从头开始加载数据
   fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
