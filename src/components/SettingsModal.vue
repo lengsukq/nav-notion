@@ -9,7 +9,7 @@
           </svg>
           设置
         </h3>
-        <button @click="closeSettings" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <button @click="closeSettings" class="button button-secondary p-1 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -29,15 +29,13 @@
           <div class="flex space-x-3">
             <button 
               @click="setCardSizeMode('small')"
-              :class="cardSizeMode === 'small' ? 'bg-primary text-white shadow-md' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'"
-              class="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+              :class="[cardSizeMode === 'small' ? 'button-primary selected' : 'button-secondary', 'flex-1 px-4 py-2 rounded-lg text-sm font-medium button']"
             >
               小卡模式
             </button>
             <button 
               @click="setCardSizeMode('large')"
-              :class="cardSizeMode === 'large' ? 'bg-primary text-white shadow-md' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'"
-              class="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+              :class="[cardSizeMode === 'large' ? 'button-primary selected' : 'button-secondary', 'flex-1 px-4 py-2 rounded-lg text-sm font-medium button']"
             >
               大卡模式
             </button>
@@ -70,14 +68,14 @@
               >
             </div>
             <div class="flex flex-wrap gap-2 mt-3">
-              <button @click="setThemeColor('#3B82F6')" :style="{ backgroundColor: '#3B82F6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="蓝色"></button>
-              <button @click="setThemeColor('#10B981')" :style="{ backgroundColor: '#10B981' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="绿色"></button>
-              <button @click="setThemeColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="琥珀色"></button>
-              <button @click="setThemeColor('#EF4444')" :style="{ backgroundColor: '#EF4444' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="红色"></button>
-              <button @click="setThemeColor('#8B5CF6')" :style="{ backgroundColor: '#8B5CF6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="紫色"></button>
-              <button @click="setThemeColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="粉色"></button>
-              <button @click="setThemeColor('#06B6D4')" :style="{ backgroundColor: '#06B6D4' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="青色"></button>
-              <button @click="setThemeColor('#6B7280')" :style="{ backgroundColor: '#6B7280' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110" title="灰色"></button>
+              <button @click="setThemeColor('#3B82F6')" :style="{ backgroundColor: '#3B82F6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="蓝色"></button>
+              <button @click="setThemeColor('#10B981')" :style="{ backgroundColor: '#10B981' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="绿色"></button>
+              <button @click="setThemeColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="琥珀色"></button>
+              <button @click="setThemeColor('#EF4444')" :style="{ backgroundColor: '#EF4444' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="红色"></button>
+              <button @click="setThemeColor('#8B5CF6')" :style="{ backgroundColor: '#8B5CF6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="紫色"></button>
+              <button @click="setThemeColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="粉色"></button>
+              <button @click="setThemeColor('#06B6D4')" :style="{ backgroundColor: '#06B6D4' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="青色"></button>
+              <button @click="setThemeColor('#6B7280')" :style="{ backgroundColor: '#6B7280' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all transform hover:scale-110 button" title="灰色"></button>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">选择或输入颜色值以更改系统主题色</p>
           </div>
@@ -89,7 +87,7 @@
 
         <button 
           @click="resetSettings()"
-          class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+          class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors button button-danger"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -98,7 +96,7 @@
         </button>
         <button 
           @click="closeSettings()"
-          class="px-5 py-2 bg-primary dark:bg-primary-dark text-white font-medium rounded-lg shadow hover:bg-primary-dark dark:hover:bg-primary-dark/90 transition-all duration-300 transform hover:translate-y-[-2px]"
+          class="px-5 py-2 font-medium rounded-lg shadow button button-primary"
         >
           关闭设置
         </button>
@@ -124,6 +122,12 @@ const { setCardSizeMode, closeSettings, setThemeColor, resetSettings } = setting
 watch([cardSizeMode, themeColor], () => {
   // 自动保存设置
   settingsStore.saveSettings();
+  console.log('cardSizeMode', cardSizeMode.value);
+  console.log('themeColor', themeColor.value);
+  
+  // 调试日志，检查按钮选中状态
+  console.log('Button classes - small:', cardSizeMode.value === 'small' ? 'button-primary selected' : 'button-secondary');
+  console.log('Button classes - large:', cardSizeMode.value === 'large' ? 'button-primary selected' : 'button-secondary');
   
   // 显示保存成功提示
   toast.success('设置已自动保存', {

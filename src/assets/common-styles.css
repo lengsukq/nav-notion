@@ -1,0 +1,62 @@
+
+/* 通用按钮样式 */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-300;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.button-primary {
+  @apply bg-blue-500/90 text-white hover:bg-blue-600 focus:ring-blue-500;
+  @apply active:bg-blue-700 active:ring-2 active:ring-blue-300 active:ring-offset-2;
+}
+
+.button-primary.selected {
+  @apply bg-blue-700/90 ring-2 ring-blue-300 ring-offset-2;
+}
+
+.btn-secondary {
+  @apply bg-gray-200/90 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700/90 dark:text-gray-200 dark:hover:bg-gray-600;
+}
+
+.btn-danger {
+  @apply bg-red-500/90 text-white hover:bg-red-600 focus:ring-red-500;
+}
+
+/* 通用标签样式 */
+.tag {
+  @apply px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.tag-default {
+  @apply bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200;
+}
+
+.tag-primary {
+  @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
+}
+
+.tag-danger {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+/* 通用卡片样式 */
+.card {
+  @apply rounded-2xl border bg-white/15 dark:bg-gray-800/15 backdrop-blur-lg;
+  @apply shadow-md transition-all duration-300;
+}
+
+.card-hover {
+  @apply hover:shadow-lg hover:-translate-y-1;
+}
+
+.card-content {
+  @apply p-4 md:p-6;
+}
+
+.card-title {
+  @apply text-xl font-bold text-gray-900 dark:text-white;
+}
+
+.card-description {
+  @apply mt-2 text-gray-700 dark:text-gray-300;
+}

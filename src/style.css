@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import './assets/common-styles.css';
 
 :root {
   --primary-color: #3B82F6; /* 默认主题色 - 蓝色 */

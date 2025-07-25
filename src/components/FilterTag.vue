@@ -1,8 +1,8 @@
 <template>
   <span
     @click="$emit('tag-click', tagName)"
-    :class="tagClasses"
-    :style="tagStyles"
+    :class="['tag', tagVariant, { 'cursor-pointer transition-colors duration-300 hover:shadow-md': true }]"
+    :style="tagStyle"
   >
     {{ tagName }}
   </span>
@@ -10,7 +10,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import color from 'color'; // 确保已安装: npm install color
+import Color from 'colorjs.io';
 
 const props = defineProps({
   tagName: {
@@ -30,46 +30,38 @@ const props = defineProps({
 // Emit the tag click event
 defineEmits(['tag-click']);
 
-const getTransparentColor = (colorValue, alpha) => {
+const tagVariant = computed(() => {
+  // 根据颜色属性选择合适的标签变体
+  if (props.tagColor === 'primary' || props.tagColor === 'blue') {
+    return props.isSelected ? 'tag-primary' : 'tag-default';
+  } else if (props.tagColor === 'danger' || props.tagColor === 'red') {
+    return 'tag-danger';
+  } else {
+    return 'tag-default';
+  }
+});
+
+// 动态计算标签样式以支持自定义颜色
+const tagStyle = computed(() => {
+  // 如果是预定义颜色关键字，则不设置内联样式
+  if (['primary', 'blue', 'danger', 'red', 'default'].includes(props.tagColor)) {
+    return {};
+  }
+  
   try {
-    return color(colorValue).alpha(alpha).rgb().string();
+    // 使用 color.js 解析颜色并设置透明度
+    const color = new Color(props.tagColor);
+    const alpha = props.isSelected ? 0.7 : 0.3;
+    color.alpha = alpha;
+    return { backgroundColor: color.toString() };
   } catch (e) {
-    console.error(`Invalid color value: ${colorValue}`, e);
-    // Fallback for invalid colors
-    return alpha === 0.7 ? 'rgba(255, 0, 0, 0.7)' : 'rgba(100, 100, 100, 0.4)';
+    // 如果颜色解析失败，回退到原始颜色值
+    console.warn(`Invalid color value: ${props.tagColor}`);
+    return { backgroundColor: props.tagColor };
   }
-};
-
-const tagClasses = computed(() => [
-  'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors duration-300 hover:shadow-md',
-  props.isSelected
-    ? 'text-white' // Selected state text color
-    : 'text-gray-800 dark:text-gray-200', // Unselected state text color
-]);
-
-const tagStyles = computed(() => {
-  const baseStyle = props.isSelected
-    ? { backgroundColor: getTransparentColor(props.tagColor, 0.7) }
-    : { backgroundColor: getTransparentColor(props.tagColor, 0.4) };
-
-  // If the color is invalid or can't be processed, use a default
-  if (!baseStyle.backgroundColor) {
-      return props.isSelected
-        ? { backgroundColor: 'rgba(59, 130, 246, 0.7)' } // Default blue for selected
-        : { backgroundColor: 'rgba(209, 213, 219, 0.4)' }; // Default gray for unselected
-  }
-  return baseStyle;
 });
 </script>
 
 <style scoped>
-/* Optional: Add specific styles for the tag if needed, or rely on Tailwind */
-/* For example, to make the hover effect stronger */
-span:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-.dark span:hover {
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
-}
+/* 使用 common-styles.css 中定义的通用标签样式 */
 </style>

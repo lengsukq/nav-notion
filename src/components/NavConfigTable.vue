@@ -2,7 +2,7 @@
   <div class="nav-config-table">
     <!-- 文件上传区域 -->
     <div class="file-upload-area">
-      <label for="navConfigUpload" class="upload-button">
+      <label for="navConfigUpload" class="upload-button button button-primary">
         选择 NavConfig 文件 (.json)
       </label>
       <input
@@ -169,27 +169,7 @@ const handleFileUpload = (event) => {
   flex-wrap: wrap;
 }
 
-.upload-button {
-  background-color: #4361ee;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
 
-.upload-button:hover {
-  background-color: #3a0ca3;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
 
 .file-name {
   font-style: italic;

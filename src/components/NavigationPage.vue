@@ -24,7 +24,7 @@
       <div class="flex items-center justify-center mb-6">
         <button
           @click="settingsStore.toggleSettings()"
-          class="bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 p-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-lg flex items-center space-x-1 z-index-100 mr-2"
+          class="button button-secondary p-2 rounded-full text-sm font-medium flex items-center space-x-1 z-index-100 mr-2"
           aria-label="设置"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,7 +42,7 @@
       <!-- 错误状态 -->
       <div v-else-if="error" class="bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-3xl p-8 text-center shadow-lg mt-8">
         <p class="text-red-700 dark:text-red-300 text-lg">{{ error }}</p>
-        <button @click="fetchNotionData(selectedTags, null)" class="mt-6 px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 dark:hover:bg-blue-800 transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <button @click="fetchNotionData(selectedTags, null)" class="mt-6 px-6 py-3 font-semibold rounded-full shadow button button-primary">
           重试
         </button>
       </div>

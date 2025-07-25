@@ -1,6 +1,6 @@
 <template>
   <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full group transition-all duration-300">
-    <div class="glassmorphic-card" :style="{ '--delay': delay }" :class="cardClasses">
+    <div class="card card-hover" :style="{ '--delay': delay }" :class="cardClasses">
       <div class="content-wrapper">
         <!-- 仅在大卡显示图标和名称容器 -->
         <div v-if="size === 'large'" class="large-card-header">
@@ -80,30 +80,6 @@ const cardClasses = computed(() => {
 </script>
 
 <style scoped>
-/* 通用卡片样式 */
-.glassmorphic-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* 保持内容填充父容器高度 */
-  overflow: hidden; /* 防止内容溢出圆角 */
-  animation: fadeInUp 0.6s var(--delay) forwards cubic-bezier(0.25, 0.8, 0.25, 1);
-  opacity: 0;
-  cursor: pointer; /* 明确指示可点击 */
-}
-
-/* 悬停效果 */
-.glassmorphic-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
-}
-
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
