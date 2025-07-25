@@ -1,7 +1,7 @@
 <template>
   <span
     @click="$emit('tag-click', tagName)"
-    :class="['tag', tagVariant, { 'cursor-pointer transition-colors duration-300 hover:shadow-md': true }]"
+    :class="['tag', tagVariant, { 'cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg': true }]"
     :style="tagStyle"
   >
     {{ tagName }}

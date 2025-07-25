@@ -63,11 +63,11 @@
 /* 通用卡片样式 */
 .card {
   @apply rounded-3xl bg-white/20 dark:bg-gray-800/20 backdrop-blur-2xl;
-  @apply shadow-xl transition-all duration-300 border-none;
+  @apply shadow-xl transition-all duration-500 ease-in-out border-none;
 }
 
 .card-hover {
-  @apply hover:shadow-lg hover:-translate-y-1;
+  @apply hover:shadow-2xl hover:-translate-y-2;
 }
 
 .card-content {

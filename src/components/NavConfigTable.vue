@@ -1,8 +1,8 @@
 <template>
   <div class="nav-config-table">
     <!-- 文件上传区域 -->
-    <div class="file-upload-area">
-      <label for="navConfigUpload" class="upload-button button button-primary">
+    <div class="file-upload-area mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl transition-all duration-300 hover:shadow-md">
+      <label for="navConfigUpload" class="upload-button button button-primary px-4 py-2 rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg">
         选择 NavConfig 文件 (.json)
       </label>
       <input
@@ -12,7 +12,7 @@
         @change="handleFileUpload"
         style="display: none;"
       />
-      <span v-if="fileName" class="file-name">已选择: {{ fileName }}</span>
+      <span v-if="fileName" class="file-name ml-4 px-3 py-1 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 transition-all duration-300">已选择: {{ fileName }}</span>
       <!-- 移除自定义的 message 提示 -->
     </div>
 
@@ -198,6 +198,11 @@ table {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease-in-out;
+}
+
+table:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 th, td {
@@ -214,6 +219,15 @@ th, td {
   position: sticky;
   top: 0;
   z-index: 10;
+  transition: all 0.2s ease-in-out;
+}
+
+th {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: #475569;
 }
 
 /* 设置每列的宽度 */
@@ -249,16 +263,21 @@ td:nth-child(5) { /* icon */
 
 
 tr {
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease-in-out;
 }
 
 tr:hover {
-  background-color: #f7fafc;
+  background-color: #f1f5f9;
+  transform: scale(1.01);
 }
 
 /* 交替行颜色 */
 tr:nth-child(even) {
   background-color: #f7fafc;
+}
+
+tr:nth-child(even):hover {
+  background-color: #f1f5f9;
 }
 
 .icon {

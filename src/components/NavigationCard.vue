@@ -1,5 +1,5 @@
 <template>
-  <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full group transition-all duration-300">
+  <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full group transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-xl hover:rounded-2xl rounded-2xl">
     <div class="card card-hover" :style="{ '--delay': delay }" :class="cardClasses">
       <div class="content-wrapper">
         <!-- 仅在大卡显示图标和名称容器 -->
@@ -8,7 +8,7 @@
             <img v-if="icon" :src="icon.trim()" alt="{{ name }}" class="icon-svg">
             <span v-else class="icon-text">{{ name.charAt(0) }}</span>
           </div>
-          <h3 class="large-card-title">{{ name }}</h3>
+          <h3 class="large-card-title" :title="name">{{ name }}</h3>
         </div>
 
         <!-- 小卡：仅显示名称，垂直居中 -->
@@ -21,7 +21,7 @@
         </div>
 
         <!-- 仅在大卡显示描述 -->
-        <p v-if="size === 'large'" class="large-card-description">{{ description }}</p>
+        <p v-if="size === 'large'" class="large-card-description" :title="description">{{ description }}</p>
 
         <!-- 仅在大卡显示标签 -->
         <div v-if="size === 'large'" class="large-card-tags">
@@ -96,6 +96,10 @@ const cardClasses = computed(() => {
 }
 
 /* 大卡样式 */
+.large-card {
+  height: 160px; /* 固定大卡高度 */
+}
+
 .large-card .content-wrapper {
   padding: 1.5rem; /* 大卡内边距更大 */
 }
@@ -118,7 +122,7 @@ const cardClasses = computed(() => {
   align-items: center;
   justify-content: center;
   margin-right: 1rem; /* mr-4 */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-lg */
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05); /* 更柔和的阴影 */
 }
 
 .dark .icon-container {
@@ -130,6 +134,9 @@ const cardClasses = computed(() => {
   font-size: 1.25rem; /* text-xl -> 20px */
   font-weight: 700; /* bold */
   color: #1F2937; /* text-gray-900 */
+  white-space: nowrap; /* 防止换行 */
+  overflow: hidden; /* 隐藏超出部分 */
+  text-overflow: ellipsis; /* 显示省略号 */
 }
 
 .dark .large-card-title {
@@ -145,6 +152,7 @@ const cardClasses = computed(() => {
   -webkit-line-clamp: 2; /* 限制两行 */
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis; /* 显示省略号 */
 }
 
 .dark .large-card-description {
@@ -192,6 +200,10 @@ const cardClasses = computed(() => {
   height: 2rem; /* 32px */
   font-size: 1rem; /* text-base */
   margin-right: 0.5rem;
+}
+
+.small-card {
+  height: 80px; /* 固定小卡高度 */
 }
 
 .small-card .content-wrapper {

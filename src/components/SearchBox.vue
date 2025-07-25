@@ -1,8 +1,8 @@
 <template>
   <!-- 整个搜索组件的容器，居中并设置毛玻璃背景 -->
   <div class="app-search-wrapper"> <!-- 添加这个 wrapper 来管理 z-index -->
-    <div class="w-full max-w-3xl search-container">
-      <div class="search-box">
+    <div class="w-full max-w-3xl search-container transition-all duration-300 hover:scale-[1.02]">
+      <div class="search-box shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl">
 
         <!-- 搜索引擎选择器 -->
         <div class="engine-selector-container">
@@ -14,9 +14,9 @@
           </div>
           <!-- 搜索引擎下拉菜单 -->
           <transition name="dropdown">
-            <div v-if="showEngineDropdown" class="engine-dropdown">
+            <div v-if="showEngineDropdown" class="engine-dropdown rounded-xl shadow-lg">
               <div v-for="(engine, key) in searchEngines" :key="key"
-                   @click.stop="selectEngine(key)" class="engine-option">
+                   @click.stop="selectEngine(key)" class="engine-option transition-colors duration-200">
                 {{ engine.name }}
               </div>
             </div>
@@ -34,13 +34,13 @@
             class="search-input"
             ref="searchInputRef"
           >
-          <button @click.stop="handleSearch" class="search-button">
+          <button @click.stop="handleSearch" class="search-button transform transition-transform duration-300 hover:scale-110">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </button>
 
           <!-- 搜索历史记录 -->
           <transition name="dropdown">
-            <div v-if="showSearchHistory && (filteredHistory.length > 0 || searchQuery)" class="search-history">
+            <div v-if="showSearchHistory && (filteredHistory.length > 0 || searchQuery)" class="search-history rounded-xl shadow-lg">
               <div v-if="filteredHistory.length > 0" class="search-history-content">
                 <div class="search-history-header">
                   <span class="text-gray-600 dark:text-gray-400">搜索历史</span>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="history-items">
                   <div v-for="(item, index) in filteredHistory" :key="index"
-                       class="history-item" @click.stop="selectHistoryItem(item)">
+                       class="history-item transition-colors duration-200" @click.stop="selectHistoryItem(item)">
                     {{ item }}
                   </div>
                 </div>

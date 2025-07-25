@@ -1,15 +1,32 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-200 to-purple-300 dark:from-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-    <div class="w-full max-w-7xl">
+  <div class="min-h-screen bg-gradient-to-br from-blue-200 to-purple-300 dark:from-gray-800 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-7xl mx-auto">
 
       <!-- 页面头部区域 -->
-      <header class="text-center mb-12 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 rounded-3xl p-6 shadow-xl relative">
-        <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 drop-shadow-lg">{{ databaseInfo.title }}</h1>
-        <p class="text-gray-700 dark:text-gray-300 text-lg">{{ databaseInfo.description }}</p>
+      <header class="text-center mb-8 md:mb-12 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 rounded-3xl p-6 shadow-xl relative transition-all duration-300 hover:shadow-2xl">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2 drop-shadow-lg">{{ databaseInfo.title }}</h1>
+        <p class="text-gray-700 dark:text-gray-300 text-base md:text-lg mb-4">{{ databaseInfo.description }}</p>
+        
+        <!-- 搜索框区域 -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div class="w-full sm:w-auto flex justify-center">
+            <SearchBox @search="handleSearch" />
+          </div>
+          <button
+            @click="settingsStore.toggleSettings()"
+            class="button button-secondary p-3 rounded-full text-sm font-medium flex items-center space-x-1 z-index-100 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            aria-label="设置"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span class="hidden sm:inline ml-2">设置</span>
+          </button>
+        </div>
       </header>
 
       <!-- 标签筛选区域 -->
-      <div class="flex flex-wrap justify-center gap-2 mb-8 p-4 bg-white/20 dark:bg-gray-800/20 rounded-2xl">
+      <div class="flex flex-wrap justify-center gap-2 mb-8 p-4 bg-white/20 dark:bg-gray-800/20 rounded-2xl transition-all duration-300">
         <FilterTag
           v-for="tag in availableTags"
           :key="tag.name"
@@ -18,20 +35,6 @@
           :is-selected="selectedTags.includes(tag.name)"
           @tag-click="toggleTag"
         />
-      </div>
-
-      <!-- 设置按钮和搜索框区域 -->
-      <div class="flex items-center justify-center mb-6">
-        <button
-          @click="settingsStore.toggleSettings()"
-          class="button button-secondary p-2 rounded-full text-sm font-medium flex items-center space-x-1 z-index-100 mr-2"
-          aria-label="设置"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </button>
-        <SearchBox @search="handleSearch" />
       </div>
 
       <!-- 初始加载状态 -->
