@@ -1,13 +1,13 @@
 
 /* 通用按钮样式 */
 .btn {
-  @apply px-4 py-2 rounded-lg font-medium transition-all duration-300;
+  @apply px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-lg;
   @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
 }
 
 .button-primary {
-  @apply bg-blue-500/90 text-white hover:bg-blue-600 focus:ring-blue-500;
-  @apply active:bg-blue-700 active:ring-2 active:ring-blue-300 active:ring-offset-2;
+  @apply bg-blue-500/80 text-white hover:bg-blue-600 focus:ring-blue-500;
+  @apply active:bg-blue-700 active:ring-2 active:ring-blue-300 active:ring-offset-2 shadow-lg;
 }
 
 .button-primary.selected {
@@ -15,11 +15,11 @@
 }
 
 .btn-secondary {
-  @apply bg-gray-200/90 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700/90 dark:text-gray-200 dark:hover:bg-gray-600;
+  @apply bg-gray-200/80 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700/80 dark:text-gray-200 dark:hover:bg-gray-600 shadow-lg;
 }
 
 .btn-danger {
-  @apply bg-red-500/90 text-white hover:bg-red-600 focus:ring-red-500;
+  @apply bg-red-500/80 text-white hover:bg-red-600 focus:ring-red-500 shadow-lg;
 }
 
 /* 通用标签样式 */
@@ -39,10 +39,17 @@
   @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
 }
 
+/* 通用导航链接样式 */
+.nav-link {
+  @apply px-4 py-3 rounded-2xl font-medium transition-all duration-300 backdrop-blur-lg;
+  @apply bg-white/10 dark:bg-gray-700/10 hover:bg-white/20 dark:hover:bg-gray-700/20;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md;
+}
+
 /* 通用卡片样式 */
 .card {
-  @apply rounded-2xl border bg-white/15 dark:bg-gray-800/15 backdrop-blur-lg;
-  @apply shadow-md transition-all duration-300;
+  @apply rounded-3xl bg-white/20 dark:bg-gray-800/20 backdrop-blur-2xl;
+  @apply shadow-xl transition-all duration-300 border-none;
 }
 
 .card-hover {
@@ -59,4 +66,13 @@
 
 .card-description {
   @apply mt-2 text-gray-700 dark:text-gray-300;
+}
+
+/* 通用容器样式 */
+.container-main {
+  @apply max-w-6xl mx-auto px-4 py-8;
+}
+
+.container-card-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
 }

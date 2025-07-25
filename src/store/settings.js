@@ -30,6 +30,9 @@ export const useSettingsStore = defineStore('settings', {
     closeSettings() {
       this.isSettingsOpen = false;
     },
+    setSettingsOpen(value) {
+      this.isSettingsOpen = value;
+    },
     saveSettings() {
       localStorage.setItem('cardSizeMode', this.cardSizeMode);
       localStorage.setItem('themeColor', this.themeColor);

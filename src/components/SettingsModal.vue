@@ -1,7 +1,7 @@
 <template>
   <!-- 设置模态框 -->
-  <div v-if="isSettingsOpen" class="fixed inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-100 p-4 animate-in fade-in duration-300">
-    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 max-w-md w-full transform transition-all duration-300 hover:shadow-2xl">
+  <div v-if="isSettingsOpen" class="modal-backdrop fixed inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-100 p-4 animate-in fade-in zoom-in-95 duration-300">
+    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 max-w-md w-full transform transition-all duration-300 hover:shadow-2xl animate-in slide-in-from-bottom-4 duration-300">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +108,7 @@
 <script setup>
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
 import { toast } from 'vue-sonner';
 
 // 获取设置store
@@ -116,7 +116,28 @@ const settingsStore = useSettingsStore();
 
 // 使用storeToRefs保持状态响应性
 const { cardSizeMode, isSettingsOpen, themeColor } = storeToRefs(settingsStore);
-const { setCardSizeMode, closeSettings, setThemeColor, resetSettings } = settingsStore;
+const { setCardSizeMode, setSettingsOpen, setThemeColor, resetSettings } = settingsStore;
+
+// 关闭设置的函数，带有动画效果
+const closeSettings = () => {
+  // 触发关闭动画
+  const modal = document.querySelector('.modal-container');
+  const backdrop = document.querySelector('.modal-backdrop');
+  
+  if (modal && backdrop) {
+    // 添加关闭动画类
+    modal.classList.add('animate-out', 'slide-out-to-bottom-4', 'duration-200');
+    backdrop.classList.add('animate-out', 'fade-out', 'duration-200');
+    
+    // 延迟关闭以播放动画
+    setTimeout(() => {
+      setSettingsOpen(false);
+    }, 200);
+  } else {
+    // 如果没有找到元素，直接关闭
+    setSettingsOpen(false);
+  }
+};
 
 // 监听设置变化，自动保存并显示提示
 watch([cardSizeMode, themeColor], () => {
