@@ -1,7 +1,7 @@
 <template>
   <!-- 设置模态框 -->
   <div v-if="isSettingsOpen" class="modal-backdrop fixed inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-100 p-4 animate-in fade-in zoom-in-95 duration-500 ease-in-out">
-    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 max-w-md w-full transform transition-all duration-500 hover:shadow-2xl animate-in slide-in-from-bottom-4 duration-700 ease-out" style="animation-delay: 100ms;">
+    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 max-w-md w-full max-h-[80vh] transform transition-all duration-500 hover:shadow-2xl animate-in slide-in-from-bottom-4 duration-700 ease-out flex flex-col" style="animation-delay: 100ms;">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,7 +17,7 @@
       </div>
       
       <!-- 设置选项卡片 -->
-      <div class="space-y-6">
+      <div class="space-y-6 overflow-y-auto flex-1 pr-2">
         <!-- 卡片模式设置 -->
         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
@@ -108,7 +108,7 @@
       </div>
 
       <!-- 操作按钮区域 -->
-      <div class="flex justify-between mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
+      <div class="flex justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex-shrink-0">
 
         <button 
           @click="resetSettings()"
@@ -194,5 +194,33 @@ input[type="color"]::-webkit-color-swatch {
 input[type="color"]::-moz-color-swatch {
   border: none;
   border-radius: 50%;
+}
+
+/* 自定义滚动条样式 */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 </style>
