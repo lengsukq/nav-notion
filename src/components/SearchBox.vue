@@ -1,14 +1,14 @@
 <template>
-  <!-- 整个搜索组件的容器，居中并设置毛玻璃背景 -->
+  <!-- HeroUI 整个搜索组件的容器，居中并设置毛玻璃背景 -->
   <div class="app-search-wrapper"> <!-- 添加这个 wrapper 来管理 z-index -->
-    <div class="w-full max-w-3xl search-container transition-all duration-300 hover:scale-[1.02]">
-      <div class="search-box shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl">
+    <div class="w-full max-w-3xl search-container transition-all duration-500 hover:scale-[1.03]">
+      <div class="search-box shadow-2xl hover:shadow-3xl transition-all duration-500 rounded-3xl">
 
         <!-- 搜索引擎选择器 -->
         <div class="engine-selector-container">
           <div class="selected-engine" @click.stop="toggleEngineDropdown">
             {{ getEngineName(selectedEngine) }}
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 transition-transform duration-300" :class="{'rotate-180': showEngineDropdown}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 transition-transform duration-500" :class="{'rotate-180': showEngineDropdown}">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
@@ -34,7 +34,7 @@
             class="search-input"
             ref="searchInputRef"
           >
-          <button @click.stop="handleSearch" class="search-button transform transition-transform duration-300 hover:scale-110">
+          <button @click.stop="handleSearch" class="search-button transform transition-all duration-500 hover:scale-110 hover:bg-primary/10">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </button>
 
@@ -199,7 +199,7 @@ const handleClickOutside = (event) => {
 </script>
 
 <style scoped>
-/* 整体容器，用于居中和背景 */
+/* HeroUI 整体容器，用于居中和背景 */
 /* 确保这个 wrapper 有 position: relative; z-index: 100; */
 .app-search-wrapper {
   position: relative;
@@ -216,24 +216,24 @@ const handleClickOutside = (event) => {
   margin: 0 auto;
 }
 
-/* 搜索框整体样式 */
+/* HeroUI 搜索框整体样式 */
 .search-box {
   display: flex;
   align-items: center;
   gap: 0.75rem; /* 12px */
-  background-color: rgba(255, 255, 255, 0.15); /* 半透明背景 */
-  backdrop-filter: blur(12px); /* 毛玻璃效果 */
-  -webkit-backdrop-filter: blur(12px); /* Safari 兼容 */
+  background-color: rgba(255, 255, 255, 0.1); /* 半透明背景 */
+  backdrop-filter: blur(16px); /* 毛玻璃效果 */
+  -webkit-backdrop-filter: blur(16px); /* Safari 兼容 */
   border-radius: 24px; /* 大圆角 */
   padding: 0.5rem 1rem; /* 8px 16px */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 柔和阴影 */
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* iOS 风格过渡 */
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); /* 主色调阴影 */
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* HeroUI 风格过渡 */
   position: relative; /* 用于定位下拉菜单 */
-  border: 1px solid rgba(255, 255, 255, 0.2); /* 半透明边框 */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* 半透明边框 */
 }
 
 .search-box:focus-within {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* 聚焦时增强阴影 */
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2); /* 聚焦时增强主色调阴影 */
 }
 
 /* 搜索引擎选择器容器 */
@@ -242,54 +242,59 @@ const handleClickOutside = (event) => {
   z-index: 10; /* 相对搜索框内部，但不是全局最高 */
 }
 
-/* 已选搜索引擎样式 */
+/* HeroUI 已选搜索引擎样式 */
 .selected-engine {
   display: flex;
   align-items: center;
   gap: 0.5rem; /* 8px */
   padding: 0.6rem 1rem; /* 9.6px 16px */
-  background-color: rgba(255, 255, 255, 0.8); /* 更半透明的背景 */
-  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.7); /* 更半透明的背景 */
+  backdrop-filter: blur(12px);
   border-radius: 16px; /* 圆角 */
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); /* 细微阴影 */
-  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1); /* 主色调细微阴影 */
+  transition: all 0.5s ease-in-out;
   white-space: nowrap; /* 防止名称换行 */
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .selected-engine:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  background-color: rgba(255, 255, 255, 0.85);
 }
 
-/* 搜索引擎下拉菜单 */
+/* HeroUI 搜索引擎下拉菜单 */
 .engine-dropdown {
   position: absolute;
   top: calc(100% + 6px); /* 距离选择器下方 */
   left: 0;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15); /* 更明显的阴影 */
-  padding: 8px 0;
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2); /* 主色调更明显的阴影 */
+  padding: 12px 0;
   z-index: 30; /* !!! 修正: 搜索引擎下拉菜单的 z-index 必须是最高的 !!! */
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .engine-option {
-  padding: 0.6rem 1rem; /* 9.6px 16px */
+  padding: 0.75rem 1rem; /* 12px 16px */
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: all 0.5s ease-in-out;
   font-size: 14px;
   font-weight: 500;
-  color: #1d1d1f; /* 深色文字 */
+  color: var(--text-primary); /* 深色文字 */
+  border-radius: 12px;
+  margin: 0 8px;
 }
 
 .engine-option:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  transform: translateX(4px);
 }
 
 /* 搜索输入框容器 */
@@ -300,7 +305,7 @@ const handleClickOutside = (event) => {
   position: relative;
 }
 
-/* 搜索输入框 */
+/* HeroUI 搜索输入框 */
 .search-input {
   flex: 1;
   background: transparent;
@@ -309,46 +314,47 @@ const handleClickOutside = (event) => {
   font-size: 16px;
   font-weight: 500;
   outline: none;
-  color: #1d1d1f; /* iOS 默认文本颜色 */
+  color: var(--text-primary); /* HeroUI 默认文本颜色 */
   width: 100%; /* 确保填充容器 */
 }
 
 .search-input::placeholder {
-  color: #86868b; /* 占位符颜色 */
+  color: var(--text-tertiary); /* 占位符颜色 */
 }
 
-/* 搜索按钮 */
+/* HeroUI 搜索按钮 */
 .search-button {
   background: transparent;
   border: none;
-  color: #6e6e73; /* 搜索图标颜色 */
+  color: var(--text-secondary); /* 搜索图标颜色 */
   cursor: pointer;
   padding: 0.5rem; /* 8px */
-  border-radius: 16px; /* iOS 风格圆角 */
+  border-radius: 16px; /* HeroUI 风格圆角 */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
 
 .search-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(99, 102, 241, 0.1);
   transform: scale(1.1); /* 悬停时放大一点 */
+  color: var(--primary);
 }
 
-/* 搜索历史记录 */
+/* HeroUI 搜索历史记录 */
 .search-history {
   position: absolute;
   top: calc(100% + 8px); /* 距离输入框下方 */
   left: 0;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.85); /* 半透明背景 */
-  backdrop-filter: blur(12px); /* 毛玻璃 */
-  border-radius: 16px; /* 大圆角 */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); /* 更强的阴影 */
-  padding: 8px 0;
+  background-color: rgba(255, 255, 255, 0.75); /* 半透明背景 */
+  backdrop-filter: blur(16px); /* 毛玻璃 */
+  border-radius: 20px; /* 大圆角 */
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15); /* 主色调更强的阴影 */
+  padding: 12px 0;
   z-index: 25; /* 调整 z-index，在搜索框内，比下拉菜单低 */
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .search-history-content {
@@ -360,58 +366,69 @@ const handleClickOutside = (event) => {
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem 0.5rem 1rem; /* 0 16px 8px 16px */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* 细分隔线 */
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1); /* 主色调细分隔线 */
   font-size: 13px;
 }
 
 .clear-history {
   font-weight: 500;
+  color: var(--primary);
+  transition: color 0.5s ease-in-out;
+}
+
+.clear-history:hover {
+  color: var(--secondary);
 }
 
 .history-items {
-  max-height: 180px; /* 限制历史记录显示的高度 */
+  max-height: 200px; /* 限制历史记录显示的高度 */
   overflow-y: auto;
   padding-top: 8px; /* 历史记录项上面的顶部间距 */
 }
 
 .history-item {
-  padding: 0.6rem 1rem; /* 9.6px 16px */
+  padding: 0.75rem 1rem; /* 12px 16px */
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: all 0.5s ease-in-out;
   font-size: 14px;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--text-primary);
+  border-radius: 12px;
+  margin: 0 8px;
 }
 
 .history-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  transform: translateX(4px);
 }
 
 .no-history {
   padding: 1rem; /* 16px */
   text-align: center;
   font-size: 13px;
+  color: var(--text-tertiary);
 }
 
-/* 过渡动画 */
+/* HeroUI 过渡动画 */
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(12px) scale(0.95);
 }
 
 .dropdown-enter-to,
 .dropdown-leave-from {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
-/* 箭头旋转动画 */
+/* HeroUI 箭头旋转动画 */
 .rotate-180 {
   transform: rotate(180deg);
 }

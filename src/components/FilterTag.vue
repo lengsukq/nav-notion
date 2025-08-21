@@ -1,7 +1,7 @@
 <template>
   <span
     @click="$emit('tag-click', tagName)"
-    :class="['tag', tagVariant, { 'cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg': true }]"
+    :class="['tag', tagVariant, { 'cursor-pointer transition-all duration-500 transform hover:scale-110 hover:shadow-xl': true }]"
     :style="tagStyle"
   >
     {{ tagName }}
@@ -31,13 +31,15 @@ const props = defineProps({
 defineEmits(['tag-click']);
 
 const tagVariant = computed(() => {
-  // 统一使用相同的选中样式
+  // HeroUI 统一使用相同的选中样式
   if (props.isSelected) {
     return 'tag-primary-selected';
   } else {
-    // 根据颜色属性选择合适的标签变体
-    if (props.tagColor === 'primary' || props.tagColor === 'blue') {
+    // HeroUI 根据颜色属性选择合适的标签变体
+    if (props.tagColor === 'primary' || props.tagColor === 'blue' || props.tagColor === 'indigo') {
       return 'tag-primary';
+    } else if (props.tagColor === 'secondary' || props.tagColor === 'purple') {
+      return 'tag-secondary';
     } else if (props.tagColor === 'danger' || props.tagColor === 'red') {
       return 'tag-danger';
     } else {
@@ -46,49 +48,57 @@ const tagVariant = computed(() => {
   }
 });
 
-// 动态计算标签样式以支持自定义颜色
+// HeroUI 动态计算标签样式以支持自定义颜色
 const tagStyle = computed(() => {
   // 如果是预定义颜色关键字，则不设置内联样式
-  if (['primary', 'blue', 'danger', 'red', 'default'].includes(props.tagColor)) {
+  if (['primary', 'blue', 'indigo', 'secondary', 'purple', 'danger', 'red', 'default'].includes(props.tagColor)) {
     return {};
   }
   
   try {
-    // 使用 color.js 解析颜色并设置透明度
+    // HeroUI 使用 color.js 解析颜色并设置透明度
     const color = new Color(props.tagColor);
-    const alpha = props.isSelected ? 0.9 : 0.3;
+    const alpha = props.isSelected ? 0.95 : 0.4;
     color.alpha = alpha;
     
-    // 选中状态添加更明显的样式
+    // HeroUI 选中状态添加更明显的样式
     if (props.isSelected) {
       return { 
         backgroundColor: color.toString(),
         color: 'white',
-        fontWeight: 'bold',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        border: `2px solid ${new Color(props.tagColor).toString({format: 'hex'})}`
+        fontWeight: '700',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)',
+        border: `2px solid ${new Color(props.tagColor).toString({format: 'hex'})}`,
+        transform: 'scale(1.05)'
       };
     }
-    return { backgroundColor: color.toString() };
+    return { 
+      backgroundColor: color.toString(),
+      backdropFilter: 'blur(10px)'
+    };
   } catch (e) {
     // 如果颜色解析失败，回退到原始颜色值
     console.warn(`Invalid color value: ${props.tagColor}`);
     
-    // 选中状态添加更明显的样式
+    // HeroUI 选中状态添加更明显的样式
     if (props.isSelected) {
       return { 
         backgroundColor: props.tagColor,
         color: 'white',
-        fontWeight: 'bold',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        border: `2px solid ${props.tagColor}`
+        fontWeight: '700',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)',
+        border: `2px solid ${props.tagColor}`,
+        transform: 'scale(1.05)'
       };
     }
-    return { backgroundColor: props.tagColor };
+    return { 
+      backgroundColor: props.tagColor,
+      backdropFilter: 'blur(10px)'
+    };
   }
 });
 </script>
 
 <style scoped>
-/* 使用 common-styles.css 中定义的通用标签样式 */
+/* HeroUI 使用 common-styles.css 中定义的通用标签样式 */
 </style>

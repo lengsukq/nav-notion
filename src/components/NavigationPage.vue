@@ -1,25 +1,33 @@
 <template>
-  <!-- 页面根容器，采用更现代的柔和背景色 -->
-  <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-8 px-4 sm:px-6 lg:px-8">
+  <!-- HeroUI 页面根容器 - 个人导航核心模块 -->
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
     <div class="w-full max-w-7xl mx-auto space-y-12">
 
-      <!-- 页面头部：标题、描述、搜索和设置 -->
-      <header class="relative z-20 backdrop-blur-lg bg-white/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-3xl p-6 sm:p-8 shadow-lg transition-all duration-300">
+      <!-- HeroUI 页面头部：个人导航中心 -->
+      <header class="relative z-20 glass-effect rounded-3xl p-6 sm:p-8 shadow-xl transition-all duration-300 fade-in-up">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <!-- 标题和描述 -->
+          <!-- 标题和描述 - 个人导航核心 -->
           <div class="text-center md:text-left">
-            <h1 class="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100">{{ databaseInfo.title }}</h1>
-            <p class="text-zinc-600 dark:text-zinc-400 text-base md:text-lg mt-2">{{ databaseInfo.description }}</p>
+            <div class="inline-flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">个人导航中心</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{{ databaseInfo.title }}</h1>
+            <p class="text-gray-600 dark:text-gray-400 text-base md:text-lg mt-2 leading-relaxed">{{ databaseInfo.description }}</p>
           </div>
           
           <!-- 搜索框和设置按钮 -->
-          <div class="flex items-center gap-2 w-full md:w-auto">
+          <div class="flex items-center gap-3 w-full md:w-auto">
             <div class="flex-grow">
               <SearchBox @search="handleSearch" />
             </div>
             <button
               @click="settingsStore.toggleSettings()"
-              class="flex-shrink-0 bg-zinc-200/80 dark:bg-zinc-800/80 hover:bg-zinc-300/80 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 p-3 rounded-xl font-medium flex items-center justify-center shadow-sm transition-all duration-200 transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-offset-zinc-900"
+              class="flex-shrink-0 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white p-3 rounded-2xl font-medium flex items-center justify-center shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 dark:focus-visible:ring-offset-gray-900"
               aria-label="设置"
             >
               <!-- 设置图标 (齿轮) -->
@@ -32,8 +40,8 @@
         </div>
       </header>
 
-      <!-- 标签筛选区域 -->
-      <div class="flex flex-wrap justify-center gap-2 p-4 backdrop-blur-md bg-white/30 dark:bg-zinc-900/30 border border-zinc-200/30 dark:border-zinc-800/30 rounded-2xl">
+      <!-- HeroUI 标签筛选区域 -->
+      <div class="flex flex-wrap justify-center gap-3 p-6 glass-effect rounded-2xl shadow-lg fade-in-up">
         <FilterTag
           v-for="tag in availableTags"
           :key="tag.name"
@@ -44,31 +52,36 @@
         />
       </div>
 
-      <!-- 初始加载状态 -->
-      <div v-if="loading" class="flex justify-center items-center py-24">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+      <!-- HeroUI 初始加载状态 -->
+      <div v-if="loading" class="flex justify-center items-center py-24 fade-in-up">
+        <div class="relative">
+          <div class="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-500 border-b-purple-500 shadow-lg"></div>
+          <div class="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-300 border-b-purple-300 animate-pulse"></div>
+        </div>
       </div>
 
-      <!-- 错误状态 -->
-      <div v-else-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-2xl p-8 text-center shadow-md mt-8 flex flex-col items-center gap-4">
-        <!-- 警告图标 -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <p class="text-red-700 dark:text-red-300 text-lg font-medium">{{ error }}</p>
-        <button @click="fetchNotionData(selectedTags, null)" class="mt-4 px-6 py-2 font-semibold rounded-lg shadow-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200">
-          重试
-        </button>
+      <!-- HeroUI 错误状态 -->
+      <div v-else-if="error" class="gradient-border p-1 rounded-3xl shadow-xl mt-8 fade-in-up">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 text-center flex flex-col items-center gap-6">
+          <!-- 错误图标 -->
+          <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">加载失败</h3>
+            <p class="text-gray-600 dark:text-gray-400">{{ error }}</p>
+          </div>
+          <button @click="fetchNotionData(selectedTags, null)" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+            重新加载
+          </button>
+        </div>
       </div>
 
-      <!-- 导航卡片列表 -->
+      <!-- HeroUI 导航卡片列表 - 个人导航核心功能 -->
       <div v-else>
-        <div :class="cardContainerClasses">
-          <!-- 
-            建议对 NavigationCard 组件本身也进行样式优化，
-            使其具有圆角、阴影和过渡效果，以匹配整体风格。
-            例如：bg-white dark:bg-zinc-900 rounded-2xl shadow-md hover:shadow-lg transition-all
-          -->
+        <div :class="cardContainerClasses" class="fade-in-up">
           <NavigationCard
             v-for="(item, index) in processedLinks"
             :key="index"
@@ -77,14 +90,17 @@
             :tags="item.tags"
             :url="item.url"
             :icon="item.icon"
-            :delay="`${index * 50}ms`"
+            :delay="`${index * 100}ms`"
             :size="cardSizeMode"
           />
         </div>
         
-        <!-- 加载更多指示器 -->
-        <div v-if="isFetchingMore" class="flex justify-center items-center py-6">
-          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <!-- HeroUI 加载更多指示器 -->
+        <div v-if="isFetchingMore" class="flex justify-center items-center py-8">
+          <div class="relative">
+            <div class="animate-spin rounded-full h-10 w-10 border-3 border-transparent border-t-indigo-400 border-b-purple-400 shadow-md"></div>
+            <div class="absolute inset-0 rounded-full h-10 w-10 border-3 border-transparent border-t-indigo-200 border-b-purple-200 animate-pulse"></div>
+          </div>
         </div>
       </div>
 

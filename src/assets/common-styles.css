@@ -1,73 +1,144 @@
 
-/* 通用按钮样式 */
+/* HeroUI 通用按钮样式 */
 .btn {
   @apply px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-lg;
   @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 500ms ease-in-out;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .button-primary {
-  @apply bg-blue-500/80 text-white hover:bg-blue-600 focus:ring-blue-500;
-  @apply active:bg-blue-700 active:ring-2 active:ring-blue-300 active:ring-offset-2 shadow-lg;
+  @apply bg-indigo-500/90 text-white hover:bg-indigo-600 focus:ring-indigo-500;
+  @apply active:bg-indigo-700 active:ring-2 active:ring-indigo-300 active:ring-offset-2;
+  background-color: var(--primary-color);
+}
+
+.button-primary:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .button-primary.selected {
-  @apply bg-blue-700/90 ring-2 ring-blue-300 ring-offset-2;
+  @apply bg-indigo-700/90 ring-2 ring-indigo-300 ring-offset-2;
+  background-color: var(--primary-color-dark);
 }
 
 .btn-secondary {
-  @apply bg-gray-200/80 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700/80 dark:text-gray-200 dark:hover:bg-gray-600 shadow-lg;
+  @apply bg-purple-500/90 text-white hover:bg-purple-600 focus:ring-purple-500;
+  @apply active:bg-purple-700 active:ring-2 active:ring-purple-300 active:ring-offset-2;
+  background-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-color-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-danger {
-  @apply bg-red-500/80 text-white hover:bg-red-600 focus:ring-red-500 shadow-lg;
+  @apply bg-red-500/90 text-white hover:bg-red-600 focus:ring-red-500;
+  @apply active:bg-red-700 active:ring-2 active:ring-red-300 active:ring-offset-2;
 }
 
-/* 通用标签样式 */
+/* HeroUI 通用标签样式 */
 .tag {
-  @apply px-3 py-1 rounded-full text-xs font-medium;
+  @apply px-3 py-1 rounded-full text-xs font-medium transition-all duration-300;
+  @apply cursor-pointer transform hover:scale-105 hover:shadow-md;
+  box-shadow: var(--shadow-sm);
 }
 
 .tag-default {
   @apply bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200;
+  background-color: var(--gray-200);
+  color: var(--gray-800);
+}
+
+.tag-default:hover {
+  background-color: var(--gray-300);
 }
 
 .tag-primary {
-  @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
+  @apply bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200;
+  background-color: var(--primary-color-light);
+  color: var(--primary-color-dark);
+}
+
+.tag-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.tag-secondary {
+  @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200;
+  background-color: var(--secondary-color-light);
+  color: var(--secondary-color-dark);
+}
+
+.tag-secondary:hover {
+  background-color: var(--secondary-color);
+  color: white;
 }
 
 .tag-danger {
   @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
 }
 
-/* 选中状态的标签样式 */
+/* HeroUI 选中状态的标签样式 */
 .tag-primary-selected {
-  @apply bg-blue-500 text-white dark:bg-blue-600 dark:text-white font-bold shadow-lg ring-2 ring-blue-300 ring-offset-2;
+  @apply bg-indigo-500 text-white dark:bg-indigo-600 dark:text-white font-bold;
+  @apply shadow-lg ring-2 ring-indigo-300 ring-offset-2 transform scale-105;
+  background-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
 }
 
-/* 移除不再使用的样式 */
-/*.tag-danger-selected {
-  @apply bg-red-500 text-white dark:bg-red-600 dark:text-white font-bold shadow-lg ring-2 ring-red-300 ring-offset-2;
+.tag-secondary-selected {
+  @apply bg-purple-500 text-white dark:bg-purple-600 dark:text-white font-bold;
+  @apply shadow-lg ring-2 ring-purple-300 ring-offset-2 transform scale-105;
+  background-color: var(--secondary-color);
+  box-shadow: var(--shadow-lg);
 }
 
-.tag-custom-selected {
-  @apply text-white font-bold shadow-lg ring-2 ring-white ring-offset-2;
-}*/
-
-/* 通用导航链接样式 */
+/* HeroUI 通用导航链接样式 */
 .nav-link {
   @apply px-4 py-3 rounded-2xl font-medium transition-all duration-300 backdrop-blur-lg;
   @apply bg-white/10 dark:bg-gray-700/10 hover:bg-white/20 dark:hover:bg-gray-700/20;
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 通用卡片样式 */
+.nav-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* HeroUI 通用卡片样式 */
 .card {
-  @apply rounded-3xl bg-white/20 dark:bg-gray-800/20 backdrop-blur-2xl;
-  @apply shadow-xl transition-all duration-500 ease-in-out border-none;
+  @apply rounded-3xl backdrop-blur-2xl transition-all duration-500 ease-in-out;
+  @apply bg-white/80 dark:bg-gray-800/80 border border-white/20 dark:border-gray-700/30;
+  box-shadow: var(--shadow-lg);
 }
 
 .card-hover {
-  @apply hover:shadow-2xl hover:-translate-y-2;
+  @apply hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02];
+  box-shadow: var(--shadow-xl);
 }
 
 .card-content {
@@ -76,17 +147,69 @@
 
 .card-title {
   @apply text-xl font-bold text-gray-900 dark:text-white;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .card-description {
-  @apply mt-2 text-gray-700 dark:text-gray-300;
+  @apply mt-2 text-gray-700 dark:text-gray-300 leading-relaxed;
 }
 
-/* 通用容器样式 */
+/* HeroUI 通用容器样式 */
 .container-main {
-  @apply max-w-6xl mx-auto px-4 py-8;
+  @apply max-w-7xl mx-auto px-4 py-8;
 }
 
 .container-card-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6;
+}
+
+/* HeroUI 特殊效果 */
+.glass-effect {
+  @apply backdrop-blur-xl bg-white/10 dark:bg-gray-800/10;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  padding: 2px;
+  border-radius: var(--radius-xl);
+}
+
+.gradient-border > * {
+  background: var(--gray-50);
+  border-radius: calc(var(--radius-xl) - 2px);
+}
+
+.dark .gradient-border > * {
+  background: var(--gray-900);
+}
+
+/* HeroUI 动画效果 */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hover-lift {
+  transition: all var(--transition-normal);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-2xl);
 }
