@@ -12,5 +12,6 @@ const app = createApp(App)
 // 初始化主题色
 const settingsStore = useSettingsStore()
 settingsStore.setThemeColor(settingsStore.themeColor)
+settingsStore.setSecondaryColor(settingsStore.secondaryColor)
 
 app.mount('#app')

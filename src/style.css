@@ -6,11 +6,19 @@
   --primary-color: #6366F1; /* Indigo-500 - HeroUI 主色 */
   --primary-color-light: #E0E7FF; /* 主题色浅色变体 */
   --primary-color-dark: #4F46E5; /* 主题色深色变体 */
+  --primary-color-rgb: 99, 102, 241; /* RGB格式用于rgba()函数 */
   
   /* HeroUI 次主题色 - 现代紫色 */
   --secondary-color: #A855F7; /* Purple-500 - 次主题色 */
   --secondary-color-light: #F3E8FF; /* 次主题色浅色变体 */
   --secondary-color-dark: #9333EA; /* 次主题色深色变体 */
+  --secondary-color-rgb: 168, 85, 247; /* RGB格式用于rgba()函数 */
+  
+  /* HeroUI 强调色 - 现代粉色 */
+  --accent-color: #EC4899; /* Pink-500 - 强调色 */
+  --accent-color-light: #FCE7F3; /* 强调色浅色变体 */
+  --accent-color-dark: #DB2777; /* 强调色深色变体 */
+  --accent-color-rgb: 236, 72, 153; /* RGB格式用于rgba()函数 */
   
   /* HeroUI 中性色系 */
   --gray-50: #F9FAFB;
@@ -64,24 +72,10 @@ a {
   font-weight: 500;
   color: var(--primary-color);
   text-decoration: none;
-  transition: color var(--transition-normal);
   position: relative;
-}
-a::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--primary-color);
-  transition: width var(--transition-normal);
 }
 a:hover {
   color: var(--primary-color-dark);
-}
-a:hover::after {
-  width: 100%;
 }
 
 body {
@@ -172,11 +166,22 @@ button.secondary:hover {
   padding: 2rem;
   box-shadow: var(--shadow-lg);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all var(--transition-normal);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* HeroUI 通用悬浮效果 */
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* HeroUI 深色模式卡片悬浮效果 */
+@media (prefers-color-scheme: dark) {
+  .card:hover {
+    box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.4);
+  }
 }
 
 #app {
@@ -210,9 +215,6 @@ button.secondary:hover {
   
   a {
     color: var(--primary-color-light);
-  }
-  a::after {
-    background: var(--primary-color-light);
   }
   a:hover {
     color: var(--primary-color);

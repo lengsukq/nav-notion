@@ -8,20 +8,7 @@
   overflow: hidden;
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 500ms ease-in-out;
-}
 
-.btn:hover::before {
-  left: 100%;
-}
 
 .button-primary {
   @apply bg-indigo-500/90 text-white hover:bg-indigo-600 focus:ring-indigo-500;
@@ -32,7 +19,8 @@
 .button-primary:hover {
   background-color: var(--primary-color-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2), 0 4px 6px -4px rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .button-primary.selected {
@@ -49,7 +37,8 @@
 .btn-secondary:hover {
   background-color: var(--secondary-color-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.2), 0 4px 6px -4px rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.3);
 }
 
 .btn-danger {
@@ -126,18 +115,37 @@
 
 .nav-link:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.15), 0 4px 6px -4px rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.dark .nav-link:hover {
+  box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.2), 0 4px 6px -4px rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
 }
 
 /* HeroUI 通用卡片样式 */
 .card {
-  @apply rounded-3xl backdrop-blur-2xl transition-all duration-500 ease-in-out;
+  @apply rounded-3xl backdrop-blur-2xl;
   @apply bg-white/80 dark:bg-gray-800/80 border border-white/20 dark:border-gray-700/30;
   box-shadow: var(--shadow-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* HeroUI 卡片悬浮效果 */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* HeroUI 深色模式卡片悬浮效果 */
+.dark .card:hover {
+  box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
 }
 
 .card-hover {
-  @apply hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02];
   box-shadow: var(--shadow-xl);
 }
 
@@ -206,10 +214,14 @@
 }
 
 .hover-lift {
-  transition: all var(--transition-normal);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hover-lift:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: var(--shadow-2xl);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.15);
 }

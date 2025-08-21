@@ -1,6 +1,6 @@
 <template>
-  <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full group transition-all duration-700 ease-in-out transform hover:-translate-y-2 hover:shadow-2xl rounded-3xl fade-in-up" :style="{ animationDelay: delay }">
-    <div class="card card-hover" :class="cardClasses">
+  <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full rounded-3xl fade-in-up" :style="{ animationDelay: delay }">
+    <div class="card" :class="cardClasses">
       <div class="content-wrapper">
         <!-- HeroUI 大卡显示图标和名称容器 -->
         <div v-if="size === 'large'" class="large-card-header">
@@ -100,32 +100,36 @@ const cardClasses = computed(() => {
   border: 1px solid rgba(229, 231, 235, 0.5);
   border-radius: 1.5rem;
   height: 100%;
-  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 50%, rgba(236, 72, 153, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.7s ease;
-  pointer-events: none;
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
+/* HeroUI 卡片悬浮效果 */
 .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
   border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(99, 102, 241, 0.1);
-  transform: translateY(-8px);
 }
+
+.card:hover .icon-container {
+  transform: scale(1.05);
+  box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.3), 0 4px 8px -1px rgba(99, 102, 241, 0.2);
+}
+
+.card:hover .large-card-title,
+.card:hover .small-card-title {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card:hover .tag-item {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2), 0 2px 4px -1px rgba(99, 102, 241, 0.1);
+}
+
+
 
 .dark .card {
   background: #1f2937;
@@ -133,8 +137,16 @@ const cardClasses = computed(() => {
 }
 
 .dark .card:hover {
-  border-color: rgba(168, 85, 247, 0.3);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.dark .card:hover .icon-container {
+  box-shadow: 0 8px 12px -1px rgba(168, 85, 247, 0.4), 0 4px 8px -1px rgba(168, 85, 247, 0.3);
+}
+
+.dark .card:hover .tag-item {
+  box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.3), 0 2px 4px -1px rgba(168, 85, 247, 0.2);
 }
 
 /* HeroUI 内容容器 */
@@ -170,48 +182,26 @@ const cardClasses = computed(() => {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 1.25rem;
-  background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
-  color: #6366f1;
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
+  color: var(--primary-color);
   font-weight: 900;
   font-size: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 1.25rem;
-  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2), 0 2px 4px -1px rgba(99, 102, 241, 0.1);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(var(--primary-color-rgb), 0.2), 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.1);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.icon-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.7s ease;
-}
 
-.icon-container:hover::before {
-  left: 100%;
-}
-
-.icon-container:hover {
-  transform: scale(1.1) rotate(3deg);
-  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3), 0 4px 6px -2px rgba(99, 102, 241, 0.2);
-}
 
 .dark .icon-container {
-  background: linear-gradient(135deg, #312e81 0%, #581c87 100%);
-  color: #a78bfa;
-  box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.3), 0 2px 4px -1px rgba(168, 85, 247, 0.2);
-}
-
-.dark .icon-container:hover {
-  box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.4), 0 4px 6px -2px rgba(168, 85, 247, 0.3);
+  background: linear-gradient(135deg, var(--primary-color-dark) 0%, var(--secondary-color-dark) 100%);
+  color: var(--secondary-color-light);
+  box-shadow: 0 4px 6px -1px rgba(var(--secondary-color-rgb), 0.3), 0 2px 4px -1px rgba(var(--secondary-color-rgb), 0.2);
 }
 
 /* HeroUI 大卡标题 */
@@ -222,20 +212,11 @@ const cardClasses = computed(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: color 0.5s ease;
   line-height: 1.2;
-}
-
-.large-card-title:hover {
-  color: #6366f1;
 }
 
 .dark .large-card-title {
   color: #f9fafb;
-}
-
-.dark .large-card-title:hover {
-  color: #a78bfa;
 }
 
 /* HeroUI 大卡描述 */
@@ -249,20 +230,11 @@ const cardClasses = computed(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: color 0.5s ease;
   font-weight: 400;
-}
-
-.large-card-description:hover {
-  color: #374151;
 }
 
 .dark .large-card-description {
   color: #d1d5db;
-}
-
-.dark .large-card-description:hover {
-  color: #e5e7eb;
 }
 
 /* HeroUI 大卡标签 */
@@ -276,47 +248,22 @@ const cardClasses = computed(() => {
 .tag-item {
   font-size: 0.75rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
-  color: #4338ca;
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
+  color: var(--primary-color-dark);
   padding: 0.375rem 1rem;
   border-radius: 9999px;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px 0 rgba(99, 102, 241, 0.1), 0 1px 2px 0 rgba(99, 102, 241, 0.06);
+  box-shadow: 0 1px 3px 0 rgba(var(--primary-color-rgb), 0.1), 0 1px 2px 0 rgba(var(--primary-color-rgb), 0.06);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tag-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s ease;
-}
 
-.tag-item:hover::before {
-  left: 100%;
-}
-
-.tag-item:hover {
-  transform: scale(1.05);
-  background: linear-gradient(135deg, #c7d2fe 0%, #e9d5ff 100%);
-  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2), 0 2px 4px -1px rgba(99, 102, 241, 0.1);
-}
 
 .dark .tag-item {
-  background: linear-gradient(135deg, #312e81 0%, #581c87 100%);
-  color: #c4b5fd;
-  box-shadow: 0 1px 3px 0 rgba(168, 85, 247, 0.2), 0 1px 2px 0 rgba(168, 85, 247, 0.1);
-}
-
-.dark .tag-item:hover {
-  background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 100%);
-  color: #ddd6fe;
-  box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.3), 0 2px 4px -1px rgba(168, 85, 247, 0.2);
+  background: linear-gradient(135deg, var(--primary-color-dark) 0%, var(--secondary-color-dark) 100%);
+  color: var(--secondary-color-light);
+  box-shadow: 0 1px 3px 0 rgba(var(--secondary-color-rgb), 0.2), 0 1px 2px 0 rgba(var(--secondary-color-rgb), 0.1);
 }
 
 /* HeroUI 小卡样式 */
@@ -332,25 +279,16 @@ const cardClasses = computed(() => {
   height: 2.5rem;
   font-size: 1.125rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
-  color: #6366f1;
-  box-shadow: 0 2px 4px -1px rgba(99, 102, 241, 0.2), 0 1px 2px -1px rgba(99, 102, 241, 0.1);
-  transition: all 0.5s ease;
-}
-
-.small-icon:hover {
-  transform: scale(1.1) rotate(3deg);
-  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3), 0 2px 4px -1px rgba(99, 102, 241, 0.2);
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
+  color: var(--primary-color);
+  box-shadow: 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.2), 0 1px 2px -1px rgba(var(--primary-color-rgb), 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark .small-icon {
-  background: linear-gradient(135deg, #312e81 0%, #581c87 100%);
-  color: #a78bfa;
-  box-shadow: 0 2px 4px -1px rgba(168, 85, 247, 0.3), 0 1px 2px -1px rgba(168, 85, 247, 0.2);
-}
-
-.dark .small-icon:hover {
-  box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.4), 0 2px 4px -1px rgba(168, 85, 247, 0.3);
+  background: linear-gradient(135deg, var(--primary-color-dark) 0%, var(--secondary-color-dark) 100%);
+  color: var(--secondary-color-light);
+  box-shadow: 0 2px 4px -1px rgba(var(--secondary-color-rgb), 0.3), 0 1px 2px -1px rgba(var(--secondary-color-rgb), 0.2);
 }
 
 .small-card {
@@ -368,12 +306,6 @@ const cardClasses = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.5s ease;
-}
-
-.icon-container:hover .icon-svg,
-.small-icon:hover .icon-svg {
-  transform: scale(1.1);
 }
 
 /* HeroUI 小卡标题 */
@@ -386,20 +318,11 @@ const cardClasses = computed(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
-  transition: color 0.5s ease;
   line-height: 1.2;
-}
-
-.small-card-title:hover {
-  color: #6366f1;
 }
 
 .dark .small-card-title {
   color: #f9fafb;
-}
-
-.dark .small-card-title:hover {
-  color: #a78bfa;
 }
 
 /* HeroUI 淡入上移动画 */

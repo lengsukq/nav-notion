@@ -226,14 +226,14 @@ const handleClickOutside = (event) => {
   -webkit-backdrop-filter: blur(16px); /* Safari 兼容 */
   border-radius: 24px; /* 大圆角 */
   padding: 0.5rem 1rem; /* 8px 16px */
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); /* 主色调阴影 */
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1); /* 主色调阴影 */
   transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* HeroUI 风格过渡 */
   position: relative; /* 用于定位下拉菜单 */
   border: 1px solid rgba(255, 255, 255, 0.15); /* 半透明边框 */
 }
 
 .search-box:focus-within {
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2); /* 聚焦时增强主色调阴影 */
+  box-shadow: 0 8px 25px rgba(var(--primary-color-rgb), 0.2); /* 聚焦时增强主色调阴影 */
 }
 
 /* 搜索引擎选择器容器 */
@@ -254,14 +254,14 @@ const handleClickOutside = (event) => {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1); /* 主色调细微阴影 */
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.1); /* 主色调细微阴影 */
   transition: all 0.5s ease-in-out;
   white-space: nowrap; /* 防止名称换行 */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .selected-engine:hover {
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
   background-color: rgba(255, 255, 255, 0.85);
 }
 
@@ -274,7 +274,7 @@ const handleClickOutside = (event) => {
   background-color: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2); /* 主色调更明显的阴影 */
+  box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.2); /* 主色调更明显的阴影 */
   padding: 12px 0;
   z-index: 30; /* !!! 修正: 搜索引擎下拉菜单的 z-index 必须是最高的 !!! */
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -292,7 +292,7 @@ const handleClickOutside = (event) => {
 }
 
 .engine-option:hover {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
   color: var(--primary);
   transform: translateX(4px);
 }
@@ -337,7 +337,7 @@ const handleClickOutside = (event) => {
 }
 
 .search-button:hover {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
   transform: scale(1.1); /* 悬停时放大一点 */
   color: var(--primary);
 }
@@ -351,7 +351,7 @@ const handleClickOutside = (event) => {
   background-color: rgba(255, 255, 255, 0.75); /* 半透明背景 */
   backdrop-filter: blur(16px); /* 毛玻璃 */
   border-radius: 20px; /* 大圆角 */
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15); /* 主色调更强的阴影 */
+  box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.15); /* 主色调更强的阴影 */
   padding: 12px 0;
   z-index: 25; /* 调整 z-index，在搜索框内，比下拉菜单低 */
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -366,7 +366,7 @@ const handleClickOutside = (event) => {
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem 0.5rem 1rem; /* 0 16px 8px 16px */
-  border-bottom: 1px solid rgba(99, 102, 241, 0.1); /* 主色调细分隔线 */
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1); /* 主色调细分隔线 */
   font-size: 13px;
 }
 
@@ -398,7 +398,7 @@ const handleClickOutside = (event) => {
 }
 
 .history-item:hover {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
   color: var(--primary);
   transform: translateX(4px);
 }

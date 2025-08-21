@@ -81,6 +81,44 @@
           </div>
         </div>
 
+        <!-- 次主题色设置 -->
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--secondary-color)">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+            次主题色调色板
+          </h4>
+          <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+              <input
+                type="color"
+                v-model="secondaryColor"
+                @change="setSecondaryColor($event.target.value)"
+                class="w-12 h-12 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg"
+              >
+              <input
+                type="text"
+                v-model="secondaryColor"
+                @input="setSecondaryColor(secondaryColor)"
+                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-all duration-300 hover:shadow-md"
+                placeholder="输入十六进制颜色值 (#RRGGBB)"
+              >
+            </div>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button @click="setSecondaryColor('#A855F7')" :style="{ backgroundColor: '#A855F7' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="紫色"></button>
+              <button @click="setSecondaryColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="粉色"></button>
+              <button @click="setSecondaryColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="琥珀色"></button>
+              <button @click="setSecondaryColor('#10B981')" :style="{ backgroundColor: '#10B981' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="绿色"></button>
+              <button @click="setSecondaryColor('#3B82F6')" :style="{ backgroundColor: '#3B82F6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="蓝色"></button>
+              <button @click="setSecondaryColor('#EF4444')" :style="{ backgroundColor: '#EF4444' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="红色"></button>
+              <button @click="setSecondaryColor('#06B6D4')" :style="{ backgroundColor: '#06B6D4' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="青色"></button>
+              <button @click="setSecondaryColor('#6B7280')" :style="{ backgroundColor: '#6B7280' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="灰色"></button>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">选择或输入颜色值以更改系统次主题色</p>
+          </div>
+        </div>
+
         <!-- Tag筛选模式设置 -->
         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
@@ -140,8 +178,8 @@ import { toast } from 'vue-sonner';
 const settingsStore = useSettingsStore();
 
 // 使用storeToRefs保持状态响应性
-const { cardSizeMode, isSettingsOpen, themeColor, tagFilterMode } = storeToRefs(settingsStore);
-const { setCardSizeMode, setSettingsOpen, setThemeColor, resetSettings, setTagFilterMode } = settingsStore;
+const { cardSizeMode, isSettingsOpen, themeColor, secondaryColor, tagFilterMode } = storeToRefs(settingsStore);
+const { setCardSizeMode, setSettingsOpen, setThemeColor, setSecondaryColor, resetSettings, setTagFilterMode } = settingsStore;
 
 // 关闭设置的函数，带有动画效果
 const closeSettings = () => {
@@ -165,11 +203,12 @@ const closeSettings = () => {
 };
 
 // 监听设置变化，自动保存并显示提示
-watch([cardSizeMode, themeColor, tagFilterMode], () => {
+watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode], () => {
   // 自动保存设置
   settingsStore.saveSettings();
   console.log('cardSizeMode', cardSizeMode.value);
   console.log('themeColor', themeColor.value);
+  console.log('secondaryColor', secondaryColor.value);
   
   // 调试日志，检查按钮选中状态
   console.log('Button classes - small:', cardSizeMode.value === 'small' ? 'button-primary selected' : 'button-secondary');
