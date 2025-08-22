@@ -154,43 +154,51 @@ const cardClasses = computed(() => {
 .content-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   height: 100%;
   box-sizing: border-box;
-  padding: 1rem;
+  padding: 0.75rem;
   position: relative;
   z-index: 1;
 }
 
-/* HeroUI 大卡样式 */
-.large-card {
-  height: 200px;
-  min-height: 200px;
+.large-card .content-wrapper {
+  justify-content: flex-start;
+  padding: 0.625rem;
+  min-height: 100%;
+  overflow: hidden;
 }
 
-.large-card .content-wrapper {
-  padding: 1.75rem;
+/* HeroUI 大卡样式 */
+.large-card {
+  min-height: 140px;
+  height: auto;
+  max-height: 200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
+
 
 .large-card-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.375rem;
 }
 
 /* HeroUI 图标容器 */
 .icon-container {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 1.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.875rem;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   font-weight: 900;
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1.25rem;
+  margin-right: 0.625rem;
   box-shadow: 0 4px 6px -1px rgba(var(--primary-color-rgb), 0.2), 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.1);
   position: relative;
   overflow: hidden;
@@ -226,14 +234,15 @@ const cardClasses = computed(() => {
 
 /* HeroUI 大卡标题 */
 .large-card-title {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: 1.125rem;
+  font-weight: 700;
   color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
   letter-spacing: -0.025em;
+  max-width: 100%;
 }
 
 .dark .large-card-title {
@@ -242,16 +251,22 @@ const cardClasses = computed(() => {
 
 /* HeroUI 大卡描述 */
 .large-card-description {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: #4b5563;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 400;
+  word-wrap: break-word;
+  hyphens: auto;
+  height: 2.6rem;
+  min-height: 2.6rem;
+  max-height: 2.6rem;
+  white-space: pre-wrap;
 }
 
 .dark .large-card-description {
@@ -262,22 +277,28 @@ const cardClasses = computed(() => {
 .large-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  gap: 0.125rem;
+  margin-bottom: 0.0625rem;
+  max-height: 1.25rem;
+  overflow: hidden;
 }
 
 .tag-item {
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   font-weight: 600;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color-dark);
-  padding: 0.375rem 1rem;
+  padding: 0.0625rem 0.375rem;
   border-radius: 9999px;
   box-shadow: 0 1px 3px 0 rgba(var(--primary-color-rgb), 0.1), 0 1px 2px 0 rgba(var(--primary-color-rgb), 0.06);
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
+  white-space: nowrap;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tag-item::before {
@@ -312,14 +333,14 @@ const cardClasses = computed(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .small-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  font-size: 1.125rem;
-  border-radius: 1rem;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   box-shadow: 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.2), 0 1px 2px -1px rgba(var(--primary-color-rgb), 0.1);
@@ -333,13 +354,18 @@ const cardClasses = computed(() => {
 }
 
 .small-card {
-  height: 120px;
-  min-height: 120px;
+  height: 100px;
+  min-height: 100px;
+  max-height: 100px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .small-card .content-wrapper {
-  padding: 1rem;
+  padding: 0.5rem;
   justify-content: center;
+  overflow: hidden;
 }
 
 /* HeroUI 图标样式 */
@@ -351,7 +377,7 @@ const cardClasses = computed(() => {
 
 /* HeroUI 小卡标题 */
 .small-card-title {
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: #111827;
   text-align: center;
@@ -360,7 +386,8 @@ const cardClasses = computed(() => {
   text-overflow: ellipsis;
   width: 100%;
   line-height: 1.2;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.025em;
+  max-width: 100%;
 }
 
 .dark .small-card-title {
@@ -375,5 +402,133 @@ const cardClasses = computed(() => {
 
 .fade-in-up.animated {
   opacity: 1;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .large-card {
+    min-height: 120px;
+    max-height: 160px;
+  }
+  
+  .large-card .content-wrapper {
+    padding: 0.5rem;
+  }
+  
+  .large-card-title {
+    font-size: 1rem;
+  }
+  
+  .large-card-description {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 2;
+    height: 2.2rem;
+    min-height: 2.2rem;
+    max-height: 2.2rem;
+  }
+  
+  .small-card {
+    height: 80px;
+    min-height: 80px;
+    max-height: 80px;
+  }
+  
+  .small-card .content-wrapper {
+    padding: 0.375rem;
+  }
+  
+  .small-card-title {
+    font-size: 0.75rem;
+  }
+  
+  .tag-item {
+    max-width: 55px;
+    font-size: 0.5rem;
+    padding: 0.03125rem 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .large-card {
+    min-height: 100px;
+    max-height: 140px;
+  }
+  
+  .large-card .content-wrapper {
+    padding: 0.375rem;
+  }
+  
+  .large-card-title {
+    font-size: 0.875rem;
+  }
+  
+  .large-card-description {
+    font-size: 0.6875rem;
+    -webkit-line-clamp: 2;
+    height: 1.8rem;
+    min-height: 1.8rem;
+    max-height: 1.8rem;
+    margin-bottom: 0.125rem;
+  }
+  
+  .large-card-tags {
+    max-height: 0.875rem;
+    gap: 0.0625rem;
+    margin-bottom: 0.0625rem;
+  }
+  
+  .small-card {
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
+  }
+  
+  .small-card .content-wrapper {
+    padding: 0.25rem;
+  }
+  
+  .small-card-title {
+    font-size: 0.625rem;
+  }
+  
+  .icon-container {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.875rem;
+    margin-right: 0.375rem;
+  }
+  
+  .small-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .tag-item {
+    max-width: 45px;
+    font-size: 0.4375rem;
+    padding: 0.015625rem 0.1875rem;
+  }
+}
+
+/* 超限内容处理增强 */
+.large-card-description:hover {
+  overflow-y: auto;
+  max-height: 6rem;
+}
+
+.large-card-tags:hover {
+  overflow-y: auto;
+  max-height: 4rem;
+}
+
+/* 确保长文本在标题中也能正确处理 */
+.large-card-title:hover,
+.small-card-title:hover {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 </style>
