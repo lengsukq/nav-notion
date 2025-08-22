@@ -149,9 +149,13 @@ const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
 const cardContainerClasses = computed(() => {
   const baseClasses = 'gap-4 sm:gap-6 mt-8';
   if (cardSizeMode.value === 'small') {
-    return `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 ${baseClasses}`;
+    // 设置小页面布局中显示2-3列内容
+    // 对于所有屏幕，至少显示2列
+    // 对于大屏幕及以上，显示3列
+    return `grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 ${baseClasses}`;
   } else {
-    return `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${baseClasses}`;
+    // 大卡模式保持原有布局，确保描述信息清晰展示
+    return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${baseClasses}`;
   }
 });
 
@@ -198,8 +202,10 @@ const processNotionResponse = (data) => {
       const { properties } = item;
       const name = properties['name']?.title?.[0]?.plain_text || '未命名';
       const url = properties['url']?.rich_text?.[0]?.text?.link?.url || properties['url']?.rich_text?.[0]?.plain_text || '#';
+      // 确保description字段能够正确获取
       const description = properties['description']?.rich_text?.[0]?.plain_text || '无描述';
-      const icon = properties['icon']?.phone_number; // 确认 'icon' 字段类型是否正确
+      // 修正icon字段的获取方式
+      const icon = item.icon?.type === 'external' ? item.icon.external.url : (item.icon?.type === 'file' ? item.icon.file.url : null);
       const tags = properties['tag']?.multi_select?.map(tag => tag.name) || [];
       return { name, url, description, icon, tags };
     });

@@ -11,7 +11,7 @@
           <h3 class="large-card-title" :title="name">{{ name }}</h3>
         </div>
 
-        <!-- HeroUI 小卡：仅显示名称，垂直居中 -->
+        <!-- HeroUI 小卡：显示图标和名称，垂直居中 -->
         <div v-else class="small-card-header">
           <div class="icon-container small-icon">
             <img v-if="icon" :src="icon.trim()" alt="{{ name }}" class="icon-svg">
@@ -44,10 +44,11 @@ const props = defineProps({
   },
   description: {
     type: String,
-    required: false
+    required: true,
+    default: ''
   },
   icon: {
-    type: Object,
+    type: String,
     required: false,
     default: null
   },
@@ -100,7 +101,7 @@ const cardClasses = computed(() => {
   border: 1px solid rgba(229, 231, 235, 0.5);
   border-radius: 1.5rem;
   height: 100%;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -163,8 +164,8 @@ const cardClasses = computed(() => {
 
 /* HeroUI 大卡样式 */
 .large-card {
-  height: 180px;
-  min-height: 180px;
+  height: 200px;
+  min-height: 200px;
 }
 
 .large-card .content-wrapper {
@@ -194,6 +195,25 @@ const cardClasses = computed(() => {
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.icon-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.card:hover .icon-container::before {
+  transform: scaleX(1);
 }
 
 
@@ -206,13 +226,14 @@ const cardClasses = computed(() => {
 
 /* HeroUI 大卡标题 */
 .large-card-title {
-  font-size: 1.375rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
 .dark .large-card-title {
@@ -221,7 +242,7 @@ const cardClasses = computed(() => {
 
 /* HeroUI 大卡描述 */
 .large-card-description {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   color: #4b5563;
   margin-bottom: 1.5rem;
   line-height: 1.6;
@@ -241,7 +262,7 @@ const cardClasses = computed(() => {
 .large-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
   margin-bottom: 1.25rem;
 }
 
@@ -256,6 +277,25 @@ const cardClasses = computed(() => {
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.tag-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.card:hover .tag-item::before {
+  transform: scaleX(1);
 }
 
 
@@ -269,9 +309,10 @@ const cardClasses = computed(() => {
 /* HeroUI 小卡样式 */
 .small-card-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .small-icon {
@@ -292,12 +333,12 @@ const cardClasses = computed(() => {
 }
 
 .small-card {
-  height: 100px;
-  min-height: 100px;
+  height: 120px;
+  min-height: 120px;
 }
 
 .small-card .content-wrapper {
-  padding: 1rem 0.75rem;
+  padding: 1rem;
   justify-content: center;
 }
 
@@ -319,6 +360,7 @@ const cardClasses = computed(() => {
   text-overflow: ellipsis;
   width: 100%;
   line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .dark .small-card-title {
