@@ -222,6 +222,16 @@ const fetchDatabaseMetadata = async () => {
         name: option.name,
         color: option.color,
       }));
+      
+      // 设置默认标签为主页
+      const homeTag = availableTags.value.find(tag => tag.name === '主页');
+      if (homeTag) {
+        selectedTags.value = ['主页'];
+        // 自动触发数据获取
+        setTimeout(() => {
+          fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
+        }, 100);
+      }
     }
   } catch (err) {
     console.error('获取 Notion 数据库元数据失败:', err);
