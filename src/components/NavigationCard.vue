@@ -1,11 +1,12 @@
 <template>
   <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full rounded-3xl fade-in-up" :style="{ animationDelay: delay }">
-    <div class="card glass-effect" :class="cardClasses">
+    <!-- 关键改动：移除了 glass-effect 类，所有样式都由 .card 控制 -->
+    <div class="card" :class="cardClasses">
       <div class="content-wrapper">
         <!-- HeroUI 大卡显示图标和名称容器 -->
         <div v-if="size === 'large'" class="large-card-header">
           <div class="icon-container">
-            <img v-if="icon" :src="icon.trim()" alt="{{ name }}" class="icon-svg">
+            <img v-if="icon" :src="icon.trim()" :alt="name" class="icon-svg">
             <span v-else class="icon-text">{{ name.charAt(0) }}</span>
           </div>
           <h3 class="large-card-title" :title="name">{{ name }}</h3>
@@ -14,7 +15,7 @@
         <!-- HeroUI 小卡：显示图标和名称，垂直居中 -->
         <div v-else class="small-card-header">
           <div class="icon-container small-icon">
-            <img v-if="icon" :src="icon.trim()" alt="{{ name }}" class="icon-svg">
+            <img v-if="icon" :src="icon.trim()" :alt="name" class="icon-svg">
             <span v-else class="icon-text">{{ name.charAt(0) }}</span>
           </div>
           <h3 class="small-card-title">{{ name }}</h3>
@@ -81,12 +82,43 @@ const cardClasses = computed(() => {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
-/* HeroUI 基础卡片样式 - 使用公共样式 */
+/*  <-- 如果你在环境中配置了 PostCSS，这个可以保留 */
+ @reference "tailwindcss";
+/* --- 关键改动：基础卡片样式，已包含毛玻璃效果 --- */
 .card {
   height: 100%;
+  border-radius: 1.5rem; /* 对应 rounded-3xl */
+  /* 毛玻璃效果核心 */
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(1rem);
+  -webkit-backdrop-filter: blur(1rem); /* 兼容 Safari */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
+/* 深色模式下的卡片 */
+.dark .card {
+  background-color: rgba(31, 41, 55, 0.15); /* ~dark:bg-gray-800/15 */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 卡片悬浮效果 */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px -5px rgba(99, 102, 241, 0.2); /* 对应 var(--primary-color) */
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* 深色模式下的卡片悬浮效果 */
+.dark .card:hover {
+  box-shadow: 0 12px 40px -5px rgba(168, 85, 247, 0.25); /* 对应 var(--secondary-color) 或强调色 */
+  border-color: rgba(168, 85, 247, 0.4);
+}
+/* --- 改动结束 --- */
+
+
+/* --- 以下是你原有的其他样式，保持不变 --- */
 .card:hover .icon-container {
   transform: scale(1.05);
   box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.3), 0 4px 8px -1px rgba(99, 102, 241, 0.2);
@@ -104,10 +136,6 @@ const cardClasses = computed(() => {
   transform: scale(1.05);
   box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2), 0 2px 4px -1px rgba(99, 102, 241, 0.1);
 }
-
-
-
-/* 深色模式卡片样式 - 使用公共样式 */
 
 .dark .card:hover .icon-container {
   box-shadow: 0 8px 12px -1px rgba(168, 85, 247, 0.4), 0 4px 8px -1px rgba(168, 85, 247, 0.3);
@@ -164,8 +192,6 @@ const cardClasses = computed(() => {
   transform: scaleX(1);
 }
 
-
-
 .dark .icon-container {
   background: linear-gradient(135deg, var(--primary-color-dark) 0%, var(--secondary-color-dark) 100%);
   color: var(--secondary-color-light);
@@ -221,8 +247,6 @@ const cardClasses = computed(() => {
   transform: scaleX(1);
 }
 
-
-
 .dark .tag-item {
   background: linear-gradient(135deg, var(--primary-color-dark) 0%, var(--secondary-color-dark) 100%);
   color: var(--secondary-color-light);
@@ -273,6 +297,18 @@ const cardClasses = computed(() => {
 /* HeroUI 淡入上移动画 - 使用公共样式 */
 .fade-in-up {
   opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 响应式设计 */
@@ -356,18 +392,4 @@ const cardClasses = computed(() => {
   }
 }
 
-/* 超限内容处理增强 */
-.large-card-description:hover {
-  @apply overflow-y-auto max-h-24;
-}
-
-.large-card-tags:hover {
-  @apply overflow-y-auto max-h-16;
-}
-
-/* 确保长文本在标题中也能正确处理 */
-.large-card-title:hover,
-.small-card-title:hover {
-  @apply whitespace-normal overflow-visible text-clip break-words hyphens-auto;
-}
 </style>
