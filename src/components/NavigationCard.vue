@@ -231,11 +231,11 @@ const cardClasses = computed(() => {
 
 /* HeroUI 小卡样式 */
 .small-card-header {
-  @apply flex flex-col items-center justify-center gap-1;
+  @apply flex flex-col items-center justify-center gap-0.5;
 }
 
 .small-icon {
-  @apply w-8 h-8 text-sm rounded-[1.5rem] transition-all duration-300;
+  @apply w-6 h-6 text-xs rounded-[1.5rem] transition-all duration-300;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   box-shadow: 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.2), 0 1px 2px -1px rgba(var(--primary-color-rgb), 0.1);
@@ -248,7 +248,8 @@ const cardClasses = computed(() => {
 }
 
 .small-card {
-  @apply h-[100px] min-h-[100px] max-h-[100px] w-full flex flex-col;
+  @apply h-[80px] min-h-[80px] max-h-[80px] w-full flex flex-col;
+  padding: 0;
 }
 
 .small-card .content-wrapper {
@@ -262,7 +263,7 @@ const cardClasses = computed(() => {
 
 /* HeroUI 小卡标题 */
 .small-card-title {
-  @apply text-sm font-bold text-gray-900 text-center whitespace-nowrap overflow-hidden text-ellipsis w-full leading-tight tracking-tighter max-w-full;
+  @apply text-xs font-bold text-gray-900 text-center whitespace-nowrap overflow-hidden text-ellipsis w-full leading-tight tracking-tighter max-w-full;
 }
 
 .dark .small-card-title {
@@ -293,7 +294,7 @@ const cardClasses = computed(() => {
   }
   
   .small-card {
-    @apply h-[80px] min-h-[80px] max-h-[80px];
+    @apply h-[70px] min-h-[70px] max-h-[70px];
   }
   
   .small-card .content-wrapper {
@@ -301,7 +302,7 @@ const cardClasses = computed(() => {
   }
   
   .small-card-title {
-    @apply text-xs;
+    @apply text-[0.625rem];
   }
   
   .tag-item {
@@ -339,7 +340,7 @@ const cardClasses = computed(() => {
   }
   
   .small-card-title {
-    @apply text-[0.625rem];
+    @apply text-[0.5rem];
   }
   
   .icon-container {
@@ -347,7 +348,7 @@ const cardClasses = computed(() => {
   }
   
   .small-icon {
-    @apply w-6 h-6 text-[0.75rem] rounded-[1.5rem];
+    @apply w-5 h-5 text-[0.625rem] rounded-[1.5rem];
   }
   
   .tag-item {

@@ -147,12 +147,10 @@ const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
 
 // 根据卡片大小设置动态计算网格布局的 class
 const cardContainerClasses = computed(() => {
-  const baseClasses = 'gap-4 sm:gap-6 mt-8';
+  const baseClasses = 'gap-3 sm:gap-4 mt-8';
   if (cardSizeMode.value === 'small') {
-    // 设置小页面布局中显示2-3列内容
-    // 对于所有屏幕，至少显示2列
-    // 对于大屏幕及以上，显示3列
-    return `grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 ${baseClasses}`;
+    // 小卡模式显示更多列：手机3列，平板4列，桌面5-6列，大屏幕7-8列
+    return `grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 ${baseClasses}`;
   } else {
     // 大卡模式保持原有布局，确保描述信息清晰展示
     return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${baseClasses}`;
