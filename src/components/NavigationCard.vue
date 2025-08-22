@@ -1,6 +1,6 @@
 <template>
   <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full rounded-3xl fade-in-up" :style="{ animationDelay: delay }">
-    <div class="card" :class="cardClasses">
+    <div class="card glass-effect" :class="cardClasses">
       <div class="content-wrapper">
         <!-- HeroUI 大卡显示图标和名称容器 -->
         <div v-if="size === 'large'" class="large-card-header">
@@ -97,8 +97,7 @@ const cardClasses = computed(() => {
 .card {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1.5rem;
   height: 100%;
@@ -134,7 +133,7 @@ const cardClasses = computed(() => {
 
 
 .dark .card {
-  background: rgba(31, 41, 55, 0.4);
+  background: rgba(31, 41, 55, 0.1);
   border-color: rgba(75, 85, 99, 0.2);
 }
 

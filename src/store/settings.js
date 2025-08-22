@@ -6,7 +6,7 @@ export const useSettingsStore = defineStore('settings', {
     cardSizeMode: localStorage.getItem('cardSizeMode') || 'large',
     isSettingsOpen: false,
     themeColor: localStorage.getItem('themeColor') || '#3B82F6',
-    secondaryColor: localStorage.getItem('secondaryColor') || '#A855F7',
+    secondaryColor: localStorage.getItem('secondaryColor') || '#d1d1d1',
     tagFilterMode: localStorage.getItem('tagFilterMode') || 'single'
   }),
   actions: {
@@ -65,7 +65,7 @@ export const useSettingsStore = defineStore('settings', {
       // 恢复默认设置
       this.cardSizeMode = 'large';
       this.themeColor = '#3B82F6';
-      this.secondaryColor = '#A855F7';
+      this.secondaryColor = '#d1d1d1';
       this.tagFilterMode = 'single';
       // 更新CSS变量
       document.documentElement.style.setProperty('--primary-color', this.themeColor);

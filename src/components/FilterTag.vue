@@ -74,7 +74,8 @@ const tagStyle = computed(() => {
     }
     return { 
       backgroundColor: color.toString(),
-      backdropFilter: 'blur(10px)'
+      backdropFilter: 'blur(15px)',
+      WebkitBackdropFilter: 'blur(15px)'
     };
   } catch (e) {
     // 如果颜色解析失败，回退到原始颜色值
@@ -93,7 +94,8 @@ const tagStyle = computed(() => {
     }
     return { 
       backgroundColor: props.tagColor,
-      backdropFilter: 'blur(10px)'
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)'
     };
   }
 });

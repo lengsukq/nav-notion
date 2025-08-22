@@ -9,10 +9,10 @@
   --primary-color-rgb: 99, 102, 241; /* RGB格式用于rgba()函数 */
   
   /* HeroUI 次主题色 - 现代紫色 */
-  --secondary-color: #A855F7; /* Purple-500 - 次主题色 */
-  --secondary-color-light: #F3E8FF; /* 次主题色浅色变体 */
-  --secondary-color-dark: #9333EA; /* 次主题色深色变体 */
-  --secondary-color-rgb: 168, 85, 247; /* RGB格式用于rgba()函数 */
+  --secondary-color: #d1d1d1; /* Gray-300 - 次主题色 */
+  --secondary-color-light: #e0e0e0; /* 次主题色浅色变体 */
+  --secondary-color-dark: #b8b8b8; /* 次主题色深色变体 */
+  --secondary-color-rgb: 209, 209, 209; /* RGB格式用于rgba()函数 */
   
   /* HeroUI 强调色 - 现代粉色 */
   --accent-color: #EC4899; /* Pink-500 - 强调色 */

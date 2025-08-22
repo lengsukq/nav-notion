@@ -222,8 +222,8 @@ const handleClickOutside = (event) => {
   align-items: center;
   gap: 0.75rem; /* 12px */
   background-color: rgba(255, 255, 255, 0.1); /* 半透明背景 */
-  backdrop-filter: blur(16px); /* 毛玻璃效果 */
-  -webkit-backdrop-filter: blur(16px); /* Safari 兼容 */
+  backdrop-filter: blur(15px); /* 毛玻璃效果 */
+  -webkit-backdrop-filter: blur(15px); /* Safari 兼容 */
   border-radius: 24px; /* 大圆角 */
   padding: 0.5rem 1rem; /* 8px 16px */
   box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1); /* 主色调阴影 */
@@ -249,7 +249,8 @@ const handleClickOutside = (event) => {
   gap: 0.5rem; /* 8px */
   padding: 0.6rem 1rem; /* 9.6px 16px */
   background-color: rgba(255, 255, 255, 0.7); /* 更半透明的背景 */
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: 16px; /* 圆角 */
   cursor: pointer;
   font-size: 14px;

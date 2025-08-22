@@ -106,7 +106,7 @@
               >
             </div>
             <div class="flex flex-wrap gap-2 mt-3">
-              <button @click="setSecondaryColor('#A855F7')" :style="{ backgroundColor: '#A855F7' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="紫色"></button>
+              <button @click="setSecondaryColor('#d1d1d1')" :style="{ backgroundColor: '#d1d1d1' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="浅灰色"></button>
               <button @click="setSecondaryColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="粉色"></button>
               <button @click="setSecondaryColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="琥珀色"></button>
               <button @click="setSecondaryColor('#10B981')" :style="{ backgroundColor: '#10B981' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="绿色"></button>
