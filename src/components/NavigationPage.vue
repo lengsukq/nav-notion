@@ -223,6 +223,13 @@ const fetchDatabaseMetadata = async () => {
     const data = await response.json();
     databaseInfo.value.title = data.title?.[0]?.plain_text || '导航中心';
     databaseInfo.value.description = data.description?.[0]?.plain_text || '一个从 Notion 数据库驱动的导航网站';
+
+    // 获取背景图片并应用到页面
+    const backgroundImageUrl = data.cover?.file?.url || data.cover?.external?.url || null;
+    if (backgroundImageUrl) {
+      applyBackgroundImage(backgroundImageUrl);
+    }
+
     if (data.properties?.tag?.type === 'multi_select') {
       availableTags.value = data.properties.tag.multi_select.options.map(option => ({
         name: option.name,
@@ -242,6 +249,24 @@ const fetchDatabaseMetadata = async () => {
   } catch (err) {
     console.error('获取 Notion 数据库元数据失败:', err);
     // 元数据获取失败不应阻塞主流程，可以保留默认值
+  }
+};
+
+// 应用背景图片到页面
+const applyBackgroundImage = (imageUrl) => {
+  const body = document.body;
+  if (imageUrl && imageUrl.trim() !== '') {
+    body.style.backgroundImage = `url(${imageUrl})`;
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundPosition = 'center';
+    body.style.backgroundRepeat = 'no-repeat';
+    body.style.backgroundAttachment = 'fixed';
+  } else {
+    body.style.backgroundImage = '';
+    body.style.backgroundSize = '';
+    body.style.backgroundPosition = '';
+    body.style.backgroundRepeat = '';
+    body.style.backgroundAttachment = '';
   }
 };
 
