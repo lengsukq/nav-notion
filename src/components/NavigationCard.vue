@@ -81,35 +81,10 @@ const cardClasses = computed(() => {
 </script>
 
 <style scoped>
-/* HeroUI 动画定义 */
-@keyframes fadeInUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0);
-  }
-}
-
-/* HeroUI 基础卡片样式 */
+@reference "tailwindcss";
+/* HeroUI 基础卡片样式 - 使用公共样式 */
 .card {
-  position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 1.5rem;
   height: 100%;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* HeroUI 卡片悬浮效果 */
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
-  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .card:hover .icon-container {
@@ -132,15 +107,7 @@ const cardClasses = computed(() => {
 
 
 
-.dark .card {
-  background: rgba(31, 41, 55, 0.1);
-  border-color: rgba(75, 85, 99, 0.2);
-}
-
-.dark .card:hover {
-  box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.15);
-  border-color: rgba(168, 85, 247, 0.4);
-}
+/* 深色模式卡片样式 - 使用公共样式 */
 
 .dark .card:hover .icon-container {
   box-shadow: 0 8px 12px -1px rgba(168, 85, 247, 0.4), 0 4px 8px -1px rgba(168, 85, 247, 0.3);
@@ -152,58 +119,31 @@ const cardClasses = computed(() => {
 
 /* HeroUI 内容容器 */
 .content-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 0.75rem;
-  position: relative;
-  z-index: 1;
+  @apply flex flex-col justify-start h-full box-border p-3 relative z-10;
 }
 
 .large-card .content-wrapper {
-  justify-content: flex-start;
-  padding: 0.625rem;
-  min-height: 100%;
-  overflow: hidden;
+  @apply justify-start p-2.5 min-h-full overflow-hidden;
 }
 
 /* HeroUI 大卡样式 */
 .large-card {
-  min-height: 140px;
-  height: auto;
-  max-height: 200px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  @apply min-h-[140px] h-auto max-h-[200px] w-full flex flex-col;
 }
 
 
 .large-card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.375rem;
+  @apply flex items-center mb-1.5;
 }
 
 /* HeroUI 图标容器 */
 .icon-container {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 1.5rem;
+  @apply w-10 h-10 rounded-[1.5rem] flex items-center justify-center mr-2.5 relative overflow-hidden transition-all duration-300 z-10;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   font-weight: 900;
   font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.625rem;
   box-shadow: 0 4px 6px -1px rgba(var(--primary-color-rgb), 0.2), 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
 }
 
 .icon-container::before {
@@ -234,71 +174,33 @@ const cardClasses = computed(() => {
 
 /* HeroUI 大卡标题 */
 .large-card-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111827;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-  max-width: 100%;
+  @apply text-lg font-bold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis leading-tight tracking-tighter max-w-full;
 }
 
 .dark .large-card-title {
-  color: #f9fafb;
+  @apply text-gray-50;
 }
 
 /* HeroUI 大卡描述 */
 .large-card-description {
-  font-size: 0.875rem;
-  color: #4b5563;
-  margin-bottom: 0.25rem;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 400;
-  word-wrap: break-word;
-  hyphens: auto;
-  height: 2.6rem;
-  min-height: 2.6rem;
-  max-height: 2.6rem;
-  white-space: pre-wrap;
+  @apply text-sm text-gray-600 mb-1 leading-relaxed line-clamp-2 overflow-hidden text-ellipsis font-normal break-words hyphens-auto h-[2.6rem] min-h-[2.6rem] max-h-[2.6rem] whitespace-pre-wrap;
 }
 
 .dark .large-card-description {
-  color: #d1d5db;
+  @apply text-gray-300;
 }
 
 /* HeroUI 大卡标签 */
 .large-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.125rem;
-  margin-bottom: 0.0625rem;
-  max-height: 1.25rem;
-  overflow: hidden;
+  @apply flex flex-wrap gap-0.5 mb-0.25 max-h-5 overflow-hidden;
 }
 
 .tag-item {
-  font-size: 0.625rem;
-  font-weight: 600;
+  @apply text-xs font-semibold relative overflow-hidden transition-all duration-300 z-10 whitespace-nowrap max-w-[70px] overflow-hidden text-ellipsis rounded-full;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color-dark);
   padding: 0.0625rem 0.375rem;
-  border-radius: 9999px;
   box-shadow: 0 1px 3px 0 rgba(var(--primary-color-rgb), 0.1), 0 1px 2px 0 rgba(var(--primary-color-rgb), 0.06);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
-  white-space: nowrap;
-  max-width: 70px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .tag-item::before {
@@ -329,22 +231,14 @@ const cardClasses = computed(() => {
 
 /* HeroUI 小卡样式 */
 .small-card-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+  @apply flex flex-col items-center justify-center gap-1;
 }
 
 .small-icon {
-  width: 2rem;
-  height: 2rem;
-  font-size: 0.875rem;
-  border-radius: 1.5rem;
+  @apply w-8 h-8 text-sm rounded-[1.5rem] transition-all duration-300;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   box-shadow: 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.2), 0 1px 2px -1px rgba(var(--primary-color-rgb), 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark .small-icon {
@@ -354,183 +248,125 @@ const cardClasses = computed(() => {
 }
 
 .small-card {
-  height: 100px;
-  min-height: 100px;
-  max-height: 100px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  @apply h-[100px] min-h-[100px] max-h-[100px] w-full flex flex-col;
 }
 
 .small-card .content-wrapper {
-  padding: 0.5rem;
-  justify-content: center;
-  overflow: hidden;
+  @apply p-2 justify-center overflow-hidden;
 }
 
 /* HeroUI 图标样式 */
 .icon-svg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  @apply w-full h-full object-contain;
 }
 
 /* HeroUI 小卡标题 */
 .small-card-title {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #111827;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-  max-width: 100%;
+  @apply text-sm font-bold text-gray-900 text-center whitespace-nowrap overflow-hidden text-ellipsis w-full leading-tight tracking-tighter max-w-full;
 }
 
 .dark .small-card-title {
-  color: #f9fafb;
+  @apply text-gray-50;
 }
 
-/* HeroUI 淡入上移动画 */
+/* HeroUI 淡入上移动画 - 使用公共样式 */
 .fade-in-up {
-  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   opacity: 0;
-}
-
-.fade-in-up.animated {
-  opacity: 1;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .large-card {
-    min-height: 120px;
-    max-height: 160px;
+    @apply min-h-[120px] max-h-[160px];
   }
   
   .large-card .content-wrapper {
-    padding: 0.5rem;
+    @apply p-2;
   }
   
   .large-card-title {
-    font-size: 1rem;
+    @apply text-base;
   }
   
   .large-card-description {
-    font-size: 0.75rem;
-    -webkit-line-clamp: 2;
-    height: 2.2rem;
-    min-height: 2.2rem;
-    max-height: 2.2rem;
+    @apply text-xs line-clamp-2 h-[2.2rem] min-h-[2.2rem] max-h-[2.2rem];
   }
   
   .small-card {
-    height: 80px;
-    min-height: 80px;
-    max-height: 80px;
+    @apply h-[80px] min-h-[80px] max-h-[80px];
   }
   
   .small-card .content-wrapper {
-    padding: 0.375rem;
+    @apply p-1.5;
   }
   
   .small-card-title {
-    font-size: 0.75rem;
+    @apply text-xs;
   }
   
   .tag-item {
-    max-width: 55px;
-    font-size: 0.5rem;
-    padding: 0.03125rem 0.25rem;
+    @apply max-w-[55px] text-[0.5rem] p-px;
   }
 }
 
 @media (max-width: 480px) {
   .large-card {
-    min-height: 100px;
-    max-height: 140px;
+    @apply min-h-[100px] max-h-[140px];
   }
   
   .large-card .content-wrapper {
-    padding: 0.375rem;
+    @apply p-1.5;
   }
   
   .large-card-title {
-    font-size: 0.875rem;
+    @apply text-sm;
   }
   
   .large-card-description {
-    font-size: 0.6875rem;
-    -webkit-line-clamp: 2;
-    height: 1.8rem;
-    min-height: 1.8rem;
-    max-height: 1.8rem;
-    margin-bottom: 0.125rem;
+    @apply text-[0.6875rem] line-clamp-2 h-[1.8rem] min-h-[1.8rem] max-h-[1.8rem] mb-0.5;
   }
   
   .large-card-tags {
-    max-height: 0.875rem;
-    gap: 0.0625rem;
-    margin-bottom: 0.0625rem;
+    @apply max-h-3.5 gap-0.25 mb-0.25;
   }
   
   .small-card {
-    height: 60px;
-    min-height: 60px;
-    max-height: 60px;
+    @apply h-[60px] min-h-[60px] max-h-[60px];
   }
   
   .small-card .content-wrapper {
-    padding: 0.25rem;
+    @apply p-1;
   }
   
   .small-card-title {
-    font-size: 0.625rem;
+    @apply text-[0.625rem];
   }
   
   .icon-container {
-    width: 1.75rem;
-    height: 1.75rem;
-    font-size: 0.875rem;
-    margin-right: 0.375rem;
-    border-radius: 1.5rem;
+    @apply w-7 h-7 text-sm mr-1.5 rounded-[1.5rem];
   }
   
   .small-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    font-size: 0.75rem;
-    border-radius: 1.5rem;
+    @apply w-6 h-6 text-[0.75rem] rounded-[1.5rem];
   }
   
   .tag-item {
-    max-width: 45px;
-    font-size: 0.4375rem;
-    padding: 0.015625rem 0.1875rem;
+    @apply max-w-[45px] text-[0.4375rem] p-px;
   }
 }
 
 /* 超限内容处理增强 */
 .large-card-description:hover {
-  overflow-y: auto;
-  max-height: 6rem;
+  @apply overflow-y-auto max-h-24;
 }
 
 .large-card-tags:hover {
-  overflow-y: auto;
-  max-height: 4rem;
+  @apply overflow-y-auto max-h-16;
 }
 
 /* 确保长文本在标题中也能正确处理 */
 .large-card-title:hover,
 .small-card-title:hover {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  word-wrap: break-word;
-  hyphens: auto;
+  @apply whitespace-normal overflow-visible text-clip break-words hyphens-auto;
 }
 </style>
