@@ -190,6 +190,7 @@ button.secondary:hover {
   margin: 0 auto;
   text-align: center;
   box-sizing: border-box;
+  background-color: transparent;
 }
 
 /* 深色模式适配 */

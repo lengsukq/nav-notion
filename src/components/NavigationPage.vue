@@ -1,6 +1,6 @@
 <template>
   <!-- HeroUI 页面根容器 - 个人导航核心模块 -->
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-transparent py-8 px-4 sm:px-6 lg:px-8">
     <div class="w-full max-w-7xl mx-auto space-y-12">
 
       <!-- HeroUI 页面头部：个人导航中心 -->
@@ -9,14 +9,14 @@
           <!-- 标题和描述 - 个人导航核心 -->
           <div class="text-center md:text-left">
             <div class="inline-flex items-center gap-3 mb-4">
-              <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg" style="background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color))">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">个人导航中心</span>
+              <span class="text-sm font-medium uppercase tracking-wide" style="color: var(--primary-color)" :style="{ color: $colorMode.preference === 'dark' ? 'var(--primary-color-light)' : 'var(--primary-color)' }">个人导航中心</span>
             </div>
-            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{{ databaseInfo.title }}</h1>
+            <h1 class="text-3xl md:text-4xl font-bold" style="background: linear-gradient(to right, var(--primary-color-dark), var(--secondary-color-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ databaseInfo.title }}</h1>
             <p class="text-gray-600 dark:text-gray-400 text-base md:text-lg mt-2 leading-relaxed">{{ databaseInfo.description }}</p>
           </div>
           
@@ -261,12 +261,16 @@ const applyBackgroundImage = (imageUrl) => {
     body.style.backgroundPosition = 'center';
     body.style.backgroundRepeat = 'no-repeat';
     body.style.backgroundAttachment = 'fixed';
+    // 清除body的背景色，确保背景图片能够正确显示
+    body.style.backgroundColor = 'transparent';
   } else {
     body.style.backgroundImage = '';
     body.style.backgroundSize = '';
     body.style.backgroundPosition = '';
     body.style.backgroundRepeat = '';
     body.style.backgroundAttachment = '';
+    // 恢复body的默认背景色
+    body.style.backgroundColor = '';
   }
 };
 

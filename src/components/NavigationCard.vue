@@ -97,8 +97,9 @@ const cardClasses = computed(() => {
 .card {
   position: relative;
   overflow: hidden;
-  background: white;
-  border: 1px solid rgba(229, 231, 235, 0.5);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1.5rem;
   height: 100%;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -133,8 +134,8 @@ const cardClasses = computed(() => {
 
 
 .dark .card {
-  background: #1f2937;
-  border-color: rgba(75, 85, 99, 0.5);
+  background: rgba(31, 41, 55, 0.4);
+  border-color: rgba(75, 85, 99, 0.2);
 }
 
 .dark .card:hover {
