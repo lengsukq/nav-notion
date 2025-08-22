@@ -191,7 +191,7 @@ const cardClasses = computed(() => {
 .icon-container {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.875rem;
+  border-radius: 1.5rem;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   font-weight: 900;
@@ -341,7 +341,7 @@ const cardClasses = computed(() => {
   width: 2rem;
   height: 2rem;
   font-size: 0.875rem;
-  border-radius: 0.75rem;
+  border-radius: 1.5rem;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
   color: var(--primary-color);
   box-shadow: 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.2), 0 1px 2px -1px rgba(var(--primary-color-rgb), 0.1);
@@ -497,12 +497,14 @@ const cardClasses = computed(() => {
     height: 1.75rem;
     font-size: 0.875rem;
     margin-right: 0.375rem;
+    border-radius: 1.5rem;
   }
   
   .small-icon {
     width: 1.5rem;
     height: 1.5rem;
     font-size: 0.75rem;
+    border-radius: 1.5rem;
   }
   
   .tag-item {
