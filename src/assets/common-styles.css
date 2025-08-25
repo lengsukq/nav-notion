@@ -272,7 +272,10 @@ button.secondary:hover {
 
 /* HeroUI 卡片样式 */
 .card {
-  @apply bg-white/80 backdrop-blur-[10px] rounded-[1.5rem] p-8;
+  @apply bg-white/10 rounded-[1.5rem] p-8;
+  /* 毛玻璃效果 - 使用标准CSS属性确保兼容性 */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px); /* 兼容 Safari */
   box-shadow: var(--shadow-lg);
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -289,6 +292,15 @@ button.secondary:hover {
 .dark .card:hover {
   box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.15);
   border-color: rgba(168, 85, 247, 0.4);
+}
+
+/* HeroUI 深色模式卡片基础样式 */
+.dark .card {
+  @apply bg-gray-800/80;
+  /* 深色模式毛玻璃效果 */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px); /* 兼容 Safari */
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 深色模式适配 */

@@ -1,124 +1,124 @@
 <template>
-  <a :href="url" target="_blank" rel="noopener noreferrer" class="block h-full rounded-3xl fade-in-up" :style="{ animationDelay: delay }">
-    <!-- 关键改动：移除了 glass-effect 类，所有样式都由 .card 控制 -->
-    <div class="card" :class="cardClasses">
-      <div class="content-wrapper">
-        <!-- HeroUI 大卡显示图标和名称容器 -->
-        <div v-if="size === 'large'" class="large-card-header">
-          <div class="icon-container">
-            <img v-if="icon" :src="icon.trim()" :alt="name" class="icon-svg">
-            <span v-else class="icon-text">{{ name.charAt(0) }}</span>
-          </div>
-          <h3 class="large-card-title" :title="name">{{ name }}</h3>
+  <!-- 
+    关键改动：
+    1. 移除了 <a> 标签，根元素现在是这个 div。
+    2. 将动画类 fade-in-up 直接应用在这个 div 上。
+    3. 添加了 @click 和 @keydown.enter 事件来实现跳转。
+    4. 添加了 role="link" 和 tabindex="0" 以保证可访问性。
+  -->
+  <div 
+    class="card fade-in-up h-full" 
+    :class="cardClasses"
+    :style="{ animationDelay: delay }"
+    @click="goToUrl" 
+    @keydown.enter="goToUrl"
+    role="link"
+    tabindex="0"
+    aria-label="点击打开 {{ name }}"
+  >
+    <div class="content-wrapper">
+      <!-- HeroUI 大卡显示图标和名称容器 -->
+      <div v-if="size === 'large'" class="large-card-header">
+        <div class="icon-container">
+          <img v-if="icon" :src="icon.trim()" :alt="name" class="icon-svg">
+          <span v-else class="icon-text">{{ name.charAt(0) }}</span>
         </div>
+        <h3 class="large-card-title" :title="name">{{ name }}</h3>
+      </div>
 
-        <!-- HeroUI 小卡：显示图标和名称，垂直居中 -->
-        <div v-else class="small-card-header">
-          <div class="icon-container small-icon">
-            <img v-if="icon" :src="icon.trim()" :alt="name" class="icon-svg">
-            <span v-else class="icon-text">{{ name.charAt(0) }}</span>
-          </div>
-          <h3 class="small-card-title">{{ name }}</h3>
+      <!-- HeroUI 小卡：显示图标和名称，垂直居中 -->
+      <div v-else class="small-card-header">
+        <div class="icon-container small-icon">
+          <img v-if="icon" :src="icon.trim()" :alt="name" class="icon-svg">
+          <span v-else class="icon-text">{{ name.charAt(0) }}</span>
         </div>
+        <h3 class="small-card-title">{{ name }}</h3>
+      </div>
 
-        <!-- HeroUI 仅在大卡显示描述 -->
-        <p v-if="size === 'large'" class="large-card-description" :title="description">{{ description }}</p>
+      <!-- HeroUI 仅在大卡显示描述 -->
+      <p v-if="size === 'large'" class="large-card-description" :title="description">{{ description }}</p>
 
-        <!-- HeroUI 仅在大卡显示标签 -->
-        <div v-if="size === 'large'" class="large-card-tags">
-          <span v-for="(tag, tagIndex) in tags" :key="tagIndex" class="tag-item">
-            {{ tag }}
-          </span>
-        </div>
+      <!-- HeroUI 仅在大卡显示标签 -->
+      <div v-if="size === 'large'" class="large-card-tags">
+        <span v-for="(tag, tagIndex) in tags" :key="tagIndex" class="tag-item">
+          {{ tag }}
+        </span>
       </div>
     </div>
-  </a>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
 
 const props = defineProps({
-  name: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true,
-    default: ''
-  },
-  icon: {
-    type: String,
-    required: false,
-    default: null
-  },
-  tags: {
-    type: Array,
-    required: false,
-    default: () => []
-  },
-  url: {
-    type: String,
-    required: true
-  },
-  delay: {
-    type: String,
-    required: true // e.g., '0.2s'
-  },
-  size: {
-    type: String,
-    required: true,
-    validator: value => ['small', 'large'].includes(value)
-  }
+  name: { type: String, required: true },
+  description: { type: String, required: true, default: '' },
+  icon: { type: String, required: false, default: null },
+  tags: { type: Array, required: false, default: () => [] },
+  url: { type: String, required: true },
+  delay: { type: String, required: true }, // e.g., '0.2s'
+  size: { type: String, required: true, validator: value => ['small', 'large'].includes(value) }
 });
 
-const cardClasses = computed(() => {
-  return {
-    'small-card': props.size === 'small',
-    'large-card': props.size === 'large',
-  };
-});
+const cardClasses = computed(() => ({
+  'small-card': props.size === 'small',
+  'large-card': props.size === 'large',
+}));
+
+// 实现点击跳转的函数
+const goToUrl = () => {
+  if (props.url) {
+    window.open(props.url, '_blank', 'noopener,noreferrer');
+  }
+};
 </script>
 
 <style scoped>
-/*  <-- 如果你在环境中配置了 PostCSS，这个可以保留 */
  @reference "tailwindcss";
-/* --- 关键改动：基础卡片样式，已包含毛玻璃效果 --- */
+
+/* --- 基础卡片样式，使用全局毛玻璃样式 --- */
 .card {
   height: 100%;
-  border-radius: 1.5rem; /* 对应 rounded-3xl */
-  /* 毛玻璃效果核心 */
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(1rem);
-  -webkit-backdrop-filter: blur(1rem); /* 兼容 Safari */
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* 添加手型光标，提示用户可以点击 */
+  outline: none; /* 移除默认的焦点轮廓，下面用ring来定制 */
   transition: all 0.3s ease;
+  
+  /* 毛玻璃效果使用 common-styles.css 中定义的样式 */
+  /* 移除本地定义以避免与全局样式冲突 */
+}
+
+/* 键盘聚焦时的样式 */
+.card:focus-visible {
+  box-shadow: 0 0 0 2px var(--gray-50), 0 0 0 4px var(--primary-color);
 }
 
 /* 深色模式下的卡片 */
 .dark .card {
-  background-color: rgba(31, 41, 55, 0.15); /* ~dark:bg-gray-800/15 */
-  border-color: rgba(255, 255, 255, 0.1);
+  /* 深色模式样式使用 common-styles.css 中定义的样式 */
+  /* 移除本地定义以避免与全局样式冲突 */
+}
+
+.dark .card:focus-visible {
+  box-shadow: 0 0 0 2px var(--gray-900), 0 0 0 4px var(--primary-color);
 }
 
 /* 卡片悬浮效果 */
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px -5px rgba(99, 102, 241, 0.2); /* 对应 var(--primary-color) */
+  box-shadow: 0 12px 40px -5px rgba(99, 102, 241, 0.2);
   border-color: rgba(99, 102, 241, 0.3);
 }
 
 /* 深色模式下的卡片悬浮效果 */
 .dark .card:hover {
-  box-shadow: 0 12px 40px -5px rgba(168, 85, 247, 0.25); /* 对应 var(--secondary-color) 或强调色 */
+  box-shadow: 0 12px 40px -5px rgba(168, 85, 247, 0.25);
   border-color: rgba(168, 85, 247, 0.4);
 }
-/* --- 改动结束 --- */
+/* --- 样式核心部分结束 --- */
 
 
-/* --- 以下是你原有的其他样式，保持不变 --- */
+/* --- 以下是内部元素的样式，保持不变 --- */
 .card:hover .icon-container {
   transform: scale(1.05);
   box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.3), 0 4px 8px -1px rgba(99, 102, 241, 0.2);
@@ -145,7 +145,6 @@ const cardClasses = computed(() => {
   box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.3), 0 2px 4px -1px rgba(168, 85, 247, 0.2);
 }
 
-/* HeroUI 内容容器 */
 .content-wrapper {
   @apply flex flex-col justify-start h-full box-border p-3 relative z-10;
 }
@@ -154,17 +153,14 @@ const cardClasses = computed(() => {
   @apply justify-start p-2.5 min-h-full overflow-hidden;
 }
 
-/* HeroUI 大卡样式 */
 .large-card {
   @apply min-h-[140px] h-auto max-h-[200px] w-full flex flex-col;
 }
-
 
 .large-card-header {
   @apply flex items-center mb-1.5;
 }
 
-/* HeroUI 图标容器 */
 .icon-container {
   @apply w-10 h-10 rounded-[1.5rem] flex items-center justify-center mr-2.5 relative overflow-hidden transition-all duration-300 z-10;
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--secondary-color-light) 100%);
@@ -198,7 +194,6 @@ const cardClasses = computed(() => {
   box-shadow: 0 4px 6px -1px rgba(var(--secondary-color-rgb), 0.3), 0 2px 4px -1px rgba(var(--secondary-color-rgb), 0.2);
 }
 
-/* HeroUI 大卡标题 */
 .large-card-title {
   @apply text-lg font-bold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis leading-tight tracking-tighter max-w-full;
 }
@@ -207,7 +202,6 @@ const cardClasses = computed(() => {
   @apply text-gray-50;
 }
 
-/* HeroUI 大卡描述 */
 .large-card-description {
   @apply text-sm text-gray-600 mb-1 leading-relaxed line-clamp-2 overflow-hidden text-ellipsis font-normal break-words hyphens-auto h-[2.6rem] min-h-[2.6rem] max-h-[2.6rem] whitespace-pre-wrap;
 }
@@ -216,7 +210,6 @@ const cardClasses = computed(() => {
   @apply text-gray-300;
 }
 
-/* HeroUI 大卡标签 */
 .large-card-tags {
   @apply flex flex-wrap gap-0.5 mb-0.25 max-h-5 overflow-hidden;
 }
@@ -253,7 +246,6 @@ const cardClasses = computed(() => {
   box-shadow: 0 1px 3px 0 rgba(var(--secondary-color-rgb), 0.2), 0 1px 2px 0 rgba(var(--secondary-color-rgb), 0.1);
 }
 
-/* HeroUI 小卡样式 */
 .small-card-header {
   @apply flex flex-col items-center justify-center gap-0.5;
 }
@@ -280,12 +272,10 @@ const cardClasses = computed(() => {
   @apply p-2 justify-center overflow-hidden;
 }
 
-/* HeroUI 图标样式 */
 .icon-svg {
   @apply w-full h-full object-contain;
 }
 
-/* HeroUI 小卡标题 */
 .small-card-title {
   @apply text-xs font-bold text-gray-900 text-center whitespace-nowrap overflow-hidden text-ellipsis w-full leading-tight tracking-tighter max-w-full;
 }
@@ -294,7 +284,6 @@ const cardClasses = computed(() => {
   @apply text-gray-50;
 }
 
-/* HeroUI 淡入上移动画 - 使用公共样式 */
 .fade-in-up {
   opacity: 0;
   animation: fadeInUp 0.6s ease-out forwards;
@@ -310,7 +299,6 @@ const cardClasses = computed(() => {
     transform: translateY(0);
   }
 }
-
 /* 响应式设计 */
 @media (max-width: 768px) {
   .large-card {
