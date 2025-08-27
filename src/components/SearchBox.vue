@@ -1,14 +1,14 @@
 <template>
   <!-- HeroUI 整个搜索组件的容器，居中并设置毛玻璃背景 -->
   <div class="app-search-wrapper"> <!-- 添加这个 wrapper 来管理 z-index -->
-    <div class="w-full max-w-full md:max-w-2xl lg:max-w-4xl xl:max-w-6xl search-container transition-all duration-500 hover:scale-[1.03]">
-      <div class="search-box shadow-2xl hover:shadow-3xl transition-all duration-500 rounded-3xl">
+    <div class="w-full max-w-full md:max-w-2xl lg:max-w-4xl xl:max-w-6xl search-container transition-all duration-800 hover:scale-[1.015]">
+      <div class="search-box shadow-2xl hover:shadow-3xl transition-all duration-800 rounded-3xl">
 
         <!-- 搜索引擎选择器 -->
         <div class="engine-selector-container">
           <div class="selected-engine" @click.stop="toggleEngineDropdown">
             {{ getEngineName(selectedEngine) }}
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 transition-transform duration-500" :class="{'rotate-180': showEngineDropdown}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 transition-transform duration-800 will-change-transform" :class="{'rotate-180': showEngineDropdown}">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
@@ -16,7 +16,7 @@
           <transition name="dropdown">
             <div v-if="showEngineDropdown" class="engine-dropdown rounded-xl shadow-lg">
               <div v-for="(engine, key) in searchEngines" :key="key"
-                   @click.stop="selectEngine(key)" class="engine-option transition-colors duration-200">
+                   @click.stop="selectEngine(key)" class="engine-option transition-all duration-800 will-change-transform">
                 {{ engine.name }}
               </div>
             </div>
@@ -34,7 +34,7 @@
             class="search-input"
             ref="searchInputRef"
           >
-          <button @click.stop="handleSearch" class="search-button transform transition-all duration-500 hover:scale-110 hover:bg-primary/10">
+          <button @click.stop="handleSearch" class="search-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </button>
 
@@ -44,11 +44,11 @@
               <div v-if="filteredHistory.length > 0" class="search-history-content">
                 <div class="search-history-header">
                   <span class="text-gray-600 dark:text-gray-400">搜索历史</span>
-                  <span class="clear-history cursor-pointer text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200" @click.stop="clearSearchHistory">清除</span>
+                  <span class="clear-history cursor-pointer text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-800" @click.stop="clearSearchHistory">清除</span>
                 </div>
                 <div class="history-items">
                   <div v-for="(item, index) in filteredHistory" :key="index"
-                       class="history-item transition-colors duration-200" @click.stop="selectHistoryItem(item)">
+                       class="history-item transition-all duration-800 will-change-transform" @click.stop="selectHistoryItem(item)">
                     {{ item }}
                   </div>
                 </div>
@@ -213,7 +213,10 @@ const handleClickOutside = (event) => {
   width: 100%;
   max-width: 100%; /* 默认占满容器宽度 */
   margin: 0 auto;
-  transition: max-width 0.3s ease-in-out;
+  transition: max-width 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: max-width, transform;
+  transform-origin: center center;
+  transform: translateZ(0);
 }
 
 /* 响应式宽度调整 */
@@ -246,10 +249,13 @@ const handleClickOutside = (event) => {
   border-radius: 24px; /* 大圆角 */
   padding: 0.5rem 1rem; /* 8px 16px */
   box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1); /* 主色调阴影 */
-  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* HeroUI 风格过渡 */
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* HeroUI 风格过渡 */
   position: relative; /* 用于定位下拉菜单 */
   border: 1px solid rgba(255, 255, 255, 0.15); /* 半透明边框 */
   flex-wrap: wrap; /* 允许在小屏幕上换行 */
+  will-change: transform, box-shadow;
+  transform-origin: center center;
+  transform: translateZ(0);
 }
 
 /* 在小屏幕上调整布局 */
@@ -297,7 +303,7 @@ const handleClickOutside = (event) => {
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.1); /* 主色调细微阴影 */
-  transition: all 0.5s ease-in-out;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap; /* 防止名称换行 */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -325,7 +331,7 @@ const handleClickOutside = (event) => {
 .engine-option {
   padding: 0.75rem 1rem; /* 12px 16px */
   cursor: pointer;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary); /* 深色文字 */
@@ -375,12 +381,14 @@ const handleClickOutside = (event) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, background-color;
+  transform: translateZ(0);
 }
 
 .search-button:hover {
   background-color: rgba(var(--primary-color-rgb), 0.1);
-  transform: scale(1.1); /* 悬停时放大一点 */
+  transform: scale(1.08); /* 悬停时放大一点，调整为更自然的比例 */
   color: var(--primary);
 }
 
@@ -415,7 +423,7 @@ const handleClickOutside = (event) => {
 .clear-history {
   font-weight: 500;
   color: var(--primary);
-  transition: color 0.5s ease-in-out;
+  transition: color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .clear-history:hover {
@@ -431,7 +439,7 @@ const handleClickOutside = (event) => {
 .history-item {
   padding: 0.75rem 1rem; /* 12px 16px */
   cursor: pointer;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
@@ -455,7 +463,7 @@ const handleClickOutside = (event) => {
 /* HeroUI 过渡动画 */
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dropdown-enter-from,
