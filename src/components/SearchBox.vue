@@ -1,7 +1,7 @@
 <template>
   <!-- HeroUI 整个搜索组件的容器，居中并设置毛玻璃背景 -->
   <div class="app-search-wrapper"> <!-- 添加这个 wrapper 来管理 z-index -->
-    <div class="w-full max-w-3xl search-container transition-all duration-500 hover:scale-[1.03]">
+    <div class="w-full max-w-full md:max-w-2xl lg:max-w-4xl xl:max-w-6xl search-container transition-all duration-500 hover:scale-[1.03]">
       <div class="search-box shadow-2xl hover:shadow-3xl transition-all duration-500 rounded-3xl">
 
         <!-- 搜索引擎选择器 -->
@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue';
 
 const searchQuery = ref('');
 const selectedEngine = ref('bing'); // 默认搜索引擎
@@ -114,10 +114,9 @@ onMounted(() => {
 });
 
 // 组件卸载时移除监听器
-onMounted(() => {
+onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
-
 
 // 获取搜索引擎名称
 const getEngineName = (engineKey) => {
@@ -212,8 +211,28 @@ const handleClickOutside = (event) => {
 
 .search-container {
   width: 100%;
-  max-width: 32rem; /* 调整为适合的宽度，例如 512px */
+  max-width: 100%; /* 默认占满容器宽度 */
   margin: 0 auto;
+  transition: max-width 0.3s ease-in-out;
+}
+
+/* 响应式宽度调整 */
+@media (min-width: 768px) {
+  .search-container {
+    max-width: 42rem; /* md:max-w-2xl */
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-container {
+    max-width: 56rem; /* lg:max-w-4xl */
+  }
+}
+
+@media (min-width: 1280px) {
+  .search-container {
+    max-width: 72rem; /* xl:max-w-6xl */
+  }
 }
 
 /* HeroUI 搜索框整体样式 */
@@ -230,6 +249,28 @@ const handleClickOutside = (event) => {
   transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* HeroUI 风格过渡 */
   position: relative; /* 用于定位下拉菜单 */
   border: 1px solid rgba(255, 255, 255, 0.15); /* 半透明边框 */
+  flex-wrap: wrap; /* 允许在小屏幕上换行 */
+}
+
+/* 在小屏幕上调整布局 */
+@media (max-width: 640px) {
+  .search-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .engine-selector-container {
+    width: 100%;
+  }
+  
+  .selected-engine {
+    justify-content: center;
+  }
+  
+  .search-input-container {
+    width: 100%;
+  }
 }
 
 .search-box:focus-within {

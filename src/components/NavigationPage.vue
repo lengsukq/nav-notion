@@ -20,11 +20,16 @@
             <p class="text-gray-600 dark:text-gray-400 text-base md:text-lg mt-2 leading-relaxed">{{ databaseInfo.description }}</p>
           </div>
           
-          <!-- 搜索框和设置按钮 -->
-          <div class="flex items-center gap-3 w-full md:w-auto">
-            <div class="flex-grow">
-              <SearchBox @search="handleSearch" />
-            </div>
+          <!-- 时间显示和搜索框区域 -->
+          <div class="flex flex-col items-center md:items-end gap-4 w-full md:w-auto">
+            <!-- 时间显示组件 -->
+            <TimeDisplay />
+            
+            <!-- 搜索框和设置按钮 -->
+            <div class="flex items-center gap-3 w-full">
+              <div class="flex-grow">
+                <SearchBox @search="handleSearch" />
+              </div>
             <button
               @click="settingsStore.toggleSettings()"
               class="flex-shrink-0 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white p-3 rounded-2xl font-medium flex items-center justify-center shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 dark:focus-visible:ring-offset-gray-900"
@@ -37,6 +42,7 @@
               </svg>
             </button>
           </div>
+        </div>
         </div>
       </header>
 
@@ -115,6 +121,7 @@ import SearchBox from './SearchBox.vue';
 import SettingsModal from './SettingsModal.vue';
 import NavigationCard from './NavigationCard.vue';
 import FilterTag from './FilterTag.vue';
+import TimeDisplay from './TimeDisplay.vue';
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
@@ -200,9 +207,7 @@ const processNotionResponse = (data) => {
       const { properties } = item;
       const name = properties['name']?.title?.[0]?.plain_text || '未命名';
       const url = properties['url']?.rich_text?.[0]?.text?.link?.url || properties['url']?.rich_text?.[0]?.plain_text || '#';
-      // 确保description字段能够正确获取
       const description = properties['description']?.rich_text?.[0]?.plain_text || '无描述';
-      // 修正icon字段的获取方式
       const icon = item.icon?.type === 'external' ? item.icon.external.url : (item.icon?.type === 'file' ? item.icon.file.url : null);
       const tags = properties['tag']?.multi_select?.map(tag => tag.name) || [];
       return { name, url, description, icon, tags };
@@ -259,15 +264,9 @@ const applyBackgroundImage = (imageUrl) => {
     body.style.backgroundPosition = 'center';
     body.style.backgroundRepeat = 'no-repeat';
     body.style.backgroundAttachment = 'fixed';
-    // 清除body的背景色，确保背景图片能够正确显示
     body.style.backgroundColor = 'transparent';
   } else {
     body.style.backgroundImage = '';
-    body.style.backgroundSize = '';
-    body.style.backgroundPosition = '';
-    body.style.backgroundRepeat = '';
-    body.style.backgroundAttachment = '';
-    // 恢复body的默认背景色
     body.style.backgroundColor = '';
   }
 };
@@ -328,7 +327,6 @@ const fetchNotionData = async (tagsToFilter = [], startCursor = null, tagFilterM
     nextCursor.value = data.next_cursor;
     hasMore.value = data.has_more;
 
-    // 如果过滤后没有结果，设置相应的提示信息
     if (navigationLinks.value.length === 0 && !hasMore.value) {
        if (tagsToFilter.length > 0) {
          error.value = `未找到符合所选标签的链接。`;
@@ -351,7 +349,6 @@ const handleScroll = () => {
   if (
     !isFetchingMore.value &&
     hasMore.value &&
-    // 滚动到距离底部 200px 时触发加载
     window.innerHeight + window.scrollY >= document.body.offsetHeight - 200
   ) {
     fetchNotionData(selectedTags.value, nextCursor.value, settingsStore.tagFilterMode);
@@ -388,33 +385,50 @@ watch(
     fetchNotionData([], null, settingsStore.tagFilterMode);
   }
 );
-
-// 当 `toggleTag` 方法内部已经调用 `fetchNotionData` 时，
-// 下面的侦听器是多余的。保留注释以备将来参考。
-// watch(selectedTags, () => {
-//   fetchNotionData(selectedTags.value, null);
-// }, { deep: true });
 </script>
 
 <style>
-/* 全局样式，如果不在 App.vue 或 main.css 中定义 */
+/* 全局样式 */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
 /* header 的背景和模糊效果 */
-header {
+.glass-effect {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 确保设置按钮和搜索框有正确的 z-index */
-.flex.items-center.justify-center.mb-6 {
-  position: relative;
-  z-index: 100;
+/* 深色模式下的 glass-effect */
+@media (prefers-color-scheme: dark) {
+  .glass-effect {
+    background: rgba(30, 41, 59, 0.2); /* slate-800 with opacity */
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
+/* 渐变边框效果（用于错误提示） */
+.gradient-border {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+/* 动画效果 */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>
