@@ -235,8 +235,8 @@ const goToUrl = () => {
 }
 
 .hero-card-header {
-  @apply flex items-start gap-3;
-  /* 头部区域优化 - 紧凑间距 */
+  @apply flex items-center gap-3;
+  /* 头部区域优化 - 垂直居中对齐 */
   flex-shrink: 0;
 }
 
@@ -360,23 +360,23 @@ const goToUrl = () => {
 /* ========== 小卡片样式 ========== */
 
 .hero-card-small {
-  @apply h-[100px] min-h-[100px] max-h-[100px];
+  @apply h-[110px] min-h-[110px] max-h-[110px];
   /* 小卡片专用内边距 */
   .hero-card-content {
-    @apply p-4;
+    @apply p-3;
   }
 }
 
 .hero-small-card {
   @apply flex flex-col items-center justify-center h-full;
-  gap: 0.75rem; /* 精确的间距控制 */
+  gap: 0.5rem; /* 减少间距给标题更多空间 */
 }
 
 /* 小卡片图标容器 - 优化设计 */
 .hero-small-icon-container {
   @apply relative flex items-center justify-center rounded-2xl transition-all duration-300;
-  width: 2.75rem; /* 44px - 更合适的小图标尺寸 */
-  height: 2.75rem;
+  width: 2.5rem; /* 40px - 减小图标尺寸给标题更多空间 */
+  height: 2.5rem;
   flex-shrink: 0;
   
   /* 小图标容器毛玻璃效果 */
@@ -415,11 +415,12 @@ const goToUrl = () => {
 .hero-small-card-title {
   @apply text-sm font-bold text-center;
   @apply overflow-hidden text-ellipsis line-clamp-2 max-w-full;
-  line-height: 1.3;
-  max-height: 2.6rem;
+  line-height: 1.2;
+  max-height: 2.4rem;
   width: 100%;
   position: relative;
   z-index: 10; /* 确保标题在所有元素之上 */
+  flex-shrink: 0; /* 防止标题被压缩 */
   
   /* 使用渐变文字效果 */
   background: linear-gradient(135deg, var(--gray-900), var(--gray-700));
@@ -600,7 +601,7 @@ const goToUrl = () => {
   }
   
   .hero-card-small {
-    @apply h-[85px] min-h-[85px] max-h-[85px];
+    @apply h-[95px] min-h-[95px] max-h-[95px];
   }
   
   .hero-small-card {
@@ -648,7 +649,7 @@ const goToUrl = () => {
   }
   
   .hero-card-small {
-    @apply h-[70px] min-h-[70px] max-h-[70px];
+    @apply h-[80px] min-h-[80px] max-h-[80px];
   }
   
   .hero-small-card {
