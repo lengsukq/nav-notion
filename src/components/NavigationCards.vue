@@ -106,8 +106,8 @@ const cardContainerClasses = computed(() => {
     // 小卡模式显示更多列：手机3列，平板4列，桌面5-6列，大屏幕7-8列
     return `grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 ${baseClasses}`;
   } else {
-    // 大卡模式保持原有布局，确保描述信息清晰展示
-    return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${baseClasses}`;
+    // 大卡模式平衡布局：确保内容清晰且充分利用空间
+    return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${baseClasses}`;
   }
 });
 

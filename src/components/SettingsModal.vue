@@ -1,8 +1,8 @@
 <template>
   <!-- 设置模态框 -->
   <div v-if="isSettingsOpen" class="modal-backdrop fixed inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-100 p-4 animate-in fade-in zoom-in-95 duration-500 ease-in-out">
-    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 max-w-md w-full max-h-[80vh] transform transition-all duration-500 hover:shadow-2xl animate-in slide-in-from-bottom-4 duration-700 ease-out flex flex-col" style="animation-delay: 100ms;">
-      <div class="flex justify-between items-center mb-6">
+    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-5 max-w-md w-full max-h-[85vh] transform transition-all duration-500 hover:shadow-2xl animate-in slide-in-from-bottom-4 duration-700 ease-out flex flex-col" style="animation-delay: 100ms;">
+      <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -17,10 +17,10 @@
       </div>
       
       <!-- 设置选项卡片 -->
-      <div class="space-y-6 overflow-y-auto flex-1 pr-2">
+      <div class="space-y-4 overflow-y-auto flex-1 pr-2">
         <!-- 卡片模式设置 -->
-        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border border-gray-100 dark:border-gray-700">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
@@ -44,84 +44,117 @@
         </div>
 
         <!-- 主题色设置 -->
-        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border border-gray-100 dark:border-gray-700">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>
             主题色调色板
           </h4>
+          
+          <!-- 主次主题色紧凑布局 -->
           <div class="space-y-3">
-            <div class="flex items-center space-x-3">
+            <!-- 主题色行 -->
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2 min-w-0 flex-1">
+                <span class="text-xs text-gray-600 dark:text-gray-400 w-8 flex-shrink-0">主色</span>
               <input
                 type="color"
                 v-model="themeColor"
                 @change="setThemeColor($event.target.value)"
-                class="w-12 h-12 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg"
+                  class="w-8 h-8 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg flex-shrink-0"
               >
               <input
                 type="text"
                 v-model="themeColor"
                 @input="setThemeColor(themeColor)"
-                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 hover:shadow-md"
-                placeholder="输入十六进制颜色值 (#RRGGBB)"
-              >
-            </div>
-            <div class="flex flex-wrap gap-2 mt-3">
-              <button @click="setThemeColor('#3B82F6')" :style="{ backgroundColor: '#3B82F6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="蓝色"></button>
-              <button @click="setThemeColor('#10B981')" :style="{ backgroundColor: '#10B981' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="绿色"></button>
-              <button @click="setThemeColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="琥珀色"></button>
-              <button @click="setThemeColor('#EF4444')" :style="{ backgroundColor: '#EF4444' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="红色"></button>
-              <button @click="setThemeColor('#8B5CF6')" :style="{ backgroundColor: '#8B5CF6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="紫色"></button>
-              <button @click="setThemeColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="粉色"></button>
-              <button @click="setThemeColor('#06B6D4')" :style="{ backgroundColor: '#06B6D4' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="青色"></button>
-              <button @click="setThemeColor('#6B7280')" :style="{ backgroundColor: '#6B7280' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="灰色"></button>
-            </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">选择或输入颜色值以更改系统主题色</p>
+                  class="flex-1 min-w-0 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs focus:ring-1 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300"
+                  placeholder="#RRGGBB"
+                >
           </div>
         </div>
 
-        <!-- 次主题色设置 -->
-        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--secondary-color)">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-            </svg>
-            次主题色调色板
-          </h4>
-          <div class="space-y-3">
-            <div class="flex items-center space-x-3">
+            <!-- 次主题色行 -->
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2 min-w-0 flex-1">
+                <span class="text-xs text-gray-600 dark:text-gray-400 w-8 flex-shrink-0">次色</span>
               <input
                 type="color"
                 v-model="secondaryColor"
                 @change="setSecondaryColor($event.target.value)"
-                class="w-12 h-12 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg"
+                  class="w-8 h-8 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg flex-shrink-0"
               >
               <input
                 type="text"
                 v-model="secondaryColor"
                 @input="setSecondaryColor(secondaryColor)"
-                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-all duration-300 hover:shadow-md"
-                placeholder="输入十六进制颜色值 (#RRGGBB)"
+                  class="flex-1 min-w-0 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all duration-300"
+                  placeholder="#RRGGBB"
               >
+              </div>
             </div>
-            <div class="flex flex-wrap gap-2 mt-3">
-              <button @click="setSecondaryColor('#d1d1d1')" :style="{ backgroundColor: '#d1d1d1' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="浅灰色"></button>
-              <button @click="setSecondaryColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="粉色"></button>
-              <button @click="setSecondaryColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="琥珀色"></button>
-              <button @click="setSecondaryColor('#10B981')" :style="{ backgroundColor: '#10B981' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="绿色"></button>
-              <button @click="setSecondaryColor('#3B82F6')" :style="{ backgroundColor: '#3B82F6' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="蓝色"></button>
-              <button @click="setSecondaryColor('#EF4444')" :style="{ backgroundColor: '#EF4444' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="红色"></button>
-              <button @click="setSecondaryColor('#06B6D4')" :style="{ backgroundColor: '#06B6D4' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="青色"></button>
-              <button @click="setSecondaryColor('#6B7280')" :style="{ backgroundColor: '#6B7280' }" class="w-9 h-9 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-secondary/50 transition-all duration-300 transform hover:scale-110 button hover:shadow-lg" title="灰色"></button>
+            
+            <!-- 预设颜色选择器 -->
+            <div class="space-y-2">
+              <p class="text-xs text-gray-500 dark:text-gray-400">快速选择</p>
+              <div class="grid grid-cols-8 gap-2">
+                <button @click="applyColor('#3B82F6')" :style="{ backgroundColor: '#3B82F6' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-blue-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="蓝色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">蓝色</span>
+                </button>
+                <button @click="applyColor('#10B981')" :style="{ backgroundColor: '#10B981' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-green-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="绿色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">绿色</span>
+                </button>
+                <button @click="applyColor('#F59E0B')" :style="{ backgroundColor: '#F59E0B' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-yellow-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="琥珀色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">琥珀</span>
+                </button>
+                <button @click="applyColor('#EF4444')" :style="{ backgroundColor: '#EF4444' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-red-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="红色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">红色</span>
+                </button>
+                <button @click="applyColor('#8B5CF6')" :style="{ backgroundColor: '#8B5CF6' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-purple-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="紫色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">紫色</span>
+                </button>
+                <button @click="applyColor('#EC4899')" :style="{ backgroundColor: '#EC4899' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-pink-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="粉色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">粉色</span>
+                </button>
+                <button @click="applyColor('#06B6D4')" :style="{ backgroundColor: '#06B6D4' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-cyan-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="青色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">青色</span>
+                </button>
+                <button @click="applyColor('#6B7280')" :style="{ backgroundColor: '#6B7280' }" 
+                        class="w-7 h-7 rounded-full hover:ring-2 hover:ring-offset-1 hover:ring-gray-300 transition-all duration-200 transform hover:scale-110 relative group" 
+                        title="灰色">
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">灰色</span>
+                </button>
+              </div>
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-gray-500 dark:text-gray-400">点击色块应用到{{ applyToSecondary ? '次主题色' : '主题色' }}</p>
+                <button 
+                  @click="applyToSecondary = !applyToSecondary"
+                  :class="[applyToSecondary ? 'text-secondary bg-secondary/10 border-secondary/30' : 'text-primary bg-primary/10 border-primary/30', 'px-2 py-1 text-xs rounded border transition-all duration-200']"
+                >
+                  {{ applyToSecondary ? '切换到主色' : '切换到次色' }}
+                </button>
+              </div>
             </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">选择或输入颜色值以更改系统次主题色</p>
           </div>
         </div>
 
         <!-- Tag筛选模式设置 -->
-        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border border-gray-100 dark:border-gray-700">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
@@ -171,7 +204,7 @@
 <script setup>
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 // 获取设置store
@@ -180,6 +213,18 @@ const settingsStore = useSettingsStore();
 // 使用storeToRefs保持状态响应性
 const { cardSizeMode, isSettingsOpen, themeColor, secondaryColor, tagFilterMode } = storeToRefs(settingsStore);
 const { setCardSizeMode, setSettingsOpen, setThemeColor, setSecondaryColor, resetSettings, setTagFilterMode } = settingsStore;
+
+// 预设颜色应用模式切换
+const applyToSecondary = ref(false);
+
+// 应用颜色的函数
+const applyColor = (color) => {
+  if (applyToSecondary.value) {
+    setSecondaryColor(color);
+  } else {
+    setThemeColor(color);
+  }
+};
 
 // 关闭设置的函数，带有动画效果
 const closeSettings = () => {
