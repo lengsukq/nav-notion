@@ -34,7 +34,7 @@ defineProps({
 });
 
 // 定义组件的事件
-defineEmits(['tag-click']);
+const emit = defineEmits(['tag-click']);
 
 // 获取设置store
 const settingsStore = useSettingsStore();

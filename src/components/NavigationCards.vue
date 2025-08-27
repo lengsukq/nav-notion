@@ -4,8 +4,8 @@
     <!-- HeroUI 初始加载状态 -->
     <div v-if="loading" class="flex justify-center items-center py-24 fade-in-up">
       <div class="relative">
-        <div class="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-500 border-b-purple-500 shadow-lg"></div>
-        <div class="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-300 border-b-purple-300 animate-pulse"></div>
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-transparent shadow-lg" style="border-top-color: var(--primary-color); border-bottom-color: var(--secondary-color);"></div>
+        <div class="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent animate-pulse" style="border-top-color: var(--primary-color-light); border-bottom-color: var(--secondary-color-light);"></div>
       </div>
     </div>
 
@@ -50,8 +50,8 @@
       <!-- HeroUI 加载更多指示器 -->
       <div v-if="isFetchingMore" class="flex justify-center items-center py-8">
         <div class="relative">
-          <div class="animate-spin rounded-full h-10 w-10 border-3 border-transparent border-t-indigo-400 border-b-purple-400 shadow-md"></div>
-          <div class="absolute inset-0 rounded-full h-10 w-10 border-3 border-transparent border-t-indigo-200 border-b-purple-200 animate-pulse"></div>
+          <div class="animate-spin rounded-full h-10 w-10 border-3 border-transparent shadow-md" style="border-top-color: var(--primary-color); border-bottom-color: var(--secondary-color);"></div>
+          <div class="absolute inset-0 rounded-full h-10 w-10 border-3 border-transparent animate-pulse" style="border-top-color: var(--primary-color-light); border-bottom-color: var(--secondary-color-light);"></div>
         </div>
       </div>
     </div>
