@@ -1,7 +1,12 @@
 <template>
   <!-- HeroUI 页面根容器 - 个人导航核心模块 -->
-  <div class="min-h-screen bg-transparent py-8 px-4 sm:px-6 lg:px-8">
-    <div class="w-full max-w-7xl mx-auto space-y-12">
+  <div class="min-h-screen bg-transparent py-6 px-4 sm:px-6 lg:px-8 relative">
+    <!-- HeroUI 装饰性几何元素 -->
+    <div class="fixed top-20 left-10 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-xl pointer-events-none animate-pulse"></div>
+    <div class="fixed bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-indigo-400/20 rounded-full blur-xl pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
+    <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl pointer-events-none animate-pulse" style="animation-delay: 4s;"></div>
+    
+    <div class="w-full max-w-7xl mx-auto space-y-8 relative z-0">
 
       <!-- HeroUI 页面头部：个人导航中心 -->
       <NavigationHeader 

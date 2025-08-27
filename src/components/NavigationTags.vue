@@ -1,6 +1,9 @@
 <template>
   <!-- HeroUI 标签筛选区域 -->
-  <div class="navigation-tags flex flex-wrap justify-center gap-3 p-6 glass-effect rounded-2xl shadow-lg fade-in-up">
+  <div class="navigation-tags flex flex-wrap justify-center gap-2 p-4 glass-effect rounded-2xl shadow-lg fade-in-up relative overflow-hidden">
+    <!-- 装饰性背景光效 -->
+    <div class="absolute top-0 left-1/4 w-20 h-20 bg-gradient-to-br from-indigo-400/10 to-transparent rounded-full blur-xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-16 h-16 bg-gradient-to-tl from-purple-400/10 to-transparent rounded-full blur-xl"></div>
     <FilterTag
       v-for="tag in availableTags"
       :key="tag.name"

@@ -202,7 +202,7 @@ const handleClickOutside = (event) => {
 /* 确保这个 wrapper 有 position: relative; z-index: 100; */
 .app-search-wrapper {
   position: relative;
-  z-index: 100; /* 确保搜索框层级高于页面卡片 */
+  z-index: 200; /* 提高层级，确保搜索框层级高于标签和页面卡片 */
   /* 同样，也需要控制其在App.vue中的布局 */
   width: 100%; /* 确保它占满App.vue中的可用宽度 */
   padding: 0 1rem; /* 左右内边距，与App.vue的其他内容对齐 */
@@ -243,15 +243,17 @@ const handleClickOutside = (event) => {
   display: flex;
   align-items: center;
   gap: 0.75rem; /* 12px */
-  background-color: rgba(255, 255, 255, 0.1); /* 半透明背景 */
-  backdrop-filter: blur(15px); /* 毛玻璃效果 */
-  -webkit-backdrop-filter: blur(15px); /* Safari 兼容 */
-  border-radius: 24px; /* 大圆角 */
-  padding: 0.5rem 1rem; /* 8px 16px */
-  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1); /* 主色调阴影 */
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* HeroUI 风格过渡 */
+  background: rgba(255, 255, 255, 0.2); /* 增强透明背景 */
+  backdrop-filter: blur(20px); /* 增强毛玻璃效果 */
+  -webkit-backdrop-filter: blur(20px); /* Safari 兼容 */
+  border-radius: 28px; /* 更大圆角 */
+  padding: 0.75rem 1.25rem; /* 增加内边距 */
+  box-shadow: 
+    0 8px 25px rgba(var(--primary-color-rgb), 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3); /* 增强阴影和内光 */
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* HeroUI 风格过渡 */
   position: relative; /* 用于定位下拉菜单 */
-  border: 1px solid rgba(255, 255, 255, 0.15); /* 半透明边框 */
+  border: 1px solid rgba(255, 255, 255, 0.25); /* 增强边框 */
   flex-wrap: wrap; /* 允许在小屏幕上换行 */
   will-change: transform, box-shadow;
   transform-origin: center center;
@@ -280,13 +282,21 @@ const handleClickOutside = (event) => {
 }
 
 .search-box:focus-within {
-  box-shadow: 0 8px 25px rgba(var(--primary-color-rgb), 0.2); /* 聚焦时增强主色调阴影 */
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 
+    0 12px 40px rgba(var(--primary-color-rgb), 0.25),
+    0 0 0 2px rgba(var(--primary-color-rgb), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border-color: rgba(var(--primary-color-rgb), 0.4);
+  transform: translateY(-2px);
 }
 
 /* 搜索引擎选择器容器 */
 .engine-selector-container {
   position: relative;
-  z-index: 10; /* 相对搜索框内部，但不是全局最高 */
+  z-index: 250; /* 提高层级，确保下拉菜单能正确显示 */
 }
 
 /* HeroUI 已选搜索引擎样式 */
@@ -294,18 +304,22 @@ const handleClickOutside = (event) => {
   display: flex;
   align-items: center;
   gap: 0.5rem; /* 8px */
-  padding: 0.6rem 1rem; /* 9.6px 16px */
-  background-color: rgba(255, 255, 255, 0.7); /* 更半透明的背景 */
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-radius: 16px; /* 圆角 */
+  padding: 0.75rem 1.25rem; /* 增加内边距 */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)); /* 渐变背景 */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px; /* 更大圆角 */
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.1); /* 主色调细微阴影 */
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600; /* 增强字重 */
+  box-shadow: 
+    0 4px 12px rgba(var(--primary-color-rgb), 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5); /* 内部高光 */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap; /* 防止名称换行 */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .selected-engine:hover {
@@ -324,7 +338,7 @@ const handleClickOutside = (event) => {
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.2); /* 主色调更明显的阴影 */
   padding: 12px 0;
-  z-index: 30; /* !!! 修正: 搜索引擎下拉菜单的 z-index 必须是最高的 !!! */
+  z-index: 300; /* !!! 修正: 搜索引擎下拉菜单的 z-index 必须是最高的 !!! */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -403,7 +417,7 @@ const handleClickOutside = (event) => {
   border-radius: 20px; /* 大圆角 */
   box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.15); /* 主色调更强的阴影 */
   padding: 12px 0;
-  z-index: 25; /* 调整 z-index，在搜索框内，比下拉菜单低 */
+  z-index: 240; /* 调整 z-index，确保历史记录能正确显示，但低于引擎下拉菜单 */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 

@@ -1,10 +1,12 @@
 <template>
   <span
     @click="$emit('tag-click', tagName)"
-    :class="['tag', tagVariant, { 'cursor-pointer transition-all duration-500 transform hover:scale-110 hover:shadow-xl': true }]"
+    :class="['tag', tagVariant, 'hero-filter-tag', { 'cursor-pointer relative overflow-hidden': true }]"
     :style="tagStyle"
   >
-    {{ tagName }}
+    <!-- HeroUI 内部光效 -->
+    <span class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+    <span class="relative z-10">{{ tagName }}</span>
   </span>
 </template>
 

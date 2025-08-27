@@ -7,7 +7,7 @@
     4. 添加了 role="link" 和 tabindex="0" 以保证可访问性。
   -->
   <div 
-    class="card fade-in-up h-full" 
+    class="card fade-in-up h-full group relative overflow-hidden" 
     :class="cardClasses"
     :style="{ animationDelay: delay }"
     @click="goToUrl" 
@@ -16,6 +16,9 @@
     tabindex="0"
     aria-label="点击打开 {{ name }}"
   >
+    <!-- HeroUI 卡片内部装饰光效 -->
+    <div class="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-400/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
     <div class="content-wrapper">
       <!-- HeroUI 大卡显示图标和名称容器 -->
       <div v-if="size === 'large'" class="large-card-header">
@@ -91,17 +94,46 @@ const goToUrl = () => {
   box-shadow: 0 0 0 2px var(--gray-900), 0 0 0 4px var(--primary-color);
 }
 
-/* 卡片悬浮效果 */
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px -5px rgba(99, 102, 241, 0.2);
-  border-color: rgba(99, 102, 241, 0.3);
+/* HeroUI 增强的卡片悬浮效果 */
+.card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 8px 32px rgba(99, 102, 241, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 深色模式下的卡片悬浮效果 */
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 
+    0 20px 60px rgba(99, 102, 241, 0.2),
+    0 8px 32px rgba(168, 85, 247, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* 深色模式下的卡片样式 */
+.dark .card {
+  background: rgba(30, 41, 59, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 .dark .card:hover {
-  box-shadow: 0 12px 40px -5px rgba(168, 85, 247, 0.25);
-  border-color: rgba(168, 85, 247, 0.4);
+  background: rgba(30, 41, 59, 0.3);
+  box-shadow: 
+    0 20px 60px rgba(168, 85, 247, 0.25),
+    0 8px 32px rgba(236, 72, 153, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
 }
 /* --- 样式核心部分结束 --- */
 
@@ -155,7 +187,10 @@ const goToUrl = () => {
   color: var(--primary-color);
   font-weight: 900;
   font-size: 1.25rem;
-  box-shadow: 0 4px 6px -1px rgba(var(--primary-color-rgb), 0.2), 0 2px 4px -1px rgba(var(--primary-color-rgb), 0.1);
+  box-shadow: 
+    0 4px 12px rgba(var(--primary-color-rgb), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .icon-container::before {
