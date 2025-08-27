@@ -199,43 +199,14 @@ button.secondary:hover {
   box-shadow: var(--shadow-sm);
 }
 
-/* HeroUI 通用玻璃效果 */
-.glass-effect {
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* 深色模式下的 glass-effect */
-@media (prefers-color-scheme: dark) {
-  .glass-effect {
-    background: rgba(30, 41, 59, 0.2); /* slate-800 with opacity */
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-}
+/* HeroUI 通用玻璃效果 - 移至文件末尾统一版本 */
 
 /* HeroUI 渐变边框效果 */
 .gradient-border {
   background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 }
 
-/* HeroUI 动画效果 */
-.fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* HeroUI 动画效果 - 统一版本 */
 
 
 
@@ -458,11 +429,6 @@ button.secondary:hover {
 }
 
 /* HeroUI 特殊效果 */
-.glass-effect {
-  @apply backdrop-blur-xl bg-white/10 dark:bg-gray-800/10;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: var(--shadow-lg);
-}
 
 .gradient-border {
   position: relative;
@@ -608,3 +574,31 @@ html {
     background: var(--primary-color);
   }
 }
+
+/* ========== 统一样式定义 ========== */
+
+/* 统一玻璃效果样式 */
+.glass-effect {
+  @apply backdrop-blur-xl bg-white/10 dark:bg-gray-800/10;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 统一动画效果 */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== 统一样式定义结束 ========== */

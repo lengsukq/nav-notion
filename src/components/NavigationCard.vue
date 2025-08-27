@@ -77,27 +77,15 @@ const goToUrl = () => {
 <style scoped>
  @reference "tailwindcss";
 
-/* --- 基础卡片样式，使用全局毛玻璃样式 --- */
-.card {
-  height: 100%;
-  cursor: pointer; /* 添加手型光标，提示用户可以点击 */
-  outline: none; /* 移除默认的焦点轮廓，下面用ring来定制 */
-  transition: all 0.3s ease;
-  
-  /* 毛玻璃效果使用 common-styles.css 中定义的样式 */
-  /* 移除本地定义以避免与全局样式冲突 */
-}
+/* --- 基础卡片样式使用全局毛玻璃样式 --- */
+/* 移除本地.card定义以避免与全局样式冲突，使用 common-styles.css 中的统一定义 */
 
 /* 键盘聚焦时的样式 */
 .card:focus-visible {
   box-shadow: 0 0 0 2px var(--gray-50), 0 0 0 4px var(--primary-color);
 }
 
-/* 深色模式下的卡片 */
-.dark .card {
-  /* 深色模式样式使用 common-styles.css 中定义的样式 */
-  /* 移除本地定义以避免与全局样式冲突 */
-}
+/* 深色模式下的卡片样式使用 common-styles.css 中定义的样式 */
 
 .dark .card:focus-visible {
   box-shadow: 0 0 0 2px var(--gray-900), 0 0 0 4px var(--primary-color);
@@ -284,21 +272,7 @@ const goToUrl = () => {
   @apply text-gray-50;
 }
 
-.fade-in-up {
-  opacity: 0;
-  animation: fadeInUp 0.6s ease-out forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* fade-in-up 动画使用 common-styles.css 中的统一定义 */
 /* 响应式设计 */
 @media (max-width: 768px) {
   .large-card {
