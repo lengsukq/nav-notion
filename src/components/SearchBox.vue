@@ -7,8 +7,9 @@
         <!-- 搜索引擎选择器 -->
         <div class="engine-selector-container">
           <div class="selected-engine" @click.stop="toggleEngineDropdown">
-            {{ getEngineName(selectedEngine) }}
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 transition-transform duration-800 will-change-transform" :class="{'rotate-180': showEngineDropdown}">
+            <span class="engine-name hidden sm:inline">{{ getEngineName(selectedEngine) }}</span>
+            <span class="engine-name-short sm:hidden">{{ getEngineName(selectedEngine, true) }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 transition-transform duration-800 will-change-transform" :class="{'rotate-180': showEngineDropdown}">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
@@ -74,12 +75,12 @@ const searchQuery = ref('');
 const selectedEngine = ref('bing'); // 默认搜索引擎
 
 const searchEngines = {
-  bing: { name: 'Bing', url: 'https://www.bing.com/search?q=' },
-  google: { name: 'Google', url: 'https://www.google.com/search?q=' },
-  yahoo: { name: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
-  duck: { name: 'Duck', url: 'https://duckduckgo.com/?q=' },
-  baidu: { name: '百度', url: 'https://www.baidu.com/s?wd=' },
-  mieta: { name: '密塔搜索', url: 'https://metaso.cn/?q=' }
+  bing: { name: 'Bing', shortName: 'Bing', url: 'https://www.bing.com/search?q=' },
+  google: { name: 'Google', shortName: 'Google', url: 'https://www.google.com/search?q=' },
+  yahoo: { name: 'Yahoo', shortName: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
+  duck: { name: 'DuckDuckGo', shortName: 'Duck', url: 'https://duckduckgo.com/?q=' },
+  baidu: { name: '百度', shortName: '百度', url: 'https://www.baidu.com/s?wd=' },
+  mieta: { name: '密塔搜索', shortName: '密塔', url: 'https://metaso.cn/?q=' }
 };
 
 // 搜索历史记录
@@ -118,9 +119,11 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
-// 获取搜索引擎名称
-const getEngineName = (engineKey) => {
-  return searchEngines[engineKey]?.name || '搜索';
+// 获取搜索引擎名称 - 支持响应式显示
+const getEngineName = (engineKey, useShort = false) => {
+  const engine = searchEngines[engineKey];
+  if (!engine) return '搜索';
+  return useShort ? engine.shortName : engine.name;
 };
 
 // 切换搜索引擎下拉框
@@ -260,24 +263,45 @@ const handleClickOutside = (event) => {
   transform: translateZ(0);
 }
 
-/* 在小屏幕上调整布局 */
+/* 小屏幕优化 - 保持一行布局 */
 @media (max-width: 640px) {
   .search-box {
-    flex-direction: column;
-    align-items: stretch;
     gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
   }
   
   .engine-selector-container {
-    width: 100%;
-  }
-  
-  .selected-engine {
-    justify-content: center;
+    flex-shrink: 0;
   }
   
   .search-input-container {
-    width: 100%;
+    flex: 1;
+    min-width: 0; /* 允许收缩 */
+  }
+}
+
+/* 小尺寸屏幕优化 */
+@media (max-width: 450px) {
+  .search-box {
+    gap: 0.375rem;
+    padding: 0.5rem;
+    border-radius: 16px;
+  }
+  
+  .selected-engine {
+    padding: 0.5rem 0.75rem;
+    font-size: 12px;
+    border-radius: 12px;
+  }
+  
+  .search-input {
+    padding: 0.5rem;
+    font-size: 14px;
+  }
+  
+  .search-button {
+    padding: 0.375rem;
   }
 }
 
@@ -303,14 +327,14 @@ const handleClickOutside = (event) => {
 .selected-engine {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* 8px */
-  padding: 0.75rem 1.25rem; /* 增加内边距 */
+  gap: 0.25rem; /* 减小间距 */
+  padding: 0.625rem 1rem; /* 稍微减少内边距 */
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)); /* 渐变背景 */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-radius: 20px; /* 更大圆角 */
+  border-radius: 16px; /* 中等圆角 */
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px; /* 稍小字体 */
   font-weight: 600; /* 增强字重 */
   box-shadow: 
     0 4px 12px rgba(var(--primary-color-rgb), 0.15),
@@ -320,6 +344,8 @@ const handleClickOutside = (event) => {
   border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
+  min-width: fit-content; /* 最小宽度适应内容 */
+  flex-shrink: 0; /* 防止收缩 */
 }
 
 .selected-engine:hover {
