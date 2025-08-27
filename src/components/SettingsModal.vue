@@ -1,7 +1,9 @@
 <template>
   <!-- 设置模态框 -->
-  <div v-if="isSettingsOpen" class="modal-backdrop fixed inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-100 p-4 animate-in fade-in zoom-in-95 duration-500 ease-in-out">
-    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-5 max-w-md w-full max-h-[85vh] transform transition-all duration-500 hover:shadow-2xl animate-in slide-in-from-bottom-4 duration-700 ease-out flex flex-col" style="animation-delay: 100ms;">
+  <div v-if="isSettingsOpen" class="modal-backdrop fixed inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-100 p-4" 
+       :class="modalBackdropClasses" ref="modalBackdrop">
+    <div class="modal-container bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-5 max-w-md w-full max-h-[85vh] transform transition-all duration-500 hover:shadow-2xl flex flex-col" 
+         :class="modalContainerClasses" :style="modalContainerStyle" ref="modalContainer">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,7 +206,7 @@
 <script setup>
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
-import { watch, ref } from 'vue';
+import { watch, ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue-sonner';
 
 // 获取设置store
@@ -217,6 +219,50 @@ const { setCardSizeMode, setSettingsOpen, setThemeColor, setSecondaryColor, rese
 // 预设颜色应用模式切换
 const applyToSecondary = ref(false);
 
+// 动画相关的状态
+const isAnimating = ref(false);
+const animationState = ref('enter'); // 'enter' | 'exit'
+const settingsButtonPosition = ref({ x: 0, y: 0 });
+const modalBackdrop = ref(null);
+const modalContainer = ref(null);
+
+// 计算动画类名
+const modalBackdropClasses = computed(() => {
+  if (!isAnimating.value) return '';
+  
+  return animationState.value === 'enter' 
+    ? 'animate-in fade-in duration-300 ease-out'
+    : 'animate-out fade-out duration-200 ease-in';
+});
+
+const modalContainerClasses = computed(() => {
+  if (!isAnimating.value) return '';
+  
+  return animationState.value === 'enter' 
+    ? 'animate-in zoom-in-95 duration-400 ease-out'
+    : 'animate-out zoom-out-95 duration-200 ease-in';
+});
+
+// 计算模态框容器的变换原点样式
+const modalContainerStyle = computed(() => {
+  if (!isAnimating.value) return {};
+  
+  // 将设置按钮的屏幕坐标转换为相对于模态框的位置
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  // 计算变换原点（相对于视窗的百分比）
+  const originX = (settingsButtonPosition.value.x / viewportWidth) * 100;
+  const originY = (settingsButtonPosition.value.y / viewportHeight) * 100;
+  
+  return {
+    transformOrigin: `${originX}% ${originY}%`,
+    transition: animationState.value === 'enter' 
+      ? 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+      : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+  };
+});
+
 // 应用颜色的函数
 const applyColor = (color) => {
   if (applyToSecondary.value) {
@@ -226,26 +272,50 @@ const applyColor = (color) => {
   }
 };
 
-// 关闭设置的函数，带有动画效果
-const closeSettings = () => {
-  // 触发关闭动画
-  const modal = document.querySelector('.modal-container');
-  const backdrop = document.querySelector('.modal-backdrop');
-  
-  if (modal && backdrop) {
-    // 添加关闭动画类
-    modal.classList.add('animate-out', 'slide-out-to-bottom-4', 'duration-500', 'ease-in');
-    backdrop.classList.add('animate-out', 'fade-out', 'duration-500', 'ease-in');
-    
-    // 延迟关闭以播放动画
-    setTimeout(() => {
-      setSettingsOpen(false);
-    }, 200);
-  } else {
-    // 如果没有找到元素，直接关闭
-    setSettingsOpen(false);
+// 获取设置按钮的位置
+const getSettingsButtonPosition = () => {
+  const settingsButton = document.querySelector('.settings-button');
+  if (settingsButton) {
+    const rect = settingsButton.getBoundingClientRect();
+    settingsButtonPosition.value = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
   }
 };
+
+// 关闭设置的函数，带有iOS风格动画效果
+const closeSettings = () => {
+  isAnimating.value = true;
+  animationState.value = 'exit';
+  
+  // 获取当前设置按钮位置
+  getSettingsButtonPosition();
+  
+  // 延迟关闭以播放动画
+  setTimeout(() => {
+    setSettingsOpen(false);
+    isAnimating.value = false;
+  }, 200);
+};
+
+// 监听设置开启状态，触发进入动画
+watch(isSettingsOpen, (newValue) => {
+  if (newValue) {
+    // 获取设置按钮位置
+    getSettingsButtonPosition();
+    
+    // 触发进入动画
+    isAnimating.value = true;
+    animationState.value = 'enter';
+    
+    nextTick(() => {
+      setTimeout(() => {
+        isAnimating.value = false;
+      }, 400);
+    });
+  }
+});
 
 // 监听设置变化，自动保存并显示提示
 watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode], () => {
@@ -268,6 +338,52 @@ watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode], () => {
 </script>
 
 <style scoped>
+/* iOS风格动画效果 */
+.modal-backdrop {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-container {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* 进入动画 */
+@keyframes zoomInFromPoint {
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 退出动画 */
+@keyframes zoomOutToPoint {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+}
+
+.animate-zoom-in {
+  animation: zoomInFromPoint 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-zoom-out {
+  animation: zoomOutToPoint 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }

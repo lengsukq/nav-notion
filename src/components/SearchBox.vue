@@ -35,9 +35,17 @@
             class="search-input"
             ref="searchInputRef"
           >
-          <button @click.stop="handleSearch" class="search-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          </button>
+          <div class="search-actions">
+            <button @click.stop="handleSearch" class="search-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            <button @click.stop="$emit('toggle-settings')" class="settings-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
 
           <!-- 搜索历史记录 -->
           <transition name="dropdown">
@@ -198,6 +206,9 @@ const handleClickOutside = (event) => {
     showSearchHistory.value = false;
   }
 };
+
+// 定义组件的事件
+defineEmits(['search', 'toggle-settings']);
 </script>
 
 <style scoped>
@@ -206,9 +217,8 @@ const handleClickOutside = (event) => {
 .app-search-wrapper {
   position: relative;
   z-index: 200; /* 提高层级，确保搜索框层级高于标签和页面卡片 */
-  /* 同样，也需要控制其在App.vue中的布局 */
   width: 100%; /* 确保它占满App.vue中的可用宽度 */
-  padding: 0 1rem; /* 左右内边距，与App.vue的其他内容对齐 */
+  padding: 0; /* 移除内边距，让header控制布局 */
   box-sizing: border-box; /* 包含padding的宽度 */
 }
 
@@ -284,24 +294,62 @@ const handleClickOutside = (event) => {
 /* 小尺寸屏幕优化 */
 @media (max-width: 450px) {
   .search-box {
-    gap: 0.375rem;
-    padding: 0.5rem;
-    border-radius: 16px;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 20px;
+    /* 增强小尺寸屏幕下的视觉效果，因为它现在是主要元素 */
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 
+      0 12px 32px rgba(var(--primary-color-rgb), 0.2),
+      0 4px 12px rgba(var(--secondary-color-rgb), 0.15),
+      inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.35);
   }
   
   .selected-engine {
-    padding: 0.5rem 0.75rem;
-    font-size: 12px;
-    border-radius: 12px;
+    padding: 0.625rem 1rem;
+    font-size: 13px;
+    border-radius: 14px;
   }
   
   .search-input {
-    padding: 0.5rem;
-    font-size: 14px;
+    padding: 0.625rem;
+    font-size: 15px;
   }
   
-  .search-button {
-    padding: 0.375rem;
+  .search-actions {
+    gap: 0.125rem;
+  }
+  
+  .search-button,
+  .settings-button {
+    padding: 0.5rem;
+  }
+  
+  /* 小尺寸屏幕下增强设置按钮可见性 */
+  .settings-button {
+    background: rgba(var(--primary-color-rgb), 0.15);
+    border-color: rgba(var(--primary-color-rgb), 0.3);
+    box-shadow: 0 3px 10px rgba(var(--primary-color-rgb), 0.2);
+  }
+  
+  .settings-button:hover {
+    transform: scale(1.15) rotate(90deg);
+    box-shadow: 0 6px 16px rgba(var(--primary-color-rgb), 0.4);
+  }
+  
+  /* 增强焦点状态，因为搜索框现在是页面焦点 */
+  .search-box:focus-within {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow: 
+      0 16px 40px rgba(var(--primary-color-rgb), 0.3),
+      0 0 0 3px rgba(var(--primary-color-rgb), 0.4),
+      inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    transform: translateY(-3px);
   }
 }
 
@@ -410,6 +458,13 @@ const handleClickOutside = (event) => {
   color: var(--text-tertiary); /* 占位符颜色 */
 }
 
+/* 搜索动作区域 */
+.search-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 /* HeroUI 搜索按钮 */
 .search-button {
   background: transparent;
@@ -430,6 +485,31 @@ const handleClickOutside = (event) => {
   background-color: rgba(var(--primary-color-rgb), 0.1);
   transform: scale(1.08); /* 悬停时放大一点，调整为更自然的比例 */
   color: var(--primary);
+}
+
+/* HeroUI 设置按钮 */
+.settings-button {
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, background-color;
+  transform: translateZ(0);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.15);
+}
+
+.settings-button:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  border-color: var(--primary-color);
+  transform: scale(1.1) rotate(90deg); /* 悬停时旋转 */
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
 }
 
 /* HeroUI 搜索历史记录 */
