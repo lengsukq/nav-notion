@@ -19,7 +19,7 @@
               </svg>
             </div>
             <!-- 围绕图标的装饰圆环 - 在小屏幕上隐藏 -->
-            <div class="hidden sm:block absolute -inset-2 rounded-full border-2 border-dashed border-indigo-300/30 animate-spin" style="animation-duration: 10s;"></div>
+            <div class="hidden sm:block absolute -inset-2 rounded-full border-2 border-dashed animate-spin" style="animation-duration: 10s; border-color: rgba(var(--primary-color-rgb), 0.3);"></div>
           </div>
           <!-- 改进的标签设计 - 在小屏幕上简化 -->
           <div class="flex flex-col">
