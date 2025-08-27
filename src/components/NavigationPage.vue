@@ -143,35 +143,87 @@ const fetchDatabaseMetadata = async () => {
         color: option.color,
       }));
       
-      // 设置默认标签为主页
+      // 设置默认标签为主页，如果有的话
       const homeTag = availableTags.value.find(tag => tag.name === '主页');
       if (homeTag) {
         selectedTags.value = ['主页'];
-        // 自动触发数据获取
-        setTimeout(() => {
-          fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
-        }, 100);
       }
     }
+    
+    // 无论是否找到主页标签，都统一触发一次数据获取
+    // 使用setTimeout确保在标签设置完成后再获取数据
+    setTimeout(() => {
+      fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
+    }, 100);
   } catch (err) {
-    console.error('获取 Notion 数据库元数据失败:', err);
     // 元数据获取失败不应阻塞主流程，可以保留默认值
   }
 };
 
 // 应用背景图片到页面
 const applyBackgroundImage = (imageUrl) => {
-  const body = document.body;
+  // 移除旧的背景图片层
+  const existingLayer = document.getElementById('dynamic-background-layer');
+  if (existingLayer) {
+    existingLayer.remove();
+    document.body.classList.remove('has-dynamic-bg');
+  }
+  
   if (imageUrl && imageUrl.trim() !== '') {
-    body.style.backgroundImage = `url(${imageUrl})`;
-    body.style.backgroundSize = 'cover';
-    body.style.backgroundPosition = 'center';
-    body.style.backgroundRepeat = 'no-repeat';
-    body.style.backgroundAttachment = 'fixed';
-    body.style.backgroundColor = 'transparent';
-  } else {
-    body.style.backgroundImage = '';
-    body.style.backgroundColor = '';
+    // 创建图片对象测试URL是否有效
+    const testImage = new Image();
+    testImage.onload = () => {
+      // 创建新的背景图片层
+      const backgroundLayer = document.createElement('div');
+      backgroundLayer.id = 'dynamic-background-layer';
+      backgroundLayer.className = 'dynamic-bg-layer';
+      
+      // 设置样式
+      Object.assign(backgroundLayer.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100vw',
+        height: '100vh',
+        backgroundImage: `url("${imageUrl}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        zIndex: '-1000',
+        pointerEvents: 'none',
+        opacity: '0.7'
+      });
+      
+      // 插入到页面
+      document.body.appendChild(backgroundLayer);
+      document.body.classList.add('has-dynamic-bg');
+    };
+    
+    testImage.onerror = () => {
+      // 创建备用的渐变背景
+      const fallbackLayer = document.createElement('div');
+      fallbackLayer.id = 'dynamic-background-layer';
+      fallbackLayer.className = 'dynamic-bg-fallback';
+      
+      Object.assign(fallbackLayer.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(236, 72, 153, 0.1) 100%)',
+        zIndex: '-1000',
+        pointerEvents: 'none',
+        opacity: '0.5'
+      });
+      
+      document.body.appendChild(fallbackLayer);
+      document.body.classList.add('has-dynamic-bg');
+    };
+    
+    // 开始加载图片
+    testImage.src = imageUrl;
   }
 };
 
@@ -241,7 +293,6 @@ const fetchNotionData = async (tagsToFilter = [], startCursor = null, tagFilterM
 
   } catch (err) {
     error.value = `数据加载失败: ${err.message}`;
-    console.error('获取 Notion 数据时出错:', err);
   } finally {
     loading.value = false;
     isFetchingMore.value = false;
@@ -259,10 +310,11 @@ const handleScroll = () => {
   }
 };
 
+
+
 // --- 生命周期钩子 ---
 onMounted(() => {
-  fetchDatabaseMetadata();
-  fetchNotionData();
+  fetchDatabaseMetadata(); // 这里会自动触发数据获取，所以不需要重复调用
   window.addEventListener('scroll', handleScroll);
 });
 

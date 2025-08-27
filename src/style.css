@@ -70,12 +70,18 @@
 /* 全局基础样式 */
 body {
   @apply m-0 min-w-[320px] min-h-screen relative overflow-x-hidden;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #f1f5f9 50%, #e5e7eb 75%, #f9fafb 100%);
+  /* 移除固定背景，为动态背景图片让路 */
+  background: transparent;
   color: var(--gray-900);
   position: relative;
 }
 
-/* HeroUI 现代化背景几何图形 */
+/* 为没有动态背景图片时提供默认背景 */
+body:not(.has-dynamic-bg) {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #f1f5f9 50%, #e5e7eb 75%, #f9fafb 100%);
+}
+
+/* HeroUI 现代化背景几何图形 - 调整层次确保毛玻璃效果 */
 body::before {
   content: '';
   position: fixed;
@@ -88,10 +94,10 @@ body::before {
     radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
   pointer-events: none;
-  z-index: -1;
+  z-index: -5;
 }
 
-/* HeroUI 动态几何装饰 */
+/* HeroUI 动态几何装饰 - 调整层次确保毛玻璃效果 */
 body::after {
   content: '';
   position: fixed;
@@ -107,7 +113,7 @@ body::after {
   background-size: 60px 60px;
   background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
   pointer-events: none;
-  z-index: -1;
+  z-index: -5;
   opacity: 0.5;
 }
 
@@ -417,15 +423,26 @@ button.secondary:hover {
   }
   
   body {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #1e293b 100%);
+    /* 移除固定背景，为动态背景图片让路 */
+    background: transparent;
     color: var(--gray-100);
+  }
+  
+  /* 深色模式下没有动态背景图片时的默认背景 */
+  body:not(.has-dynamic-bg) {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #1e293b 100%);
   }
   
   body::before {
     background: 
-      radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+      radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.2) 0%, transparent 50%);
+    z-index: -5;
+  }
+  
+  body::after {
+    z-index: -5;
   }
   
   h1, h2, h3 {
@@ -700,6 +717,66 @@ html {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ========== 动态背景图片样式 ========== */
+
+/* 为动态背景图片提供毛玻璃效果支持 */
+#dynamic-background-layer {
+  /* 确保背景图片为毛玻璃效果提供足够的对比度 */
+  filter: contrast(1.1) brightness(0.9) saturate(1.2);
+  
+  /* 在深色模式下调整背景图片 */
+  transition: filter 0.3s ease;
+  
+  /* 确保背景图片在最底层，比所有装饰元素都低 */
+  z-index: -1000 !important;
+  
+  /* 强制显示 */
+  display: block !important;
+  visibility: visible !important;
+  
+  /* 确保完全覆盖 */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* 备用类名样式 */
+.dynamic-bg-layer {
+  /* 确保层次正确 */
+  z-index: -1000 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.dynamic-bg-fallback {
+  /* 备用背景样式 */
+  z-index: -1000 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* 深色模式下的动态背景图片调整 */
+@media (prefers-color-scheme: dark) {
+  #dynamic-background-layer {
+    filter: contrast(0.9) brightness(0.7) saturate(1.1);
+  }
+}
+
+/* 响应式调整 - 移动设备上降低背景图片的视觉干扰 */
+@media (max-width: 768px) {
+  #dynamic-background-layer {
+    opacity: 0.6 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #dynamic-background-layer {
+    opacity: 0.5 !important;
   }
 }
 

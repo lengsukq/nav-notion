@@ -103,31 +103,31 @@ const goToUrl = () => {
 
 /* ========== HeroUI 卡片核心样式 ========== */
 
-/* 基础卡片容器 - 增强毛玻璃效果 */
+/* 基础卡片容器 - 增强毛玻璃效果，确保背景兼容性 */
 .hero-card {
   @apply rounded-3xl transition-all duration-500 ease-out border block;
   position: relative;
   min-height: 100px;
   width: 100%;
   
-  /* 增强的毛玻璃效果 */
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  /* 增强的毛玻璃效果 - 优化参数确保在任何背景下都有效 */
+  backdrop-filter: blur(40px) saturate(200%) brightness(105%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(105%);
   
-  /* 多层背景增强玻璃质感 - 使用主题色变量 */
+  /* 多层背景增强玻璃质感 - 调整透明度以适应背景图片 */
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%),
-    linear-gradient(225deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--secondary-color-rgb), 0.05) 50%, rgba(var(--accent-color-rgb), 0.03) 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.15) 100%),
+    linear-gradient(225deg, rgba(var(--primary-color-rgb), 0.12) 0%, rgba(var(--secondary-color-rgb), 0.08) 50%, rgba(var(--accent-color-rgb), 0.05) 100%);
   
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   
-  /* 增强的阴影系统 - 使用主题色变量 */
+  /* 增强的阴影系统 - 使用主题色变量，增强对比度 */
   box-shadow: 
-    0 8px 32px rgba(var(--primary-color-rgb), 0.15),
-    0 4px 16px rgba(var(--secondary-color-rgb), 0.1),
-    0 2px 8px rgba(var(--accent-color-rgb), 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    0 12px 40px rgba(var(--primary-color-rgb), 0.2),
+    0 6px 20px rgba(var(--secondary-color-rgb), 0.15),
+    0 3px 12px rgba(var(--accent-color-rgb), 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* 卡片背景层 */
@@ -177,29 +177,29 @@ const goToUrl = () => {
   border-radius: inherit;
 }
 
-/* 卡片悬浮效果 - 增强毛玻璃 */
+/* 卡片悬浮效果 - 增强毛玻璃，优化背景兼容性 */
 .hero-card:hover {
   transform: translateY(-8px) scale(1.02);
   
-  /* 悬浮时增强毛玻璃效果 */
-  backdrop-filter: blur(40px) saturate(200%) brightness(110%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(110%);
+  /* 悬浮时增强毛玻璃效果 - 进一步增强模糊和饱和度 */
+  backdrop-filter: blur(50px) saturate(220%) brightness(115%);
+  -webkit-backdrop-filter: blur(50px) saturate(220%) brightness(115%);
   
-  /* 悬浮时的多层背景 - 使用主题色变量 */
+  /* 悬浮时的多层背景 - 提高透明度和层次感 */
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.15) 100%),
-    linear-gradient(225deg, rgba(var(--primary-color-rgb), 0.15) 0%, rgba(var(--secondary-color-rgb), 0.08) 50%, rgba(var(--accent-color-rgb), 0.05) 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.25) 100%),
+    linear-gradient(225deg, rgba(var(--primary-color-rgb), 0.18) 0%, rgba(var(--secondary-color-rgb), 0.12) 50%, rgba(var(--accent-color-rgb), 0.08) 100%);
   
-  /* 增强的悬浮阴影 - 使用主题色变量 */
+  /* 增强的悬浮阴影 - 使用主题色变量，更强的立体感 */
   box-shadow: 
-    0 32px 64px rgba(var(--primary-color-rgb), 0.25),
-    0 16px 32px rgba(var(--secondary-color-rgb), 0.2),
-    0 8px 16px rgba(var(--accent-color-rgb), 0.15),
-    0 4px 8px rgba(var(--primary-color-rgb), 0.1),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+    0 40px 80px rgba(var(--primary-color-rgb), 0.3),
+    0 20px 40px rgba(var(--secondary-color-rgb), 0.25),
+    0 10px 20px rgba(var(--accent-color-rgb), 0.2),
+    0 5px 10px rgba(var(--primary-color-rgb), 0.15),
+    inset 0 3px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
     
-  border-color: rgba(var(--primary-color-rgb), 0.5);
+  border-color: rgba(var(--primary-color-rgb), 0.6);
 }
 
 /* 焦点状态 */
@@ -216,7 +216,7 @@ const goToUrl = () => {
   @apply p-6 flex flex-col justify-start;
   min-height: inherit;
   position: relative;
-  z-index: 1;
+  z-index: 10; /* 提高层级确保内容显示在顶层 */
 }
 
 /* ========== 大卡片样式 ========== */
@@ -411,13 +411,15 @@ const goToUrl = () => {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* 小卡片标题 - 优化可读性 */
+/* 小卡片标题 - 优化可读性和层次 */
 .hero-small-card-title {
   @apply text-sm font-bold text-center;
   @apply overflow-hidden text-ellipsis line-clamp-2 max-w-full;
   line-height: 1.3;
   max-height: 2.6rem;
   width: 100%;
+  position: relative;
+  z-index: 10; /* 确保标题在所有元素之上 */
   
   /* 使用渐变文字效果 */
   background: linear-gradient(135deg, var(--gray-900), var(--gray-700));
@@ -425,6 +427,9 @@ const goToUrl = () => {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transition: all 0.3s ease;
+  
+  /* 添加文字阴影增强可读性 */
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
 }
 
 .hero-card:hover .hero-small-card-title {
@@ -437,25 +442,25 @@ const goToUrl = () => {
 
 /* ========== 深色模式适配 ========== */
 
-/* 深色模式毛玻璃效果 */
+/* 深色模式毛玻璃效果 - 优化背景兼容性 */
 .dark .hero-card {
-  /* 深色模式增强毛玻璃 */
-  backdrop-filter: blur(32px) saturate(150%) brightness(90%);
-  -webkit-backdrop-filter: blur(32px) saturate(150%) brightness(90%);
+  /* 深色模式增强毛玻璃 - 增强模糊效果 */
+  backdrop-filter: blur(45px) saturate(180%) brightness(95%);
+  -webkit-backdrop-filter: blur(45px) saturate(180%) brightness(95%);
   
-  /* 深色模式多层背景 - 使用主题色变量 */
+  /* 深色模式多层背景 - 使用主题色变量，调整透明度 */
   background: 
-    linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.5) 100%),
-    linear-gradient(225deg, rgba(var(--secondary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.05) 50%, rgba(var(--primary-color-rgb), 0.03) 100%);
+    linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%),
+    linear-gradient(225deg, rgba(var(--secondary-color-rgb), 0.12) 0%, rgba(var(--accent-color-rgb), 0.08) 50%, rgba(var(--primary-color-rgb), 0.05) 100%);
   
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
   
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 4px 16px rgba(var(--secondary-color-rgb), 0.15),
-    0 2px 8px rgba(var(--accent-color-rgb), 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 6px 20px rgba(var(--secondary-color-rgb), 0.2),
+    0 3px 12px rgba(var(--accent-color-rgb), 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .dark .hero-card-bg {
@@ -467,24 +472,24 @@ const goToUrl = () => {
 }
 
 .dark .hero-card:hover {
-  /* 深色模式悬浮时毛玻璃增强 */
-  backdrop-filter: blur(40px) saturate(180%) brightness(110%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(110%);
+  /* 深色模式悬浮时毛玻璃增强 - 进一步优化 */
+  backdrop-filter: blur(55px) saturate(200%) brightness(120%);
+  -webkit-backdrop-filter: blur(55px) saturate(200%) brightness(120%);
   
-  /* 深色模式悬浮背景 - 使用主题色变量 */
+  /* 深色模式悬浮背景 - 使用主题色变量，提高对比度 */
   background: 
-    linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%),
-    linear-gradient(225deg, rgba(var(--secondary-color-rgb), 0.15) 0%, rgba(var(--accent-color-rgb), 0.08) 50%, rgba(var(--primary-color-rgb), 0.05) 100%);
+    linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%),
+    linear-gradient(225deg, rgba(var(--secondary-color-rgb), 0.18) 0%, rgba(var(--accent-color-rgb), 0.12) 50%, rgba(var(--primary-color-rgb), 0.08) 100%);
   
   box-shadow: 
-    0 32px 64px rgba(0, 0, 0, 0.7),
-    0 16px 32px rgba(var(--secondary-color-rgb), 0.25),
-    0 8px 16px rgba(var(--accent-color-rgb), 0.2),
-    0 4px 8px rgba(var(--primary-color-rgb), 0.15),
-    inset 0 2px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+    0 40px 80px rgba(0, 0, 0, 0.8),
+    0 20px 40px rgba(var(--secondary-color-rgb), 0.3),
+    0 10px 20px rgba(var(--accent-color-rgb), 0.25),
+    0 5px 10px rgba(var(--primary-color-rgb), 0.2),
+    inset 0 3px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12);
     
-  border-color: rgba(var(--secondary-color-rgb), 0.5);
+  border-color: rgba(var(--secondary-color-rgb), 0.6);
 }
 
 .dark .hero-tag {
@@ -494,6 +499,25 @@ const goToUrl = () => {
   );
   color: var(--primary-color-light);
   border-color: rgba(168, 85, 247, 0.3);
+}
+
+/* 深色模式下的小卡片标题优化 */
+.dark .hero-small-card-title {
+  /* 深色模式下使用浅色文字 */
+  background: linear-gradient(135deg, var(--gray-100), var(--gray-300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  
+  /* 深色模式下的文字阴影 */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.dark .hero-card:hover .hero-small-card-title {
+  background: linear-gradient(135deg, var(--primary-color-light), var(--accent-color-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ========== 响应式设计 ========== */
@@ -658,6 +682,12 @@ const goToUrl = () => {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform, backdrop-filter;
+  
+  /* 强制创建新的层叠上下文，确保毛玻璃效果正确渲染 */
+  isolation: isolate;
+  
+  /* 为毛玻璃效果提供足够的渲染基础 */
+  contain: layout style paint;
 }
 
 /* 自定义卡片进入动画 */
