@@ -4,111 +4,29 @@
     <div class="w-full max-w-7xl mx-auto space-y-12">
 
       <!-- HeroUI 页面头部：个人导航中心 -->
-      <header class="relative z-20 glass-effect rounded-3xl p-6 sm:p-8 shadow-xl transition-all duration-300 fade-in-up">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <!-- 标题和描述 - 个人导航核心 -->
-          <div class="text-center md:text-left">
-            <div class="inline-flex items-center gap-3 mb-4">
-              <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg" style="background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color))">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span class="text-sm font-medium uppercase tracking-wide" style="color: var(--primary-color)">个人导航中心</span>
-            </div>
-            <h1 class="text-3xl md:text-4xl font-bold" style="background: linear-gradient(to right, var(--primary-color-dark), var(--secondary-color-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ databaseInfo.title }}</h1>
-            <p class="text-gray-600 dark:text-gray-400 text-base md:text-lg mt-2 leading-relaxed">{{ databaseInfo.description }}</p>
-          </div>
-          
-          <!-- 时间显示和搜索框区域 -->
-          <div class="flex flex-col items-center md:items-end gap-4 w-full md:w-auto">
-            <!-- 时间显示组件 -->
-            <TimeDisplay />
-            
-            <!-- 搜索框和设置按钮 -->
-            <div class="flex items-center gap-3 w-full">
-              <div class="flex-grow">
-                <SearchBox @search="handleSearch" />
-              </div>
-            <button
-              @click="settingsStore.toggleSettings()"
-              class="flex-shrink-0 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white p-3 rounded-2xl font-medium flex items-center justify-center shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 dark:focus-visible:ring-offset-gray-900"
-              aria-label="设置"
-            >
-              <!-- 设置图标 (齿轮) -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        </div>
-      </header>
+      <NavigationHeader 
+        :database-info="databaseInfo" 
+        @search="handleSearch" 
+        @toggle-settings="settingsStore.toggleSettings()"
+      />
 
       <!-- HeroUI 标签筛选区域 -->
-      <div class="flex flex-wrap justify-center gap-3 p-6 glass-effect rounded-2xl shadow-lg fade-in-up">
-        <FilterTag
-          v-for="tag in availableTags"
-          :key="tag.name"
-          :tag-name="tag.name"
-          :tag-color="tag.color"
-          :is-selected="selectedTags.includes(tag.name)"
-          @tag-click="toggleTag"
-        />
-      </div>
-
-      <!-- HeroUI 初始加载状态 -->
-      <div v-if="loading" class="flex justify-center items-center py-24 fade-in-up">
-        <div class="relative">
-          <div class="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-500 border-b-purple-500 shadow-lg"></div>
-          <div class="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-300 border-b-purple-300 animate-pulse"></div>
-        </div>
-      </div>
-
-      <!-- HeroUI 错误状态 -->
-      <div v-else-if="error" class="gradient-border p-1 rounded-3xl shadow-xl mt-8 fade-in-up">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 text-center flex flex-col items-center gap-6">
-          <!-- 错误图标 -->
-          <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">加载失败</h3>
-            <p class="text-gray-600 dark:text-gray-400">{{ error }}</p>
-          </div>
-          <button @click="fetchNotionData(selectedTags, null)" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-            重新加载
-          </button>
-        </div>
-      </div>
+      <NavigationTags 
+        :available-tags="availableTags" 
+        :selected-tags="selectedTags" 
+        @tag-click="handleTagClick"
+      />
 
       <!-- HeroUI 导航卡片列表 - 个人导航核心功能 -->
-      <div v-else>
-        <div :class="cardContainerClasses" class="fade-in-up">
-          <NavigationCard
-            v-for="(item, index) in processedLinks"
-            :key="index"
-            :name="item.name"
-            :description="item.description"
-            :tags="item.tags"
-            :url="item.url"
-            :icon="item.icon"
-            :delay="`${index * 100}ms`"
-            :size="cardSizeMode"
-          />
-        </div>
-        
-        <!-- HeroUI 加载更多指示器 -->
-        <div v-if="isFetchingMore" class="flex justify-center items-center py-8">
-          <div class="relative">
-            <div class="animate-spin rounded-full h-10 w-10 border-3 border-transparent border-t-indigo-400 border-b-purple-400 shadow-md"></div>
-            <div class="absolute inset-0 rounded-full h-10 w-10 border-3 border-transparent border-t-indigo-200 border-b-purple-200 animate-pulse"></div>
-          </div>
-        </div>
-      </div>
+      <NavigationCards 
+        :loading="loading" 
+        :error="error" 
+        :navigation-links="navigationLinks" 
+        :search-query="searchQuery" 
+        :card-size-mode="cardSizeMode" 
+        :is-fetching-more="isFetchingMore" 
+        @retry="handleRetry"
+      />
 
       <!-- 设置模态框 -->
       <SettingsModal />
@@ -117,11 +35,10 @@
 </template>
 
 <script setup>
-import SearchBox from './SearchBox.vue';
+import NavigationHeader from './NavigationHeader.vue';
+import NavigationTags from './NavigationTags.vue';
+import NavigationCards from './NavigationCards.vue';
 import SettingsModal from './SettingsModal.vue';
-import NavigationCard from './NavigationCard.vue';
-import FilterTag from './FilterTag.vue';
-import TimeDisplay from './TimeDisplay.vue';
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
@@ -151,35 +68,12 @@ const NOTION_DATABASE_ID = import.meta.env.VITE_APP_NOTION_DATABASE_ID;
 const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
 
 // --- 计算属性 ---
-
-// 根据卡片大小设置动态计算网格布局的 class
-const cardContainerClasses = computed(() => {
-  const baseClasses = 'gap-3 sm:gap-4 mt-8';
-  if (cardSizeMode.value === 'small') {
-    // 小卡模式显示更多列：手机3列，平板4列，桌面5-6列，大屏幕7-8列
-    return `grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 ${baseClasses}`;
-  } else {
-    // 大卡模式保持原有布局，确保描述信息清晰展示
-    return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${baseClasses}`;
-  }
-});
-
-// 根据搜索条件过滤链接
-const processedLinks = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return navigationLinks.value;
-  }
-  const lowerCaseQuery = searchQuery.value.trim().toLowerCase();
-  return navigationLinks.value.filter(link =>
-    link.name.toLowerCase().includes(lowerCaseQuery) ||
-    link.description.toLowerCase().includes(lowerCaseQuery)
-  );
-});
+// 注意：processedLinks 和 cardContainerClasses 计算属性已移至 NavigationCards 组件中
 
 // --- 方法 ---
 
-// 切换标签选中状态
-const toggleTag = (tagName) => {
+// 处理标签点击事件
+const handleTagClick = (tagName) => {
   let newSelectedTags;
   if (settingsStore.tagFilterMode === 'single') {
     newSelectedTags = selectedTags.value.includes(tagName) ? [] : [tagName];
@@ -196,6 +90,11 @@ const toggleTag = (tagName) => {
 // 处理搜索框输入
 const handleSearch = (query) => {
   searchQuery.value = query;
+};
+
+// 处理重试事件
+const handleRetry = () => {
+  fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
 };
 
 // 解析 Notion API 响应
@@ -387,48 +286,22 @@ watch(
 );
 </script>
 
-<style>
-/* 全局样式 */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+<style scoped>
+/* 组件特定的样式 */
+
+/* HeroUI 导航头部样式 */
+.navigation-header {
+  position: relative;
+  z-index: 20;
 }
 
-/* header 的背景和模糊效果 */
-.glass-effect {
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+/* HeroUI 标签区域样式 */
+.navigation-tags {
+  /* 标签区域的特定样式可以在这里添加 */
 }
 
-/* 深色模式下的 glass-effect */
-@media (prefers-color-scheme: dark) {
-  .glass-effect {
-    background: rgba(30, 41, 59, 0.2); /* slate-800 with opacity */
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
-/* 渐变边框效果（用于错误提示） */
-.gradient-border {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-/* 动画效果 */
-.fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* HeroUI 卡片区域样式 */
+.navigation-cards {
+  /* 卡片区域的特定样式可以在这里添加 */
 }
 </style>
