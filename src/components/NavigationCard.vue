@@ -58,7 +58,7 @@
         </div>
         
         <!-- 标题 -->
-        <h3 class="hero-small-card-title">{{ name }}</h3>
+        <h3 class="hero-small-card-title" :title="name">{{ name }}</h3>
       </div>
     </div>
     
@@ -242,10 +242,11 @@ const goToUrl = () => {
 
 /* 大卡片图标容器 - 紧凑设计 */
 .hero-icon-container {
-  @apply relative flex items-center justify-center rounded-2xl transition-all duration-300;
-  width: 3rem; /* 48px - 适中的图标容器 */
-  height: 3rem;
+  @apply relative flex items-center justify-center rounded-xl transition-all duration-300; /* 改为更柔和的圆角 */
+  width: 2.75rem; /* 44px - 进一步减小图标尺寸 */
+  height: 2.75rem;
   flex-shrink: 0; /* 防止压缩 */
+  margin-bottom: 0.5rem; /* 添加间距增强层次感 */
   
   /* 图标容器毛玻璃效果 */
   backdrop-filter: blur(16px) saturate(150%);
@@ -253,39 +254,46 @@ const goToUrl = () => {
   
   /* 增强立体感的阴影系统 */
   box-shadow: 
-    0 8px 25px rgba(var(--primary-color-rgb), 0.25),
-    0 4px 12px rgba(var(--secondary-color-rgb), 0.15),
-    0 2px 6px rgba(var(--accent-color-rgb), 0.1),
-    inset 0 2px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+    0 6px 20px rgba(var(--primary-color-rgb), 0.2), /* 减小阴影强度 */
+    0 3px 10px rgba(var(--secondary-color-rgb), 0.12),
+    0 2px 5px rgba(var(--accent-color-rgb), 0.08),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
     
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.3); /* 减小边框透明度 */
+  
+  /* 添加微妙的悬停效果 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-icon-container:hover {
+  transform: translateY(-1px) scale(1.02); /* 微妙的悬浮效果 */
 }
 
 .hero-icon-bg {
-  @apply absolute inset-0 rounded-2xl;
+  @apply absolute inset-0 rounded-xl; /* 改为更柔和的圆角 */
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
   /* 添加微妙的内部光效 */
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .hero-icon-image {
-  @apply w-6 h-6 object-contain relative z-10;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  @apply w-5 h-5 object-contain relative z-10; /* 减小图标尺寸 */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
 }
 
 .hero-icon-text {
-  @apply text-white font-bold text-lg relative z-10;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  @apply text-white font-bold text-base relative z-10; /* 减小字体尺寸 */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* 大卡片标题 - 优化长标题处理 */
 .hero-card-title {
-  @apply text-xl font-bold leading-tight;
+  @apply text-lg font-bold leading-tight;
   @apply overflow-hidden;
   flex: 1; /* 充分利用空间 */
-  line-height: 1.3;
-  max-height: 3.3rem; /* 允许2行显示 */
+  line-height: 1.4;
+  max-height: 2.8rem; /* 允许2行显示 */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -295,6 +303,9 @@ const goToUrl = () => {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transition: all 0.3s ease;
+  
+  /* 优化字母间距 */
+  letter-spacing: -0.01em;
 }
 
 .hero-card:hover .hero-card-title {
@@ -310,14 +321,17 @@ const goToUrl = () => {
   @apply text-sm text-gray-600 dark:text-gray-300 leading-relaxed;
   @apply overflow-hidden;
   flex: 1; /* 自适应高度 */
-  min-height: 3.2rem; /* 平衡高度 */
-  max-height: 3.2rem; /* 固定高度避免错乱 */
+  min-height: 2.8rem; /* 平衡高度 */
+  max-height: 2.8rem; /* 固定高度避免错乱 */
   line-height: 1.4;
   opacity: 0.9;
   transition: opacity 0.3s ease;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  
+  /* 优化字母间距 */
+  letter-spacing: 0.01em;
 }
 
 .hero-card:hover .hero-card-description {
@@ -374,10 +388,11 @@ const goToUrl = () => {
 
 /* 小卡片图标容器 - 优化设计 */
 .hero-small-icon-container {
-  @apply relative flex items-center justify-center rounded-2xl transition-all duration-300;
-  width: 2.5rem; /* 40px - 减小图标尺寸给标题更多空间 */
-  height: 2.5rem;
+  @apply relative flex items-center justify-center rounded-xl transition-all duration-300; /* 改为更柔和的圆角 */
+  width: 2.25rem; /* 36px - 进一步减小图标尺寸给标题更多空间 */
+  height: 2.25rem;
   flex-shrink: 0;
+  margin-bottom: 0.25rem; /* 添加微小间距增强层次感 */
   
   /* 小图标容器毛玻璃效果 */
   backdrop-filter: blur(12px) saturate(140%);
@@ -385,13 +400,20 @@ const goToUrl = () => {
   
   /* 精致的阴影效果 */
   box-shadow: 
-    0 6px 16px rgba(var(--primary-color-rgb), 0.2),
-    0 3px 8px rgba(var(--secondary-color-rgb), 0.12),
-    0 1px 4px rgba(var(--accent-color-rgb), 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+    0 4px 12px rgba(var(--primary-color-rgb), 0.15), /* 减小阴影强度 */
+    0 2px 6px rgba(var(--secondary-color-rgb), 0.1),
+    0 1px 3px rgba(var(--accent-color-rgb), 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
     
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25); /* 减小边框透明度 */
+  
+  /* 添加微妙的悬停效果 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-small-icon-container:hover {
+  transform: translateY(-1px) scale(1.02); /* 微妙的悬浮效果 */
 }
 
 .hero-small-icon-bg {
@@ -413,10 +435,10 @@ const goToUrl = () => {
 
 /* 小卡片标题 - 优化可读性和层次 */
 .hero-small-card-title {
-  @apply text-sm font-bold text-center;
+  @apply text-sm font-semibold text-center;
   @apply overflow-hidden text-ellipsis line-clamp-2 max-w-full;
-  line-height: 1.2;
-  max-height: 2.4rem;
+  line-height: 1.3;
+  max-height: 2.6rem;
   width: 100%;
   position: relative;
   z-index: 10; /* 确保标题在所有元素之上 */
@@ -431,6 +453,16 @@ const goToUrl = () => {
   
   /* 添加文字阴影增强可读性 */
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+  
+  /* 优化字母间距 */
+  letter-spacing: -0.01em;
+  
+  /* 添加微妙的悬停效果 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-small-card-title:hover {
+  transform: translateY(-1px); /* 微妙的悬浮效果 */
 }
 
 .hero-card:hover .hero-small-card-title {
