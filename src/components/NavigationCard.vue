@@ -566,7 +566,7 @@ const goToUrl = () => {
   }
   
   .hero-large-card {
-    gap: 0.875rem;
+    gap: 0.5rem;
   }
   
   .hero-card-title {
@@ -605,7 +605,7 @@ const goToUrl = () => {
   }
   
   .hero-large-card {
-    gap: 0.875rem;
+    gap: 0.5rem;
   }
   
   .hero-card-large {
