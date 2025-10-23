@@ -116,11 +116,8 @@ const processedLinks = computed(() => {
   if (!props.searchQuery.trim()) {
     return props.navigationLinks;
   }
-  const lowerCaseQuery = props.searchQuery.trim().toLowerCase();
-  return props.navigationLinks.filter(link =>
-    link.name.toLowerCase().includes(lowerCaseQuery) ||
-    link.description.toLowerCase().includes(lowerCaseQuery)
-  );
+
+  return props.navigationLinks;
 });
 </script>
 

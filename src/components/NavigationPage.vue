@@ -95,6 +95,81 @@ const handleTagClick = (tagName) => {
 // 处理搜索框输入
 const handleSearch = (query) => {
   searchQuery.value = query;
+  
+  // 执行搜索时，取消所有已选中的标签
+  if (query.trim()) {
+    selectedTags.value = [];
+    searchNotionDatabase(query.trim());
+  } else {
+    // 如果搜索查询为空，重新加载所有数据
+    fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
+  }
+};
+
+// 搜索Notion数据库
+const searchNotionDatabase = async (searchTerm) => {
+  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) {
+    error.value = '配置不完整，请检查 .env 文件中的 Notion API 相关设置。';
+    loading.value = false;
+    return;
+  }
+
+  loading.value = true;
+  error.value = null;
+  navigationLinks.value = [];
+
+  try {
+    const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NOTION_TOKEN}`,
+        'Notion-Version': NOTION_VERSION,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        filter: {
+          or: [
+            {
+              property: 'name',
+              title: {
+                contains: searchTerm
+              }
+            },
+            {
+              property: 'description',
+              rich_text: {
+                contains: searchTerm
+              }
+            },
+            {
+              property: 'tag',
+              multi_select: {
+                contains: searchTerm
+              }
+            }
+          ]
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP 错误! 状态: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const processed = processNotionResponse(data);
+    navigationLinks.value = processed;
+
+    if (navigationLinks.value.length === 0) {
+      error.value = `未找到包含 "${searchTerm}" 的链接。`;
+    }
+
+  } catch (err) {
+    error.value = `搜索失败: ${err.message}`;
+  } finally {
+    loading.value = false;
+  }
 };
 
 // 处理重试事件

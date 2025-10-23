@@ -82,13 +82,15 @@ import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue';
 const searchQuery = ref('');
 const selectedEngine = ref('bing'); // 默认搜索引擎
 
+// 搜索引擎选择器
 const searchEngines = {
   bing: { name: 'Bing', shortName: 'Bing', url: 'https://www.bing.com/search?q=' },
   google: { name: 'Google', shortName: 'Google', url: 'https://www.google.com/search?q=' },
   yahoo: { name: 'Yahoo', shortName: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
-  duck: { name: 'DuckDuckGo', shortName: 'Duck', url: 'https://duckduckgo.com/?q=' },
+  duck: { name: 'Duck', shortName: 'Duck', url: 'https://duckduckgo.com/?q=' },
   baidu: { name: '百度', shortName: '百度', url: 'https://www.baidu.com/s?wd=' },
-  mieta: { name: '密塔搜索', shortName: '密塔', url: 'https://metaso.cn/?q=' }
+  mieta: { name: '密塔搜索', shortName: '密塔', url: 'https://metaso.cn/?q=' },
+  notion: { name: 'Notion', shortName: 'Notion', url: 'notion' }
 };
 
 // 搜索历史记录
@@ -170,11 +172,21 @@ const handleBlur = () => {
 // 处理搜索
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    const searchUrl = searchEngines[selectedEngine.value].url + encodeURIComponent(searchQuery.value);
-    window.open(searchUrl, '_blank');
-    saveSearchHistory(searchQuery.value);
-    searchQuery.value = '';
-    showSearchHistory.value = false; // 搜索后隐藏历史记录
+    // 如果是Notion搜索
+    if (selectedEngine.value === 'notion') {
+      // 触发Notion搜索事件，将搜索查询传递给父组件
+      emit('search', searchQuery.value);
+      saveSearchHistory(searchQuery.value);
+      searchQuery.value = '';
+      showSearchHistory.value = false; // 搜索后隐藏历史记录
+    } else {
+      // 外部搜索引擎搜索
+      const searchUrl = searchEngines[selectedEngine.value].url + encodeURIComponent(searchQuery.value);
+      window.open(searchUrl, '_blank');
+      saveSearchHistory(searchQuery.value);
+      searchQuery.value = '';
+      showSearchHistory.value = false; // 搜索后隐藏历史记录
+    }
   }
 };
 
@@ -208,7 +220,7 @@ const handleClickOutside = (event) => {
 };
 
 // 定义组件的事件
-defineEmits(['search', 'toggle-settings']);
+const emit = defineEmits(['search', 'toggle-settings']);
 </script>
 
 <style scoped>
