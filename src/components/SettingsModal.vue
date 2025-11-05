@@ -178,6 +178,82 @@
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">选择Tag筛选方式：单选仅显示匹配任一Tag的结果，多选显示同时匹配所有选中Tag的结果</p>
         </div>
+
+        <!-- 缓存设置 -->
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border border-gray-100 dark:border-gray-700">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2" />
+            </svg>
+            数据缓存设置
+          </h4>
+          
+          <!-- 缓存过期时间设置 -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-700 dark:text-gray-300">缓存过期时间</span>
+              <div class="flex items-center space-x-2">
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="168" 
+                  v-model="cacheExpiryTime" 
+                  @input="setCacheExpiryTime(parseInt(cacheExpiryTime) || 0)"
+                  class="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary outline-none"
+                >
+                <span class="text-sm text-gray-600 dark:text-gray-400">小时</span>
+              </div>
+            </div>
+            
+            <!-- 快速选择按钮 -->
+            <div class="flex flex-wrap gap-1 mt-2">
+              <button 
+                @click="setCacheExpiryTime(0)" 
+                :class="[cacheExpiryTime === 0 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                不缓存
+              </button>
+              <button 
+                @click="setCacheExpiryTime(1)" 
+                :class="[cacheExpiryTime === 1 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                1小时
+              </button>
+              <button 
+                @click="setCacheExpiryTime(6)" 
+                :class="[cacheExpiryTime === 6 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                6小时
+              </button>
+              <button 
+                @click="setCacheExpiryTime(12)" 
+                :class="[cacheExpiryTime === 12 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                12小时
+              </button>
+              <button 
+                @click="setCacheExpiryTime(24)" 
+                :class="[cacheExpiryTime === 24 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                1天
+              </button>
+              <button 
+                @click="setCacheExpiryTime(72)" 
+                :class="[cacheExpiryTime === 72 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                3天
+              </button>
+              <button 
+                @click="setCacheExpiryTime(168)" 
+                :class="[cacheExpiryTime === 168 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                1周
+              </button>
+            </div>
+            
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">设置为0表示不使用缓存，缓存首页数据可减少API调用，提高加载速度</p>
+          </div>
+        </div>
       </div>
 
       <!-- 操作按钮区域 -->
@@ -213,8 +289,8 @@ import { toast } from 'vue-sonner';
 const settingsStore = useSettingsStore();
 
 // 使用storeToRefs保持状态响应性
-const { cardSizeMode, isSettingsOpen, themeColor, secondaryColor, tagFilterMode } = storeToRefs(settingsStore);
-const { setCardSizeMode, setSettingsOpen, setThemeColor, setSecondaryColor, resetSettings, setTagFilterMode } = settingsStore;
+const { cardSizeMode, isSettingsOpen, themeColor, secondaryColor, tagFilterMode, cacheExpiryTime } = storeToRefs(settingsStore);
+const { setCardSizeMode, setSettingsOpen, setThemeColor, setSecondaryColor, resetSettings, setTagFilterMode, setCacheExpiryTime } = settingsStore;
 
 // 预设颜色应用模式切换
 const applyToSecondary = ref(false);
@@ -318,12 +394,13 @@ watch(isSettingsOpen, (newValue) => {
 });
 
 // 监听设置变化，自动保存并显示提示
-watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode], () => {
+watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode, cacheExpiryTime], () => {
   // 自动保存设置
   settingsStore.saveSettings();
   console.log('cardSizeMode', cardSizeMode.value);
   console.log('themeColor', themeColor.value);
   console.log('secondaryColor', secondaryColor.value);
+  console.log('cacheExpiryTime', cacheExpiryTime.value);
   
   // 调试日志，检查按钮选中状态
   console.log('Button classes - small:', cardSizeMode.value === 'small' ? 'button-primary selected' : 'button-secondary');

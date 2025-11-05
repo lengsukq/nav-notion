@@ -7,7 +7,9 @@ export const useSettingsStore = defineStore('settings', {
     isSettingsOpen: false,
     themeColor: localStorage.getItem('themeColor') || '#3B82F6',
     secondaryColor: localStorage.getItem('secondaryColor') || '#d1d1d1',
-    tagFilterMode: localStorage.getItem('tagFilterMode') || 'single'
+    tagFilterMode: localStorage.getItem('tagFilterMode') || 'single',
+    // 缓存设置
+    cacheExpiryTime: parseInt(localStorage.getItem('cacheExpiryTime')) || 24 // 默认24小时过期，0表示不缓存
   }),
   actions: {
     setCardSizeMode(mode) {
@@ -44,6 +46,11 @@ export const useSettingsStore = defineStore('settings', {
       this.tagFilterMode = mode;
       this.saveSettings();
     },
+    // 缓存相关方法
+    setCacheExpiryTime(hours) {
+      this.cacheExpiryTime = hours;
+      this.saveSettings();
+    },
     toggleSettings() {
       console.log('toggleSettings called, current state:', this.isSettingsOpen);
       this.isSettingsOpen = !this.isSettingsOpen;
@@ -60,6 +67,8 @@ export const useSettingsStore = defineStore('settings', {
       localStorage.setItem('themeColor', this.themeColor);
       localStorage.setItem('secondaryColor', this.secondaryColor);
       localStorage.setItem('tagFilterMode', this.tagFilterMode);
+      // 保存缓存设置
+      localStorage.setItem('cacheExpiryTime', this.cacheExpiryTime.toString());
     },
     resetSettings() {
       // 恢复默认设置
@@ -67,6 +76,8 @@ export const useSettingsStore = defineStore('settings', {
       this.themeColor = '#3B82F6';
       this.secondaryColor = '#d1d1d1';
       this.tagFilterMode = 'single';
+      // 重置缓存设置为默认值
+      this.cacheExpiryTime = 24;
       // 更新CSS变量
       document.documentElement.style.setProperty('--primary-color', this.themeColor);
       const primaryLightColor = this.lightenColor(this.themeColor, 0.2);

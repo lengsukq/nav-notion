@@ -47,6 +47,7 @@ import SettingsModal from './SettingsModal.vue';
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
+import navigationCache from '../utils/cache';
 
 // --- 响应式状态定义 ---
 const navigationLinks = ref([]); // 存储所有导航链接
@@ -64,7 +65,7 @@ const isFetchingMore = ref(false); // 是否正在加载更多数据
 
 // 从 Pinia store 获取状态
 const settingsStore = useSettingsStore();
-const { cardSizeMode } = storeToRefs(settingsStore);
+const { cardSizeMode, cacheExpiryTime } = storeToRefs(settingsStore);
 
 // --- 环境变量 ---
 const NOTION_TOKEN = import.meta.env.VITE_APP_NOTION_TOKEN;
@@ -321,6 +322,18 @@ const fetchNotionData = async (tagsToFilter = [], startCursor = null, tagFilterM
     hasMore.value = false;
   }
 
+  // 尝试从缓存获取数据（仅在首次加载时，不适用于分页加载）
+  if (!startCursor && cacheExpiryTime.value > 0) {
+    const cachedData = navigationCache.getCache(tagsToFilter, tagFilterMode, cacheExpiryTime.value * 60 * 60 * 1000);
+    if (cachedData) {
+      navigationLinks.value = cachedData.data;
+      nextCursor.value = cachedData.metadata.nextCursor || null;
+      hasMore.value = cachedData.metadata.hasMore || false;
+      loading.value = false;
+      return;
+    }
+  }
+
   const body = {};
   if (tagsToFilter.length > 0) {
     const filterLogic = tagFilterMode === 'multiple' ? 'and' : 'or';
@@ -357,6 +370,15 @@ const fetchNotionData = async (tagsToFilter = [], startCursor = null, tagFilterM
     navigationLinks.value = startCursor ? [...navigationLinks.value, ...processed] : processed;
     nextCursor.value = data.next_cursor;
     hasMore.value = data.has_more;
+
+    // 缓存数据（仅在首次加载时，不适用于分页加载）
+    if (!startCursor && cacheExpiryTime.value > 0) {
+      const metadata = {
+        nextCursor: data.next_cursor,
+        hasMore: data.has_more
+      };
+      navigationCache.setCache(tagsToFilter, tagFilterMode, processed, metadata);
+    }
 
     if (navigationLinks.value.length === 0 && !hasMore.value) {
        if (tagsToFilter.length > 0) {
