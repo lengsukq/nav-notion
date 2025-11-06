@@ -2,6 +2,8 @@
  * 首页数据缓存管理器
  * 用于缓存按分类获取的导航数据，减少API调用
  */
+import { filter, sortBy, map, take, forEach } from 'lodash';
+
 class NavigationCache {
   constructor() {
     this.cachePrefix = 'nav_notion_cache_';
@@ -102,11 +104,8 @@ class NavigationCache {
    */
   clearAllCache() {
     const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-      if (key.startsWith(this.cachePrefix)) {
-        localStorage.removeItem(key);
-      }
-    });
+    const cacheKeys = filter(keys, key => key.startsWith(this.cachePrefix));
+    forEach(cacheKeys, key => localStorage.removeItem(key));
   }
 
   /**
@@ -118,17 +117,16 @@ class NavigationCache {
     const expiryTime = customExpiryTime || this.defaultExpiryTime;
     const now = Date.now();
     
-    keys.forEach(key => {
-      if (key.startsWith(this.cachePrefix)) {
-        try {
-          const cachedData = JSON.parse(localStorage.getItem(key));
-          if (now - cachedData.timestamp > expiryTime) {
-            localStorage.removeItem(key);
-          }
-        } catch (error) {
-          // 如果解析失败，直接删除该缓存
+    const cacheKeys = filter(keys, key => key.startsWith(this.cachePrefix));
+    forEach(cacheKeys, key => {
+      try {
+        const cachedData = JSON.parse(localStorage.getItem(key));
+        if (now - cachedData.timestamp > expiryTime) {
           localStorage.removeItem(key);
         }
+      } catch (error) {
+        // 如果解析失败，直接删除该缓存
+        localStorage.removeItem(key);
       }
     });
   }
@@ -137,31 +135,33 @@ class NavigationCache {
    * 清除最旧的缓存项（当存储空间不足时使用）
    */
   clearOldCache() {
-    const keys = Object.keys(localStorage).filter(key => key.startsWith(this.cachePrefix));
+    const keys = filter(Object.keys(localStorage), key => key.startsWith(this.cachePrefix));
     
     if (keys.length === 0) return;
     
-    // 按时间戳排序，找出最旧的缓存项
-    const cacheItems = keys.map(key => {
-      try {
-        const cachedData = JSON.parse(localStorage.getItem(key));
-        return {
-          key,
-          timestamp: cachedData.timestamp || 0
-        };
-      } catch (error) {
-        return {
-          key,
-          timestamp: 0
-        };
-      }
-    }).sort((a, b) => a.timestamp - b.timestamp);
+    // 使用 lodash 的 map 和 sortBy 简化数组操作
+    const cacheItems = sortBy(
+      map(keys, key => {
+        try {
+          const cachedData = JSON.parse(localStorage.getItem(key));
+          return {
+            key,
+            timestamp: cachedData.timestamp || 0
+          };
+        } catch (error) {
+          return {
+            key,
+            timestamp: 0
+          };
+        }
+      }),
+      'timestamp'
+    );
     
     // 删除最旧的25%缓存项
     const itemsToDelete = Math.ceil(cacheItems.length * 0.25);
-    for (let i = 0; i < itemsToDelete; i++) {
-      localStorage.removeItem(cacheItems[i].key);
-    }
+    const itemsToRemove = take(cacheItems, itemsToDelete);
+    forEach(itemsToRemove, item => localStorage.removeItem(item.key));
   }
 
   /**
@@ -169,13 +169,13 @@ class NavigationCache {
    * @returns {Object} 缓存统计信息
    */
   getCacheStats() {
-    const keys = Object.keys(localStorage).filter(key => key.startsWith(this.cachePrefix));
+    const keys = filter(Object.keys(localStorage), key => key.startsWith(this.cachePrefix));
     let totalSize = 0;
     let itemCount = 0;
     let oldestTimestamp = Date.now();
     let newestTimestamp = 0;
     
-    keys.forEach(key => {
+    forEach(keys, key => {
       try {
         const cachedData = JSON.parse(localStorage.getItem(key));
         const size = new Blob([localStorage.getItem(key)]).size;

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { debounce, clamp } from 'lodash';
 
 // 定义设置状态管理Store
 export const useSettingsStore = defineStore('settings', {
@@ -98,45 +99,36 @@ export const useSettingsStore = defineStore('settings', {
       this.saveSettings();
     },
     lightenColor(color, percent) {
-      // 实现颜色变浅逻辑
-      let R = parseInt(color.substring(1,3),16);
-      let G = parseInt(color.substring(3,5),16);
-      let B = parseInt(color.substring(5,7),16);
+      // 使用 lodash 的 clamp 简化颜色变浅逻辑
+      const r = clamp(parseInt(color.substring(1,3), 16) * (1 + percent), 0, 255);
+      const g = clamp(parseInt(color.substring(3,5), 16) * (1 + percent), 0, 255);
+      const b = clamp(parseInt(color.substring(5,7), 16) * (1 + percent), 0, 255);
 
-      R = Math.min(255, Math.round(R * (1 + percent)));
-      G = Math.min(255, Math.round(G * (1 + percent)));
-      B = Math.min(255, Math.round(B * (1 + percent)));
-
-      const RR = ((R.toString(16).length === 1) ? '0' + R.toString(16) : R.toString(16));
-      const GG = ((G.toString(16).length === 1) ? '0' + G.toString(16) : G.toString(16));
-      const BB = ((B.toString(16).length === 1) ? '0' + B.toString(16) : B.toString(16));
-
-      return '#' + RR + GG + BB;
+      // 使用 padStart 确保两位数
+      const toHex = (value) => Math.round(value).toString(16).padStart(2, '0');
+      
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     },
+    // 将十六进制颜色转换为RGB对象
     hexToRgb(hex) {
-      // 将十六进制颜色转换为RGB格式
+      // 使用 lodash 的 clamp 确保值在有效范围内
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
       return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
+        r: clamp(parseInt(result[1], 16), 0, 255),
+        g: clamp(parseInt(result[2], 16), 0, 255),
+        b: clamp(parseInt(result[3], 16), 0, 255)
       } : null;
     },
     darkenColor(color, percent) {
-      // 实现颜色变深逻辑
-      let R = parseInt(color.substring(1,3),16);
-      let G = parseInt(color.substring(3,5),16);
-      let B = parseInt(color.substring(5,7),16);
+      // 使用 lodash 的 clamp 简化颜色变深逻辑
+      const r = clamp(parseInt(color.substring(1,3), 16) * (1 - percent), 0, 255);
+      const g = clamp(parseInt(color.substring(3,5), 16) * (1 - percent), 0, 255);
+      const b = clamp(parseInt(color.substring(5,7), 16) * (1 - percent), 0, 255);
 
-      R = Math.max(0, Math.round(R * (1 - percent)));
-      G = Math.max(0, Math.round(G * (1 - percent)));
-      B = Math.max(0, Math.round(B * (1 - percent)));
-
-      const RR = ((R.toString(16).length === 1) ? '0' + R.toString(16) : R.toString(16));
-      const GG = ((G.toString(16).length === 1) ? '0' + G.toString(16) : G.toString(16));
-      const BB = ((B.toString(16).length === 1) ? '0' + B.toString(16) : B.toString(16));
-
-      return '#' + RR + GG + BB;
+      // 使用 padStart 确保两位数
+      const toHex = (value) => Math.round(value).toString(16).padStart(2, '0');
+      
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
   },
   created() {

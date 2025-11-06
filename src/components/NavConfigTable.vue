@@ -53,6 +53,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { forEach, filter } from 'lodash';
 // Import toast from vue-sonner
 import { toast } from 'vue-sonner'; // <-- 导入 toast 函数
 
@@ -69,21 +70,19 @@ const processNavConfig = (configData) => {
   tableData.value = []; // 清空之前的数据
 
   if (navConfig.value && navConfig.value.length > 0) {
-    navConfig.value.forEach(group => {
+    forEach(navConfig.value, group => {
       const tag = group.name;
       if (group.children && group.children.length > 0) {
-        group.children.forEach(item => {
-          // 只保留type为text或icon的项
-          if (['text', 'icon'].includes(item.type)) {
-            tableData.value.push({
-              id: item.id,
-              name: item.name,
-              url: item.url || '',
-              description: item.config?.title || '',
-              tag: tag,
-              icon: item.src || ''
-            });
-          }
+        const validItems = filter(group.children, item => ['text', 'icon'].includes(item.type));
+        forEach(validItems, item => {
+          tableData.value.push({
+            id: item.id,
+            name: item.name,
+            url: item.url || '',
+            description: item.config?.title || '',
+            tag: tag,
+            icon: item.src || ''
+          });
         });
       }
     });
