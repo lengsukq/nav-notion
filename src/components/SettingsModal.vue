@@ -145,7 +145,7 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400">点击色块应用到{{ applyToSecondary ? '次主题色' : '主题色' }}</p>
                 <button 
                   @click="applyToSecondary = !applyToSecondary"
-                  :class="[applyToSecondary ? 'text-secondary bg-secondary/10 border-secondary/30' : 'text-primary bg-primary/10 border-primary/30', 'px-2 py-1 text-xs rounded border transition-all duration-200']"
+                  :class="[applyToSecondary ? 'bg-secondary/10 border-secondary/30' : 'bg-primary/10 border-primary/30', 'px-2 py-1 text-xs rounded border transition-all duration-200']"
                 >
                   {{ applyToSecondary ? '切换到主色' : '切换到次色' }}
                 </button>

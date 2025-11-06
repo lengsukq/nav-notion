@@ -82,8 +82,14 @@ const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
 const handleTagClick = (tagName) => {
   let newSelectedTags;
   if (settingsStore.tagFilterMode === 'single') {
-    newSelectedTags = selectedTags.value.includes(tagName) ? [] : [tagName];
+    // 单选模式：如果点击已选中的标签，不做任何改变，确保至少有一个标签被选中
+    if (selectedTags.value.includes(tagName)) {
+      return; // 不做任何改变，保持当前选中状态
+    }
+    // 否则切换到新标签
+    newSelectedTags = [tagName];
   } else {
+    // 多选模式：正常切换标签选中状态
     newSelectedTags = selectedTags.value.includes(tagName)
       ? selectedTags.value.filter(tag => tag !== tagName)
       : [...selectedTags.value, tagName];
