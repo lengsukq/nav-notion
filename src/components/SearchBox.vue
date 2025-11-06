@@ -89,7 +89,7 @@ const searchEngines = {
   yahoo: { name: 'Yahoo', shortName: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
   duck: { name: 'Duck', shortName: 'Duck', url: 'https://duckduckgo.com/?q=' },
   baidu: { name: '百度', shortName: '百度', url: 'https://www.baidu.com/s?wd=' },
-  mieta: { name: '密塔搜索', shortName: '密塔', url: 'https://metaso.cn/?q=' },
+  mieta: { name: '密塔', shortName: '密塔', url: 'https://metaso.cn/?q=' },
   notion: { name: 'Notion', shortName: 'Notion', url: 'notion' }
 };
 
