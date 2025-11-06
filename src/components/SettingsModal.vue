@@ -284,6 +284,7 @@ import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import { watch, ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue-sonner';
+import { debounce } from 'lodash';
 
 // 获取设置store
 const settingsStore = useSettingsStore();
@@ -393,24 +394,22 @@ watch(isSettingsOpen, (newValue) => {
   }
 });
 
-// 监听设置变化，自动保存并显示提示
-watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode, cacheExpiryTime], () => {
-  // 自动保存设置
+// 创建防抖保存函数
+const debouncedSaveSettings = debounce(() => {
   settingsStore.saveSettings();
-  console.log('cardSizeMode', cardSizeMode.value);
-  console.log('themeColor', themeColor.value);
-  console.log('secondaryColor', secondaryColor.value);
-  console.log('cacheExpiryTime', cacheExpiryTime.value);
-  
-  // 调试日志，检查按钮选中状态
-  console.log('Button classes - small:', cardSizeMode.value === 'small' ? 'button-primary selected' : 'button-secondary');
-  console.log('Button classes - large:', cardSizeMode.value === 'large' ? 'button-primary selected' : 'button-secondary');
   
   // 显示保存成功提示
   toast.success('设置已自动保存', {
     description: '您的偏好设置已更新',
     duration: 2000
   });
+}, 500);
+
+// 监听设置变化，自动保存并显示提示
+watch([cardSizeMode, themeColor, secondaryColor, tagFilterMode, cacheExpiryTime], () => {
+  
+  // 使用防抖函数保存设置
+  debouncedSaveSettings();
 }, { deep: true });
 </script>
 
