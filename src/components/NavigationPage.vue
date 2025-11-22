@@ -197,6 +197,15 @@ const processNotionResponse = (data) => {
       const icon = item.icon?.type === 'external' ? item.icon.external.url : (item.icon?.type === 'file' ? item.icon.file.url : null);
       const tags = properties['tag']?.multi_select?.map(tag => tag.name) || [];
       return { name, url, description, icon, tags };
+    })
+    // 按名称首字母A-Z排序
+    .sort((a, b) => {
+      // 转换为小写进行比较，支持中英文排序
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      
+      // 使用localeCompare进行国际化排序，支持中文
+      return nameA.localeCompare(nameB, 'zh-CN', { sensitivity: 'base' });
     });
 };
 
