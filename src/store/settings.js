@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { debounce, clamp } from 'lodash';
+import navigationCache from '../utils/cache';
 
 // 定义设置状态管理Store
 export const useSettingsStore = defineStore('settings', {
@@ -51,6 +52,11 @@ export const useSettingsStore = defineStore('settings', {
     setCacheExpiryTime(hours) {
       this.cacheExpiryTime = hours;
       this.saveSettings();
+      
+      // 如果设置为不缓存（0小时），立即清除所有已缓存的数据
+      if (hours === 0) {
+        navigationCache.clearAllCache();
+      }
     },
     toggleSettings() {
       console.log('toggleSettings called, current state:', this.isSettingsOpen);
@@ -77,8 +83,11 @@ export const useSettingsStore = defineStore('settings', {
       this.themeColor = '#3B82F6';
       this.secondaryColor = '#d1d1d1';
       this.tagFilterMode = 'single';
-      // 重置缓存设置为默认值
+      
+      // 更新缓存设置时不通过 setCacheExpiryTime 方法，避免意外清除缓存
+      const previousCacheExpiryTime = this.cacheExpiryTime;
       this.cacheExpiryTime = 24;
+      
       // 更新CSS变量
       document.documentElement.style.setProperty('--primary-color', this.themeColor);
       const primaryLightColor = this.lightenColor(this.themeColor, 0.2);
