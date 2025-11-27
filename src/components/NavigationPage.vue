@@ -303,60 +303,31 @@ const applyBackgroundImage = (imageUrl) => {
   }
   
   if (imageUrl && imageUrl.trim() !== '') {
-    // 创建图片对象测试URL是否有效
-    const testImage = new Image();
-    testImage.onload = () => {
-      // 创建新的背景图片层
-      const backgroundLayer = document.createElement('div');
-      backgroundLayer.id = 'dynamic-background-layer';
-      backgroundLayer.className = 'dynamic-bg-layer';
-      
-      // 设置样式
-      Object.assign(backgroundLayer.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100vw',
-        height: '100vh',
-        backgroundImage: `url("${imageUrl}")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-        zIndex: '-1000',
-        pointerEvents: 'none',
-        opacity: '0.7'
-      });
-      
-      // 插入到页面
-      document.body.appendChild(backgroundLayer);
-      document.body.classList.add('has-dynamic-bg');
-    };
+    // 直接创建新的背景图片层，不再检测图片有效性
+    const backgroundLayer = document.createElement('div');
+    backgroundLayer.id = 'dynamic-background-layer';
+    backgroundLayer.className = 'dynamic-bg-layer';
     
-    testImage.onerror = () => {
-      // 创建备用的渐变背景
-      const fallbackLayer = document.createElement('div');
-      fallbackLayer.id = 'dynamic-background-layer';
-      fallbackLayer.className = 'dynamic-bg-fallback';
-      
-      Object.assign(fallbackLayer.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100vw',
-        height: '100vh',
-        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(236, 72, 153, 0.1) 100%)',
-        zIndex: '-1000',
-        pointerEvents: 'none',
-        opacity: '0.5'
-      });
-      
-      document.body.appendChild(fallbackLayer);
-      document.body.classList.add('has-dynamic-bg');
-    };
+    // 设置样式
+    Object.assign(backgroundLayer.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100vw',
+      height: '100vh',
+      backgroundImage: `url("${imageUrl}")`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
+      zIndex: '-1000',
+      pointerEvents: 'none',
+      opacity: '0.7'
+    });
     
-    // 开始加载图片
-    testImage.src = imageUrl;
+    // 插入到页面
+    document.body.appendChild(backgroundLayer);
+    document.body.classList.add('has-dynamic-bg');
   }
 };
 
