@@ -1,28 +1,24 @@
 <template>
-  <!-- HeroUI 页面根容器 - 个人导航核心模块 -->
+  <!-- HeroUI 页面根容器 -->
   <div class="min-h-screen bg-transparent py-6 px-4 sm:px-6 lg:px-8 relative">
-    <!-- HeroUI 装饰性几何元素 -->
+    <!-- 装饰性几何元素 (保持原样) -->
     <div class="fixed top-20 left-10 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-xl pointer-events-none animate-pulse"></div>
     <div class="fixed bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-indigo-400/20 rounded-full blur-xl pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
     <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl pointer-events-none animate-pulse" style="animation-delay: 4s;"></div>
     
     <div class="w-full max-w-7xl mx-auto space-y-8 relative z-0">
-
-      <!-- HeroUI 页面头部：个人导航中心 -->
       <NavigationHeader 
         :database-info="databaseInfo" 
         @search="handleSearch" 
         @toggle-settings="settingsStore.toggleSettings()"
       />
 
-      <!-- HeroUI 标签筛选区域 -->
       <NavigationTags 
         :available-tags="availableTags" 
         :selected-tags="selectedTags" 
         @tag-click="handleTagClick"
       />
 
-      <!-- HeroUI 导航卡片列表 - 个人导航核心功能 -->
       <NavigationCards 
         :loading="loading" 
         :error="error" 
@@ -33,7 +29,6 @@
         @retry="handleRetry"
       />
 
-      <!-- 设置模态框 -->
       <SettingsModal />
     </div>
   </div>
@@ -49,441 +44,362 @@ import { storeToRefs } from 'pinia';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import navigationCache from '../utils/cache';
 
-// --- 响应式状态定义 ---
-const navigationLinks = ref([]); // 存储所有导航链接
-const loading = ref(true);        // 初始数据加载状态
-const error = ref(null);          // API请求错误信息
+// --- 配置与环境常量 ---
+const CONFIG = {
+  TOKEN: import.meta.env.VITE_APP_NOTION_TOKEN,
+  VERSION: import.meta.env.VITE_APP_NOTION_VERSION || '2022-06-28',
+  DB_ID: import.meta.env.VITE_APP_NOTION_DATABASE_ID,
+  PROXY: import.meta.env.VITE_APP_PROXY_URL,
+};
+
+// --- 响应式状态 ---
+const navigationLinks = ref([]);
+const loading = ref(true);
+const error = ref(null);
 const databaseInfo = ref({ title: '导航中心', description: '正在从 Notion 加载...' });
-const availableTags = ref([]);    // 所有可用标签
-const selectedTags = ref([]);     // 用户选择的标签
-const searchQuery = ref('');      // 搜索查询内容
+const availableTags = ref([]);
+const selectedTags = ref([]);
+const searchQuery = ref('');
 
 // 分页状态
-const nextCursor = ref(null);     // 用于下一页请求的游标
-const hasMore = ref(false);       // 是否还有更多数据
-const isFetchingMore = ref(false); // 是否正在加载更多数据
+const pagination = ref({
+  nextCursor: null,
+  hasMore: false,
+  isFetchingMore: false
+});
 
-// 从 Pinia store 获取状态
 const settingsStore = useSettingsStore();
 const { cardSizeMode, cacheExpiryTime } = storeToRefs(settingsStore);
 
-// --- 环境变量 ---
-const NOTION_TOKEN = import.meta.env.VITE_APP_NOTION_TOKEN;
-const NOTION_VERSION = import.meta.env.VITE_APP_NOTION_VERSION || '2022-06-28';
-const NOTION_DATABASE_ID = import.meta.env.VITE_APP_NOTION_DATABASE_ID;
-const PROXY_URL = import.meta.env.VITE_APP_PROXY_URL;
-
-// --- 计算属性 ---
-// 注意：processedLinks 和 cardContainerClasses 计算属性已移至 NavigationCards 组件中
-
-// --- 方法 ---
-
-// 处理标签点击事件
-const handleTagClick = (tagName) => {
-  let newSelectedTags;
-  if (settingsStore.tagFilterMode === 'single') {
-    // 单选模式：如果点击已选中的标签，不做任何改变，确保至少有一个标签被选中
-    if (selectedTags.value.includes(tagName)) {
-      return; // 不做任何改变，保持当前选中状态
+// ==========================================
+// 1. API Client Module (Internal Service)
+// 遵循 Clean Interface & DRY 原则，统一请求逻辑
+// ==========================================
+const createNotionClient = () => {
+  // 校验配置
+  const validateConfig = () => {
+    if (!CONFIG.TOKEN || !CONFIG.DB_ID || !CONFIG.PROXY) {
+      throw new Error('配置不完整，请检查 .env 文件中的 Notion API 相关设置。');
     }
-    // 否则切换到新标签
-    newSelectedTags = [tagName];
-  } else {
-    // 多选模式：正常切换标签选中状态
-    newSelectedTags = selectedTags.value.includes(tagName)
-      ? selectedTags.value.filter(tag => tag !== tagName)
-      : [...selectedTags.value, tagName];
-  }
-  selectedTags.value = newSelectedTags;
-  // 标签改变后，重置分页并从头获取数据
-  fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
-};
+  };
 
-// 处理搜索框输入
-const handleSearch = (query) => {
-  searchQuery.value = query;
-  
-  // 执行搜索时，取消所有已选中的标签
-  if (query.trim()) {
-    selectedTags.value = [];
-    searchNotionDatabase(query.trim());
-  } else {
-    // 如果搜索查询为空，重新加载所有数据
-    fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
-  }
-};
+  const getHeaders = () => ({
+    'Authorization': `Bearer ${CONFIG.TOKEN}`,
+    'Notion-Version': CONFIG.VERSION,
+    'Content-Type': 'application/json',
+  });
 
-// 搜索Notion数据库
-const searchNotionDatabase = async (searchTerm) => {
-  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) {
-    error.value = '配置不完整，请检查 .env 文件中的 Notion API 相关设置。';
-    loading.value = false;
-    return;
-  }
-
-  loading.value = true;
-  error.value = null;
-  navigationLinks.value = [];
-
-  try {
-    const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${NOTION_TOKEN}`,
-        'Notion-Version': NOTION_VERSION,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        filter: {
-          or: [
-            {
-              property: 'name',
-              title: {
-                contains: searchTerm
-              }
-            },
-            {
-              property: 'description',
-              rich_text: {
-                contains: searchTerm
-              }
-            },
-            {
-              property: 'tag',
-              multi_select: {
-                contains: searchTerm
-              }
-            }
-          ]
-        }
-      }),
+  // 通用请求方法，封装 fetch 和 错误处理
+  const request = async (endpoint, method = 'GET', body = null) => {
+    validateConfig();
+    const url = `${CONFIG.PROXY}https://api.notion.com/v1/${endpoint}`;
+    
+    const response = await fetch(url, {
+      method,
+      headers: getHeaders(),
+      body: body ? JSON.stringify(body) : null
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP 错误! 状态: ${response.status}`);
     }
 
-    const data = await response.json();
-    const processed = processNotionResponse(data);
-    navigationLinks.value = processed;
+    return response.json();
+  };
 
-    if (navigationLinks.value.length === 0) {
-      error.value = `未找到包含 "${searchTerm}" 的链接。`;
-    }
-
-  } catch (err) {
-    error.value = `搜索失败: ${err.message}`;
-  } finally {
-    loading.value = false;
-  }
+  return {
+    queryDatabase: (filters = null, cursor = null) => {
+      const body = {};
+      if (filters) body.filter = filters;
+      if (cursor) body.start_cursor = cursor;
+      return request(`databases/${CONFIG.DB_ID}/query`, 'POST', body);
+    },
+    retrieveDatabase: () => request(`databases/${CONFIG.DB_ID}`, 'GET')
+  };
 };
 
-// 处理重试事件
-const handleRetry = () => {
-  fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
-};
+const notionApi = createNotionClient();
 
-// 解析 Notion API 响应
-const processNotionResponse = (data) => {
-  if (!data || !Array.isArray(data.results)) return [];
-  return data.results
+// ==========================================
+// 2. Helper Functions (Pure Logic)
+// 内存优化：纯函数，不依赖外部状态，易于垃圾回收
+// ==========================================
+
+// 解析 Notion 响应数据
+const parseNotionResults = (results) => {
+  if (!Array.isArray(results)) return [];
+  
+  return results
     .filter(item => item.object === 'page' && item.properties)
     .map(item => {
       const { properties } = item;
-      const name = properties['name']?.title?.[0]?.plain_text || '未命名';
-      const url = properties['url']?.rich_text?.[0]?.text?.link?.url || properties['url']?.rich_text?.[0]?.plain_text || '#';
-      const description = properties['description']?.rich_text?.[0]?.plain_text || '无描述';
-      const icon = item.icon?.type === 'external' ? item.icon.external.url : (item.icon?.type === 'file' ? item.icon.file.url : null);
-      const tags = properties['tag']?.multi_select?.map(tag => tag.name) || [];
-      return { name, url, description, icon, tags };
-    })
-    // 按名称首字母A-Z排序
-    .sort((a, b) => {
-      // 转换为小写进行比较，支持中英文排序
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      
-      // 使用localeCompare进行国际化排序，支持中文
-      return nameA.localeCompare(nameB, 'zh-CN', { sensitivity: 'base' });
-    });
-};
-
-// 获取 Notion 数据库元数据（标题、描述、标签）
-const fetchDatabaseMetadata = async () => {
-  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) return;
-  
-  // 尝试从缓存获取元数据
-  const cachedMetadata = navigationCache.getMetadataCache(cacheExpiryTime.value * 60 * 60 * 1000);
-  if (cachedMetadata) {
-    const { title, description, availableTags: cachedTags, backgroundImageUrl } = cachedMetadata.data;
-    
-    // 应用缓存的元数据
-    databaseInfo.value.title = title;
-    databaseInfo.value.description = description;
-    availableTags.value = cachedTags;
-    
-    // 设置默认标签为主页，如果有的话
-    const homeTag = cachedTags.find(tag => tag.name === '主页');
-    if (homeTag) {
-      selectedTags.value = ['主页'];
-    }
-    
-    // 应用缓存的背景图片
-    if (backgroundImageUrl) {
-      applyBackgroundImage(backgroundImageUrl);
-    }
-    
-    // 触发数据获取
-    setTimeout(() => {
-      fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
-    }, 100);
-    return;
-  }
-
-  try {
-    const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': NOTION_VERSION },
-    });
-    if (!response.ok) throw new Error(`HTTP 错误! 状态: ${response.status}`);
-    const data = await response.json();
-    databaseInfo.value.title = data.title?.[0]?.plain_text || '导航中心';
-    databaseInfo.value.description = data.description?.[0]?.plain_text || '一个从 Notion 数据库驱动的导航网站';
-
-    // 获取背景图片并应用到页面
-    const backgroundImageUrl = data.cover?.file?.url || data.cover?.external?.url || null;
-    if (backgroundImageUrl) {
-      applyBackgroundImage(backgroundImageUrl);
-    }
-
-    let cachedTags = [];
-    if (data.properties?.tag?.type === 'multi_select') {
-      cachedTags = data.properties.tag.multi_select.options.map(option => ({
-        name: option.name,
-        color: option.color,
-      }));
-      availableTags.value = cachedTags;
-      
-      // 设置默认标签为主页，如果有的话
-      const homeTag = cachedTags.find(tag => tag.name === '主页');
-      if (homeTag) {
-        selectedTags.value = ['主页'];
-      }
-    }
-    
-    // 缓存元数据（仅在缓存时间大于0时）
-    if (cacheExpiryTime.value > 0) {
-      const metadataToCache = {
-        title: databaseInfo.value.title,
-        description: databaseInfo.value.description,
-        availableTags: cachedTags,
-        backgroundImageUrl: backgroundImageUrl
+      return {
+        name: properties['name']?.title?.[0]?.plain_text || '未命名',
+        url: properties['url']?.rich_text?.[0]?.text?.link?.url || 
+             properties['url']?.rich_text?.[0]?.plain_text || '#',
+        description: properties['description']?.rich_text?.[0]?.plain_text || '无描述',
+        icon: item.icon?.type === 'external' ? item.icon.external.url : 
+              (item.icon?.type === 'file' ? item.icon.file.url : null),
+        tags: properties['tag']?.multi_select?.map(tag => tag.name) || []
       };
-      navigationCache.setMetadataCache(metadataToCache);
-    }
-    
-    // 无论是否找到主页标签，都统一触发一次数据获取
-    // 使用setTimeout确保在标签设置完成后再获取数据
-    setTimeout(() => {
-      fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
-    }, 100);
-  } catch (err) {
-    // 元数据获取失败不应阻塞主流程，可以保留默认值
-  }
+    })
+    .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase(), 'zh-CN', { sensitivity: 'base' }));
 };
 
-// 应用背景图片到页面
-const applyBackgroundImage = (imageUrl) => {
-  // 移除旧的背景图片层
-  const existingLayer = document.getElementById('dynamic-background-layer');
-  if (existingLayer) {
-    existingLayer.remove();
-    document.body.classList.remove('has-dynamic-bg');
+// 构建查询过滤器
+const buildFilterQuery = (tags, mode, query) => {
+  // 搜索模式优先
+  if (query) {
+    return {
+      or: [
+        { property: 'name', title: { contains: query } },
+        { property: 'description', rich_text: { contains: query } },
+        { property: 'tag', multi_select: { contains: query } }
+      ]
+    };
   }
   
-  if (imageUrl && imageUrl.trim() !== '') {
-    // 直接创建新的背景图片层，不再检测图片有效性
-    const backgroundLayer = document.createElement('div');
-    backgroundLayer.id = 'dynamic-background-layer';
-    backgroundLayer.className = 'dynamic-bg-layer';
-    
-    // 设置样式
-    Object.assign(backgroundLayer.style, {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      width: '100vw',
-      height: '100vh',
-      backgroundImage: `url("${imageUrl}")`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed',
-      zIndex: '-1000',
-      pointerEvents: 'none',
-      opacity: '0.7'
-    });
-    
-    // 插入到页面
-    document.body.appendChild(backgroundLayer);
-    document.body.classList.add('has-dynamic-bg');
+  // 标签筛选模式
+  if (tags.length > 0) {
+    const filterLogic = mode === 'multiple' ? 'and' : 'or';
+    return {
+      [filterLogic]: tags.map(tagName => ({
+        property: 'tag',
+        multi_select: { contains: tagName },
+      }))
+    };
   }
+  
+  return null; // 无过滤条件
 };
 
-// 从 Notion 获取导航数据，支持过滤和分页
-const fetchNotionData = async (tagsToFilter = [], startCursor = null, tagFilterMode = settingsStore.tagFilterMode) => {
-  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) {
-    error.value = '配置不完整，请检查 .env 文件中的 Notion API 相关设置。';
-    loading.value = false;
-    return;
-  }
+// ==========================================
+// 3. Composable Logic (State Management)
+// ==========================================
 
-  // 设置加载状态
-  if (startCursor) {
-    isFetchingMore.value = true;
+// 背景图管理逻辑 (DOM 操作隔离)
+const useDynamicBackground = () => {
+  const setBackground = (imageUrl) => {
+    const existingLayer = document.getElementById('dynamic-background-layer');
+    if (existingLayer) {
+      existingLayer.remove();
+      document.body.classList.remove('has-dynamic-bg');
+    }
+    
+    if (imageUrl?.trim()) {
+      const div = document.createElement('div');
+      div.id = 'dynamic-background-layer';
+      div.className = 'dynamic-bg-layer fixed inset-0 w-screen h-screen -z-50 opacity-70 pointer-events-none bg-cover bg-center bg-no-repeat bg-fixed';
+      div.style.backgroundImage = `url("${imageUrl}")`;
+      document.body.appendChild(div);
+      document.body.classList.add('has-dynamic-bg');
+    }
+  };
+  return { setBackground };
+};
+
+const backgroundManager = useDynamicBackground();
+
+// ==========================================
+// 4. Main Business Logic
+// ==========================================
+
+// 核心数据加载方法 - 降低复杂度，拆分流程
+const fetchContent = async (options = {}) => {
+  const { 
+    isLoadMore = false, 
+    tags = selectedTags.value, 
+    search = searchQuery.value 
+  } = options;
+
+  // 1. 状态守卫与初始化
+  if (isLoadMore) {
+    pagination.value.isFetchingMore = true;
   } else {
     loading.value = true;
     error.value = null;
-    navigationLinks.value = [];
-    nextCursor.value = null;
-    hasMore.value = false;
+    if (!search) navigationLinks.value = []; // 搜索时不立即清空以免闪烁
   }
 
-  // 尝试从缓存获取数据（仅在首次加载时，不适用于分页加载）
-  if (!startCursor && cacheExpiryTime.value > 0) {
-    const cachedData = navigationCache.getCache(tagsToFilter, tagFilterMode, cacheExpiryTime.value * 60 * 60 * 1000);
-    if (cachedData) {
-      navigationLinks.value = cachedData.data;
-      nextCursor.value = cachedData.metadata.nextCursor || null;
-      hasMore.value = cachedData.metadata.hasMore || false;
+  // 2. 缓存检查 (仅在非加载更多且无搜索且缓存有效时)
+  const shouldUseCache = !isLoadMore && !search && cacheExpiryTime.value > 0;
+  if (shouldUseCache) {
+    const cached = navigationCache.getCache(tags, settingsStore.tagFilterMode, cacheExpiryTime.value * 3600000);
+    if (cached) {
+      applyDataToState(cached.data, cached.metadata, false);
       loading.value = false;
       return;
     }
   }
 
-  const body = {};
-  if (tagsToFilter.length > 0) {
-    const filterLogic = tagFilterMode === 'multiple' ? 'and' : 'or';
-    body.filter = {
-      [filterLogic]: tagsToFilter.map(tagName => ({
-        property: 'tag',
-        multi_select: { contains: tagName },
-      })),
-    };
-  }
-  if (startCursor) {
-    body.start_cursor = startCursor;
-  }
-
   try {
-    const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${NOTION_TOKEN}`,
-        'Notion-Version': NOTION_VERSION,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+    // 3. 准备参数
+    const cursor = isLoadMore ? pagination.value.nextCursor : null;
+    const filter = buildFilterQuery(tags, settingsStore.tagFilterMode, search);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP 错误! 状态: ${response.status}`);
-    }
+    // 4. API 调用
+    const data = await notionApi.queryDatabase(filter, cursor);
+    const processedLinks = parseNotionResults(data.results);
+    const metadata = { nextCursor: data.next_cursor, hasMore: data.has_more };
 
-    const data = await response.json();
-    const processed = processNotionResponse(data);
+    // 5. 更新状态与缓存
+    applyDataToState(processedLinks, metadata, isLoadMore);
     
-    navigationLinks.value = startCursor ? [...navigationLinks.value, ...processed] : processed;
-    nextCursor.value = data.next_cursor;
-    hasMore.value = data.has_more;
-
-    // 缓存数据（仅在首次加载时，不适用于分页加载）
-    if (!startCursor && cacheExpiryTime.value > 0) {
-      const metadata = {
-        nextCursor: data.next_cursor,
-        hasMore: data.has_more
-      };
-      navigationCache.setCache(tagsToFilter, tagFilterMode, processed, metadata);
+    if (shouldUseCache) {
+      navigationCache.setCache(tags, settingsStore.tagFilterMode, processedLinks, metadata);
     }
 
-    if (navigationLinks.value.length === 0 && !hasMore.value) {
-       if (tagsToFilter.length > 0) {
-         error.value = `未找到符合所选标签的链接。`;
-       } else if (!searchQuery.value) {
-         error.value = `数据库为空或未能加载任何链接。`;
-       }
+    // 6. 空数据处理
+    if (navigationLinks.value.length === 0 && !data.has_more) {
+      error.value = search 
+        ? `未找到包含 "${search}" 的链接。` 
+        : (tags.length > 0 ? '未找到符合所选标签的链接。' : '数据库为空。');
     }
 
   } catch (err) {
-    error.value = `数据加载失败: ${err.message}`;
+    error.value = `获取数据失败: ${err.message}`;
   } finally {
     loading.value = false;
-    isFetchingMore.value = false;
+    pagination.value.isFetchingMore = false;
   }
 };
 
-// --- 无限滚动 ---
+// 辅助：统一应用数据到状态
+const applyDataToState = (links, metadata, append) => {
+  if (append) {
+    navigationLinks.value = [...navigationLinks.value, ...links];
+  } else {
+    navigationLinks.value = links;
+  }
+  pagination.value.nextCursor = metadata.nextCursor;
+  pagination.value.hasMore = metadata.hasMore;
+};
+
+// 初始化元数据 (标题、描述、背景、标签)
+const initMetadata = async () => {
+  // 尝试缓存
+  const cachedMeta = navigationCache.getMetadataCache(cacheExpiryTime.value * 3600000);
+  if (cachedMeta) {
+    const { title, description, availableTags: tags, backgroundImageUrl } = cachedMeta.data;
+    applyMetadata({ title, description, tags, backgroundImageUrl });
+    
+    // 如果有缓存，直接用缓存的标签触发数据加载
+    const hasHome = tags.find(t => t.name === '主页');
+    if (hasHome) selectedTags.value = ['主页'];
+    fetchContent(); 
+    return;
+  }
+
+  try {
+    const data = await notionApi.retrieveDatabase();
+    
+    const meta = {
+      title: data.title?.[0]?.plain_text || '导航中心',
+      description: data.description?.[0]?.plain_text || 'Notion 驱动的导航站',
+      tags: data.properties?.tag?.multi_select?.options.map(o => ({ name: o.name, color: o.color })) || [],
+      backgroundImageUrl: data.cover?.file?.url || data.cover?.external?.url || null
+    };
+
+    applyMetadata(meta);
+    
+    if (cacheExpiryTime.value > 0) {
+      navigationCache.setMetadataCache({ 
+        title: meta.title, 
+        description: meta.description, 
+        availableTags: meta.tags, 
+        backgroundImageUrl: meta.backgroundImageUrl 
+      });
+    }
+
+    // 设置默认标签并加载
+    const hasHome = meta.tags.find(t => t.name === '主页');
+    if (hasHome) selectedTags.value = ['主页'];
+    fetchContent();
+
+  } catch (err) {
+    console.warn('元数据加载失败，使用默认值:', err);
+    // 即使元数据失败，也尝试加载一次内容
+    fetchContent();
+  }
+};
+
+const applyMetadata = ({ title, description, tags, backgroundImageUrl }) => {
+  databaseInfo.value = { title, description };
+  availableTags.value = tags;
+  backgroundManager.setBackground(backgroundImageUrl);
+};
+
+// ==========================================
+// 5. Event Handlers
+// ==========================================
+
+const handleTagClick = (tagName) => {
+  // 优化：简化 If-Else 逻辑，使用更清晰的流控制
+  if (settingsStore.tagFilterMode === 'single') {
+    if (selectedTags.value.includes(tagName)) return; // 避免重复点击
+    selectedTags.value = [tagName];
+  } else {
+    const index = selectedTags.value.indexOf(tagName);
+    if (index > -1) {
+      selectedTags.value = selectedTags.value.filter(t => t !== tagName);
+    } else {
+      selectedTags.value = [...selectedTags.value, tagName];
+    }
+  }
+  
+  // 重置搜索并加载
+  searchQuery.value = '';
+  fetchContent({ isLoadMore: false, search: '' });
+};
+
+const handleSearch = (query) => {
+  searchQuery.value = query;
+  if (query.trim()) {
+    selectedTags.value = []; // 搜索时清空标签
+    fetchContent({ isLoadMore: false, search: query.trim() });
+  } else {
+    fetchContent({ isLoadMore: false });
+  }
+};
+
+const handleRetry = () => {
+  fetchContent({ isLoadMore: false });
+};
+
 const handleScroll = () => {
-  if (
-    !isFetchingMore.value &&
-    hasMore.value &&
-    window.innerHeight + window.scrollY >= document.body.offsetHeight - 200
-  ) {
-    fetchNotionData(selectedTags.value, nextCursor.value, settingsStore.tagFilterMode);
+  const { isFetchingMore, hasMore } = pagination.value;
+  if (isFetchingMore || !hasMore) return;
+
+  const threshold = document.body.offsetHeight - 200;
+  if (window.innerHeight + window.scrollY >= threshold) {
+    fetchContent({ isLoadMore: true });
   }
 };
 
+// ==========================================
+// 6. Lifecycle & Watchers
+// ==========================================
 
+watch(() => databaseInfo.value.title, (newTitle) => {
+  if (newTitle) document.title = newTitle;
+}, { immediate: true });
 
-// --- 生命周期钩子 ---
+watch(() => settingsStore.tagFilterMode, () => {
+  selectedTags.value = [];
+  fetchContent({ isLoadMore: false });
+});
+
 onMounted(() => {
-  fetchDatabaseMetadata(); // 这里会自动触发数据获取，所以不需要重复调用
+  initMetadata();
   window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
-
-// --- 侦听器 ---
-
-// 监听数据库标题变化，同步更新浏览器标签页标题
-watch(
-  () => databaseInfo.value.title,
-  (newTitle) => {
-    document.title = newTitle || '导航中心';
-  },
-  { immediate: true }
-);
-
-// 监听标签筛选模式变化，重置选择并重新加载数据
-watch(
-  () => settingsStore.tagFilterMode,
-  () => {
-    selectedTags.value = [];
-    fetchNotionData([], null, settingsStore.tagFilterMode);
-  }
-);
 </script>
 
 <style scoped>
-/* 组件特定的样式 */
-
-/* HeroUI 导航头部样式 */
-.navigation-header {
-  position: relative;
-  z-index: 20;
-}
-
-/* HeroUI 标签区域样式 */
-.navigation-tags {
-  /* 标签区域的特定样式可以在这里添加 */
-}
-
-/* HeroUI 卡片区域样式 */
-.navigation-cards {
-  /* 卡片区域的特定样式可以在这里添加 */
-}
+.navigation-header { position: relative; z-index: 20; }
 </style>
