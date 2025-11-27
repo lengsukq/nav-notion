@@ -100,6 +100,81 @@ class NavigationCache {
   }
 
   /**
+   * 生成数据库元数据缓存键
+   * @returns {string} 缓存键
+   */
+  generateMetadataCacheKey() {
+    return `${this.cachePrefix}${this.cacheVersion}_metadata`;
+  }
+
+  /**
+   * 获取数据库元数据缓存
+   * @param {number} customExpiryTime - 自定义过期时间（毫秒）
+   * @returns {Object|null} 缓存的元数据或null
+   */
+  getMetadataCache(customExpiryTime = null) {
+    const cacheKey = this.generateMetadataCacheKey();
+    const cachedData = localStorage.getItem(cacheKey);
+    
+    if (!cachedData) {
+      return null;
+    }
+
+    try {
+      const parsedData = JSON.parse(cachedData);
+      const expiryTime = customExpiryTime || this.defaultExpiryTime;
+      
+      // 检查缓存是否过期
+      if (Date.now() - parsedData.timestamp > expiryTime) {
+        this.removeMetadataCache();
+        return null;
+      }
+      
+      return parsedData;
+    } catch (error) {
+      console.error('解析元数据缓存失败:', error);
+      this.removeMetadataCache();
+      return null;
+    }
+  }
+
+  /**
+   * 设置数据库元数据缓存
+   * @param {Object} metadata - 数据库元数据
+   */
+  setMetadataCache(metadata) {
+    const cacheKey = this.generateMetadataCacheKey();
+    const cacheData = {
+      timestamp: Date.now(),
+      data: metadata
+    };
+    
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('设置元数据缓存失败:', error);
+      // 如果localStorage空间不足，尝试清除旧缓存
+      if (error.name === 'QuotaExceededError') {
+        this.clearOldCache();
+        // 再次尝试设置缓存
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } catch (retryError) {
+          console.error('重试设置元数据缓存失败:', retryError);
+        }
+      }
+    }
+  }
+
+  /**
+   * 删除数据库元数据缓存
+   */
+  removeMetadataCache() {
+    const cacheKey = this.generateMetadataCacheKey();
+    localStorage.removeItem(cacheKey);
+  }
+
+  /**
    * 清除所有导航缓存
    */
   clearAllCache() {

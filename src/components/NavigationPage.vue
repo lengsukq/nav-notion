@@ -212,6 +212,35 @@ const processNotionResponse = (data) => {
 // 获取 Notion 数据库元数据（标题、描述、标签）
 const fetchDatabaseMetadata = async () => {
   if (!NOTION_TOKEN || !NOTION_DATABASE_ID || !PROXY_URL) return;
+  
+  // 尝试从缓存获取元数据
+  const cachedMetadata = navigationCache.getMetadataCache(cacheExpiryTime.value * 60 * 60 * 1000);
+  if (cachedMetadata) {
+    const { title, description, availableTags: cachedTags, backgroundImageUrl } = cachedMetadata.data;
+    
+    // 应用缓存的元数据
+    databaseInfo.value.title = title;
+    databaseInfo.value.description = description;
+    availableTags.value = cachedTags;
+    
+    // 设置默认标签为主页，如果有的话
+    const homeTag = cachedTags.find(tag => tag.name === '主页');
+    if (homeTag) {
+      selectedTags.value = ['主页'];
+    }
+    
+    // 应用缓存的背景图片
+    if (backgroundImageUrl) {
+      applyBackgroundImage(backgroundImageUrl);
+    }
+    
+    // 触发数据获取
+    setTimeout(() => {
+      fetchNotionData(selectedTags.value, null, settingsStore.tagFilterMode);
+    }, 100);
+    return;
+  }
+
   try {
     const response = await fetch(`${PROXY_URL}https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
       method: 'GET',
@@ -228,17 +257,30 @@ const fetchDatabaseMetadata = async () => {
       applyBackgroundImage(backgroundImageUrl);
     }
 
+    let cachedTags = [];
     if (data.properties?.tag?.type === 'multi_select') {
-      availableTags.value = data.properties.tag.multi_select.options.map(option => ({
+      cachedTags = data.properties.tag.multi_select.options.map(option => ({
         name: option.name,
         color: option.color,
       }));
+      availableTags.value = cachedTags;
       
       // 设置默认标签为主页，如果有的话
-      const homeTag = availableTags.value.find(tag => tag.name === '主页');
+      const homeTag = cachedTags.find(tag => tag.name === '主页');
       if (homeTag) {
         selectedTags.value = ['主页'];
       }
+    }
+    
+    // 缓存元数据（仅在缓存时间大于0时）
+    if (cacheExpiryTime.value > 0) {
+      const metadataToCache = {
+        title: databaseInfo.value.title,
+        description: databaseInfo.value.description,
+        availableTags: cachedTags,
+        backgroundImageUrl: backgroundImageUrl
+      };
+      navigationCache.setMetadataCache(metadataToCache);
     }
     
     // 无论是否找到主页标签，都统一触发一次数据获取
