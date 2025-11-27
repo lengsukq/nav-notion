@@ -19,7 +19,7 @@ const props = defineProps({
     type: String,
     required: true
   },
-  tagColor: { // e.g., 'blue', 'red' etc. or a hex code
+  tagColor: {
     type: String,
     required: true
   },
@@ -29,77 +29,78 @@ const props = defineProps({
   }
 });
 
-// Emit the tag click event
 defineEmits(['tag-click']);
 
+// 配置：预定义颜色映射，用于消除 magic strings 和重复的列表检查
+// Memory: 放在模块顶层作为常量，避免每次组件渲染都重新分配内存
+const COLOR_VARIANT_MAP = {
+  primary: 'tag-primary',
+  blue: 'tag-primary',
+  indigo: 'tag-primary',
+  secondary: 'tag-secondary',
+  purple: 'tag-secondary',
+  danger: 'tag-danger',
+  red: 'tag-danger',
+  default: 'tag-default'
+};
+
 const tagVariant = computed(() => {
-  // HeroUI 统一使用相同的选中样式
-  if (props.isSelected) {
-    return 'tag-primary-selected';
-  } else {
-    // HeroUI 根据颜色属性选择合适的标签变体
-    if (props.tagColor === 'primary' || props.tagColor === 'blue' || props.tagColor === 'indigo') {
-      return 'tag-primary';
-    } else if (props.tagColor === 'secondary' || props.tagColor === 'purple') {
-      return 'tag-secondary';
-    } else if (props.tagColor === 'danger' || props.tagColor === 'red') {
-      return 'tag-danger';
-    } else {
-      return 'tag-default';
-    }
-  }
+  // Logic: 优先处理选中状态，否则查表返回对应变体，兜底为 default
+  if (props.isSelected) return 'tag-primary-selected';
+  return COLOR_VARIANT_MAP[props.tagColor] || 'tag-default';
 });
 
-// HeroUI 动态计算标签样式以支持自定义颜色
 const tagStyle = computed(() => {
-  // 如果是预定义颜色关键字，则不设置内联样式
-  if (['primary', 'blue', 'indigo', 'secondary', 'purple', 'danger', 'red', 'default'].includes(props.tagColor)) {
+  // DRY: 如果是预定义颜色，由 class 处理样式，不需要内联 style
+  if (COLOR_VARIANT_MAP.hasOwnProperty(props.tagColor)) {
     return {};
   }
-  
-  try {
-    // HeroUI 使用 color.js 解析颜色并设置透明度
-    const color = new Color(props.tagColor);
-    const alpha = props.isSelected ? 0.95 : 0.4;
-    color.alpha = alpha;
-    
-    // HeroUI 选中状态添加更明显的样式
-    if (props.isSelected) {
-      return { 
-        backgroundColor: color.toString(),
-        color: 'white',
-        fontWeight: '700',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)',
-        border: `2px solid ${new Color(props.tagColor).toString({format: 'hex'})}`,
-        transform: 'scale(1.05)'
+
+  // Memory/SRP: 内部辅助函数，仅在当前作用域生效，处理颜色解析逻辑
+  // 解决了 try-catch 代码块过大导致逻辑不清晰的问题
+  const resolveColorValues = () => {
+    try {
+      const color = new Color(props.tagColor);
+      const alpha = props.isSelected ? 0.95 : 0.4;
+      color.alpha = alpha;
+      
+      return {
+        bg: color.toString(),
+        // 只有选中时才需要 hex 格式的边框色
+        border: props.isSelected 
+          ? new Color(props.tagColor).toString({ format: 'hex' }) 
+          : null
       };
+    } catch (e) {
+      console.warn(`[TagComponent] Invalid color value: ${props.tagColor}`);
+      // Fallback strategies
+      return { bg: props.tagColor, border: props.tagColor };
     }
-    return { 
-      backgroundColor: color.toString(),
-      backdropFilter: 'blur(15px)',
+  };
+
+  const { bg, border } = resolveColorValues();
+
+  // DRY: 统一构建样式对象，不再分别在 try 和 catch 中重复写两遍样式定义
+  const styles = {
+    backgroundColor: bg,
+  };
+
+  if (props.isSelected) {
+    Object.assign(styles, {
+      color: 'white',
+      fontWeight: '700',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)',
+      border: `2px solid ${border}`,
+      transform: 'scale(1.05)'
+    });
+  } else {
+    Object.assign(styles, {
+      backdropFilter: 'blur(15px)', // 统一模糊度，移除原有代码中不一致的 24px/15px 差异
       WebkitBackdropFilter: 'blur(15px)'
-    };
-  } catch (e) {
-    // 如果颜色解析失败，回退到原始颜色值
-    console.warn(`Invalid color value: ${props.tagColor}`);
-    
-    // HeroUI 选中状态添加更明显的样式
-    if (props.isSelected) {
-      return { 
-        backgroundColor: props.tagColor,
-        color: 'white',
-        fontWeight: '700',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)',
-        border: `2px solid ${props.tagColor}`,
-        transform: 'scale(1.05)'
-      };
-    }
-    return { 
-      backgroundColor: props.tagColor,
-      backdropFilter: 'blur(24px)',
-      WebkitBackdropFilter: 'blur(24px)'
-    };
+    });
   }
+
+  return styles;
 });
 </script>
 

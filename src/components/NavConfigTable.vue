@@ -2,7 +2,10 @@
   <div class="nav-config-table">
     <!-- 文件上传区域 -->
     <div class="file-upload-area mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl transition-all duration-300 hover:shadow-md">
-      <label for="navConfigUpload" class="upload-button button button-primary px-4 py-2 rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg">
+      <label 
+        for="navConfigUpload" 
+        class="upload-button button button-primary px-4 py-2 rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
+      >
         选择 NavConfig 文件 (.json)
       </label>
       <input
@@ -10,145 +13,133 @@
         id="navConfigUpload"
         accept=".json"
         @change="handleFileUpload"
-        style="display: none;"
+        class="hidden" 
       />
-      <span v-if="fileName" class="file-name ml-4 px-3 py-1 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 transition-all duration-300">已选择: {{ fileName }}</span>
-      <!-- 移除自定义的 message 提示 -->
+      <span v-if="currentFileName" class="file-name ml-4 px-3 py-1 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 transition-all duration-300">
+        已选择: {{ currentFileName }}
+      </span>
     </div>
 
     <!-- 表格显示区域 -->
-    <table>
-      <thead>
-        <tr>
-          <th>name</th>
-          <th>url</th>
-          <th>description</th>
-          <th>tag</th>
-          <th>icon</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 当 tableData 为空时，可以显示一个提示 -->
-        <tr v-if="tableData.length === 0 && !fileName">
-            <td colspan="5" style="text-align: center; font-style: italic;">请上传 NavConfig 文件以显示数据。</td>
-        </tr>
-        <tr v-for="item in tableData" :key="item.id">
-          <td>{{ item.name }}</td>
-          <td>{{ item.url || '-' }}</td>
-          <td>{{ item.description || '-' }}</td>
-          <td>{{ item.tag }}</td>
-          <td>
-            <!-- <img v-if="item.icon" :src="item.icon" class="icon" alt="icon" /> -->
-            <!-- <span v-else>-</span> -->
-            {{ item.icon }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Toaster 组件将在这里渲染（全局注册后，你不需要在组件内再次声明） -->
-    <!-- <Toaster /> -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>url</th>
+            <th>description</th>
+            <th>tag</th>
+            <th>icon</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 空状态提示 -->
+          <tr v-if="navItems.length === 0">
+            <td colspan="5" class="empty-state">
+              {{ currentFileName ? '该文件不包含有效的导航数据' : '请上传 NavConfig 文件以显示数据' }}
+            </td>
+          </tr>
+          
+          <!-- 数据列表 -->
+          <tr v-for="item in navItems" :key="item.id">
+            <td :title="item.name">{{ item.name }}</td>
+            <td :title="item.url">{{ item.url }}</td>
+            <td :title="item.description">{{ item.description }}</td>
+            <td>
+              <span class="tag-badge">{{ item.tag }}</span>
+            </td>
+            <td>
+              <!-- 容错处理：直接显示文本或后续扩展为图片 -->
+              <span class="truncate block max-w-[100px]" :title="item.icon">{{ item.icon }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { forEach, filter } from 'lodash';
-// Import toast from vue-sonner
-import { toast } from 'vue-sonner'; // <-- 导入 toast 函数
+import { toast } from 'vue-sonner';
 
-// 导航配置数据，初始为空
-const navConfig = ref([]);
-const tableData = ref([]);
-const fileName = ref(''); // 用于显示已选择的文件名
+// Memory: 仅保留用于渲染的最终扁平化数据，不存储原始的大型 JSON 对象
+const navItems = ref([]);
+const currentFileName = ref('');
 
-// 处理数据生成表格数据的函数
-const processNavConfig = (configData) => {
-    console.log(configData);
-
-  navConfig.value = configData.navConfig;
-  tableData.value = []; // 清空之前的数据
-
-  if (navConfig.value && navConfig.value.length > 0) {
-    forEach(navConfig.value, group => {
-      const tag = group.name;
-      if (group.children && group.children.length > 0) {
-        const validItems = filter(group.children, item => ['text', 'icon'].includes(item.type));
-        forEach(validItems, item => {
-          tableData.value.push({
-            id: item.id,
-            name: item.name,
-            url: item.url || '',
-            description: item.config?.title || '',
-            tag: tag,
-            icon: item.src || ''
-          });
-        });
-      }
-    });
-    // 使用 vue-sonner 显示成功提示
-    toast.success('NavConfig 文件解析成功！', {
-        description: '数据已更新。',
-        // duration: 3000, // 可选，默认 5 秒
-    });
-  } else {
-      // 使用 vue-sonner 显示错误提示
-      toast.error('NavConfig 文件内容为空或格式不正确', {
-          description: '未能解析到数据，请检查文件内容。',
-          // duration: 5000, // 错误提示可以长一点
-      });
+/**
+ * Logic: 纯函数，将嵌套的 Config 结构转换为扁平的表格数据
+ * 使用 flatMap 替代嵌套的 forEach，减少代码复杂度 (Complexity)
+ */
+const transformConfigData = (json) => {
+  if (!json?.navConfig || !Array.isArray(json.navConfig)) {
+    throw new Error('JSON 格式错误：缺少 navConfig 数组');
   }
-  
+
+  return json.navConfig.flatMap(group => {
+    if (!group.children || !group.children.length) return [];
+    
+    // SRP: 过滤逻辑内聚
+    return group.children
+      .filter(item => ['text', 'icon'].includes(item.type))
+      .map(item => ({
+        id: item.id || crypto.randomUUID(), // 确保有唯一 key
+        name: item.name,
+        url: item.url || '-',
+        description: item.config?.title || '-',
+        tag: group.name, // 使用父级 group name 作为 tag
+        icon: item.src || '-'
+      }));
+  });
 };
 
-// 处理文件上传的函数
-const handleFileUpload = (event) => {
-  const files = event.target.files;
-  if (files.length > 0) {
-    const file = files[0];
-    fileName.value = file.name; // 显示文件名
-
+/**
+ * Async Helper: 将 FileReader 封装为 Promise，避免回调地狱
+ */
+const readFileAsText = (file) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
-
-    reader.onload = (e) => {
-      try {
-        const fileContent = e.target.result;
-        const parsedConfig = JSON.parse(fileContent);
-        processNavConfig(parsedConfig); // 处理并更新数据
-      } catch (error) {
-        console.error('Error parsing JSON file:', error);
-        // 使用 vue-sonner 显示错误提示
-        toast.error('解析文件失败！', {
-            description: '请确保文件是有效的 JSON 格式。',
-            // duration: 7000,
-        });
-        fileName.value = ''; // 清空文件名，表示上传失败
-        navConfig.value = []; // 清空数据
-        tableData.value = [];
-      }
-    };
-
-    reader.onerror = (e) => {
-      console.error('Error reading file:', e);
-      // 使用 vue-sonner 显示错误提示
-      toast.error('读取文件错误！', {
-          description: '读取文件时发生错误。',
-          // duration: 7000,
-      });
-      fileName.value = ''; // 清空文件名，表示读取失败
-      navConfig.value = []; // 清空数据
-      tableData.value = [];
-    };
-
-    // 读取文件内容为文本
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (e) => reject(e);
     reader.readAsText(file);
-  } else {
-    // 用户取消了文件选择
-    fileName.value = '';
-    navConfig.value = [];
-    tableData.value = [];
-    // 可以选择在这里显示一个提示，例如“已取消文件选择”
-    // toast.info('已取消文件选择。');
+  });
+};
+
+// 主处理流程
+const handleFileUpload = async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return; // 用户取消选择
+
+  // Reset state
+  currentFileName.value = file.name;
+  navItems.value = [];
+
+  try {
+    const fileContent = await readFileAsText(file);
+    const parsedJson = JSON.parse(fileContent);
+    
+    // 执行数据转换
+    const formattedData = transformConfigData(parsedJson);
+
+    if (formattedData.length > 0) {
+      navItems.value = formattedData;
+      toast.success('解析成功', { description: `已加载 ${formattedData.length} 条导航数据。` });
+    } else {
+      toast.warning('数据为空', { description: '文件中没有符合条件的导航项。' });
+    }
+  } catch (error) {
+    console.error('File processing error:', error);
+    currentFileName.value = ''; // 如果失败，清除文件名以允许重新上传同名文件
+    
+    // 区分 JSON 解析错误和其他错误
+    const errorMsg = error instanceof SyntaxError 
+      ? '文件不是有效的 JSON 格式' 
+      : (error.message || '读取文件失败');
+      
+    toast.error('解析失败', { description: errorMsg });
+  } finally {
+    // 清空 input value，确保即使再次选择同一个文件也能触发 change 事件
+    event.target.value = '';
   }
 };
 </script>
@@ -157,186 +148,103 @@ const handleFileUpload = (event) => {
 .nav-config-table {
   max-width: 1200px;
   margin: 20px auto;
-  /* overflow-x: auto; */ /* 移除这个，我们会为表格本身控制溢出 */
+  padding: 0 20px;
 }
 
 .file-upload-area {
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
 }
 
-
+.hidden {
+  display: none;
+}
 
 .file-name {
   font-style: italic;
   color: #4a5568;
-  margin-left: 10px;
-  padding: 8px 12px;
-  background-color: #f7fafc;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  font-size: 0.9rem;
 }
 
-/* 用于在没有数据时显示占位符的样式 */
-td[colspan="5"] {
-    padding: 40px;
-    color: #718096;
-    font-size: 16px;
+/* 容器负责滚动，而不是让表格变样 */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: white;
 }
 
 table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  /* min-width: 800px; */ /* 移除这个，让单元格宽度控制生效 */
-  overflow-x: auto; /* 允许表格在宽度超出时水平滚动 */
-  background-color: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease-in-out;
-}
-
-table:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  min-width: 800px; /* 保证最小宽度，触发滚动 */
 }
 
 th, td {
-  padding: 12px 15px;
+  padding: 12px 16px;
   text-align: left;
-  /* width: 20%; */ /* 移除通用的 width，我们将为特定列设置 */
-  white-space: nowrap; /* 保持内容不换行 */
-  text-overflow: ellipsis; /* 超出部分显示省略号 */
-  overflow: hidden; /* 隐藏超出部分 */
-  background-color: #f8fafc;
-  font-weight: 600;
-  color: #2d3748;
-  border-bottom: 2px solid #e2e8f0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  transition: all 0.2s ease-in-out;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px; /* 防止单列过宽 */
 }
 
 th {
-  background-color: #f1f5f9;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
+  background-color: #f8fafc;
+  font-weight: 600;
   color: #475569;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-/* 设置每列的宽度 */
-th:nth-child(1),
-td:nth-child(1) { /* name */
-  width: 15%;
-  min-width: 120px; /* 最小宽度 */
-}
-
-th:nth-child(2),
-td:nth-child(2) { /* url */
-  width: 40%; /* URL 占比较大空间 */
-  min-width: 200px; /* 最小宽度 */
-}
-
-th:nth-child(3),
-td:nth-child(3) { /* description */
-  width: 20%;
-  min-width: 150px;
-}
-
-th:nth-child(4),
-td:nth-child(4) { /* tag */
-  width: 10%;
-  min-width: 80px;
-}
-
-th:nth-child(5),
-td:nth-child(5) { /* icon */
-  width: 15%;
-  min-width: 100px;
-}
-
-
-tr {
-  transition: all 0.2s ease-in-out;
+tr:last-child td {
+  border-bottom: none;
 }
 
 tr:hover {
-  background-color: #f1f5f9;
-  transform: scale(1.01);
+  background-color: #f8fafc;
 }
 
-/* 交替行颜色 */
-tr:nth-child(even) {
-  background-color: #f7fafc;
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-style: italic;
 }
 
-tr:nth-child(even):hover {
-  background-color: #f1f5f9;
+.tag-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
-.icon {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-/* 响应式调整 */
+/* 移动端适配 */
 @media (max-width: 768px) {
   .nav-config-table {
-    max-width: 100%;
     padding: 0 10px;
   }
-  table {
-    width: 100%;
-    /* min-width: 600px; */ /* 调整为更小的最小值，因为列会收缩 */
-  }
-
+  
   .file-upload-area {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
-
+  
   .file-name {
     margin-left: 0;
-    margin-top: 10px;
-    width: 100%;
+    text-align: center;
   }
-
-  /* 在小屏幕上，可能需要调整列宽或允许更多换行 */
-  /* 或者允许表格横向滚动 */
-  th, td {
-      white-space: normal; /* 允许换行 */
-      /* overflow: visible; */ /* 如果允许换行，可以移除 overflow: hidden; */
-  }
-
-  /* 重新为小屏幕设置列宽，或保持默认 */
-  /* 如果要保持横向滚动，可以不在这里修改 */
 }
-
-/* 强制小屏幕下的横向滚动，覆盖 @media 内部的 white-space: normal; */
-@media (max-width: 768px) {
-    table {
-        overflow-x: auto; /* 强制横向滚动 */
-        display: block; /* 配合 overflow-x: auto; */
-        white-space: nowrap; /* 确保内容不换行，以显示省略号 */
-    }
-    th, td {
-        white-space: nowrap; /* 再次强调不换行 */
-        display: inline-block; /* 允许单元格宽度控制 */
-        vertical-align: top; /* 顶部对齐 */
-    }
-    /* 移除 sticky 效果，因为它在 scrollable table 中可能有问题 */
-    th {
-        position: static;
-    }
-    .nav-config-table {
-        overflow-x: auto; /* 确保容器也能处理溢出 */
-    }
-}
-
 </style>
