@@ -1,42 +1,46 @@
 <template>
-  <!-- HeroUI 整个搜索组件的容器，居中并设置毛玻璃背景 -->
-  <div class="app-search-wrapper"> <!-- 添加这个 wrapper 来管理 z-index -->
+  <!-- HeroUI 搜索组件容器 -->
+  <div class="app-search-wrapper">
     <div class="w-full max-w-full md:max-w-2xl lg:max-w-4xl xl:max-w-6xl search-container transition-all duration-800 hover:scale-[1.015]">
-      <div class="search-box shadow-2xl hover:shadow-3xl transition-all duration-800 rounded-3xl">
+      <div class="search-box shadow-2xl hover:shadow-3xl transition-all duration-800 rounded-3xl"
+           :class="{ 'is-focused': isFocused }">
 
-        <!-- 搜索引擎选择器 -->
-        <div class="engine-selector-container">
+        <!-- 1. 搜索引擎选择器 -->
+        <div class="engine-selector-container" ref="engineSelectorRef">
           <div class="selected-engine" @click.stop="toggleEngineDropdown">
-            <span class="engine-name hidden sm:inline">{{ getEngineName(selectedEngine) }}</span>
-            <span class="engine-name-short sm:hidden">{{ getEngineName(selectedEngine, true) }}</span>
+            <span class="engine-name hidden sm:inline">{{ currentEngine.name }}</span>
+            <span class="engine-name-short sm:hidden">{{ currentEngine.shortName }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 transition-transform duration-800 will-change-transform" :class="{'rotate-180': showEngineDropdown}">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
-          <!-- 搜索引擎下拉菜单 -->
+          <!-- 下拉菜单 -->
           <transition name="dropdown">
             <div v-if="showEngineDropdown" class="engine-dropdown rounded-xl shadow-lg">
-              <div v-for="(engine, key) in searchEngines" :key="key"
-                   @click.stop="selectEngine(key)" class="engine-option transition-all duration-800 will-change-transform">
-                {{ engine.name }}
+              <div v-for="(config, key) in SEARCH_CONFIG" :key="key"
+                   @click.stop="selectEngine(key)" 
+                   class="engine-option transition-all duration-800 will-change-transform">
+                {{ config.name }}
               </div>
             </div>
           </transition>
         </div>
 
-        <!-- 搜索输入框和按钮 -->
-        <div class="search-input-container">
+        <!-- 2. 搜索输入框 -->
+        <div class="search-input-container" ref="inputContainerRef">
           <input
             v-model="searchQuery"
-            @keyup.enter="handleSearch"
-            @focus="showSearchHistory = true"
+            @keyup.enter="executeSearch"
+            @focus="handleFocus"
             @blur="handleBlur"
             placeholder="搜索..."
             class="search-input"
             ref="searchInputRef"
           >
+          
+          <!-- 动作按钮 -->
           <div class="search-actions">
-            <button @click.stop="handleSearch" class="search-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
+            <button @click.stop="executeSearch" class="search-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
             <button @click.stop="$emit('toggle-settings')" class="settings-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
@@ -47,26 +51,23 @@
             </button>
           </div>
 
-          <!-- 搜索历史记录 -->
+          <!-- 3. 历史记录下拉 -->
           <transition name="dropdown">
-            <div v-if="showSearchHistory && (filteredHistory.length > 0 || searchQuery)" class="search-history rounded-xl shadow-lg">
+            <div v-if="shouldShowHistory" class="search-history rounded-xl shadow-lg">
               <div v-if="filteredHistory.length > 0" class="search-history-content">
                 <div class="search-history-header">
                   <span class="text-gray-600 dark:text-gray-400">搜索历史</span>
-                  <span class="clear-history cursor-pointer text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-800" @click.stop="clearSearchHistory">清除</span>
+                  <span class="clear-history cursor-pointer text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-800" @click.stop="clearHistory">清除</span>
                 </div>
                 <div class="history-items">
                   <div v-for="(item, index) in filteredHistory" :key="index"
-                       class="history-item transition-all duration-800 will-change-transform" @click.stop="selectHistoryItem(item)">
+                       class="history-item transition-all duration-800 will-change-transform" @click.stop="selectHistory(item)">
                     {{ item }}
                   </div>
                 </div>
               </div>
-              <div v-else-if="searchQuery" class="no-history text-gray-500 dark:text-gray-400">
-                搜索 "{{ searchQuery }}"
-              </div>
-               <div v-else class="no-history text-gray-500 dark:text-gray-400">
-                暂无搜索历史
+              <div v-else class="no-history text-gray-500 dark:text-gray-400">
+                {{ searchQuery ? `搜索 "${searchQuery}"` : '暂无搜索历史' }}
               </div>
             </div>
           </transition>
@@ -77,549 +78,371 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+
+// ==========================================
+// 1. Constants & Configuration (Memory Opt)
+// ==========================================
+/**
+ * 搜索引擎配置
+ * 移出 Setup，避免每次渲染重新分配内存。
+ * type: 'external' (跳转 URL) | 'event' (Emit 事件)
+ */
+const SEARCH_CONFIG = {
+  bing:   { name: 'Bing', shortName: 'Bing', type: 'external', url: 'https://www.bing.com/search?q=' },
+  google: { name: 'Google', shortName: 'Google', type: 'external', url: 'https://www.google.com/search?q=' },
+  yahoo:  { name: 'Yahoo', shortName: 'Yahoo', type: 'external', url: 'https://search.yahoo.com/search?p=' },
+  duck:   { name: 'Duck', shortName: 'Duck', type: 'external', url: 'https://duckduckgo.com/?q=' },
+  baidu:  { name: '百度', shortName: '百度', type: 'external', url: 'https://www.baidu.com/s?wd=' },
+  mieta:  { name: '密塔', shortName: '密塔', type: 'external', url: 'https://metaso.cn/?q=' },
+  notion: { name: 'Notion', shortName: 'Notion', type: 'event', eventName: 'search' }
+};
+
+const EMITS = defineEmits(['search', 'toggle-settings']);
+
+// ==========================================
+// 2. Logic Abstraction (Composables)
+// ==========================================
+
+/**
+ * 内部方法：管理搜索引擎状态
+ * 封装选择逻辑，降低主组件复杂度。
+ */
+const useSearchEngine = () => {
+  const selectedKey = ref('bing');
+  const showDropdown = ref(false);
+
+  const currentEngine = computed(() => SEARCH_CONFIG[selectedKey.value] || SEARCH_CONFIG.bing);
+
+  const selectEngine = (key) => {
+    selectedKey.value = key;
+    localStorage.setItem('preferredSearchEngine', key);
+    showDropdown.value = false;
+  };
+
+  const toggleDropdown = () => {
+    showDropdown.value = !showDropdown.value;
+  };
+
+  onMounted(() => {
+    const saved = localStorage.getItem('preferredSearchEngine');
+    if (saved && SEARCH_CONFIG[saved]) {
+      selectedKey.value = saved;
+    }
+  });
+
+  return { selectedKey, currentEngine, showDropdown, selectEngine, toggleDropdown };
+};
+
+/**
+ * 内部方法：管理搜索历史
+ * 职责分离，专门处理 Storage 和过滤逻辑。
+ */
+const useSearchHistory = (searchQueryRef) => {
+  const history = ref([]);
+  const showHistory = ref(false);
+
+  // 安全读取 Storage
+  const loadHistory = () => {
+    try {
+      history.value = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    } catch (e) {
+      history.value = [];
+    }
+  };
+
+  const saveHistory = (query) => {
+    if (!query || !query.trim()) return;
+    // 去重并将新搜索置顶，保留最近 10 条
+    const next = [query, ...history.value.filter(h => h !== query)].slice(0, 10);
+    history.value = next;
+    localStorage.setItem('searchHistory', JSON.stringify(next));
+  };
+
+  const clearHistory = () => {
+    history.value = [];
+    localStorage.removeItem('searchHistory');
+    showHistory.value = false;
+  };
+
+  const filteredHistory = computed(() => {
+    const q = searchQueryRef.value.trim().toLowerCase();
+    if (!q) return history.value;
+    return history.value.filter(item => item.toLowerCase().includes(q));
+  });
+
+  onMounted(loadHistory);
+
+  return { history, showHistory, filteredHistory, saveHistory, clearHistory };
+};
+
+// ==========================================
+// 3. Component Setup & Integration
+// ==========================================
 
 const searchQuery = ref('');
-const selectedEngine = ref('bing'); // 默认搜索引擎
+const isFocused = ref(false); // 用于 UI 状态
+const engineSelectorRef = ref(null);
+const inputContainerRef = ref(null);
 
-// 搜索引擎选择器
-const searchEngines = {
-  bing: { name: 'Bing', shortName: 'Bing', url: 'https://www.bing.com/search?q=' },
-  google: { name: 'Google', shortName: 'Google', url: 'https://www.google.com/search?q=' },
-  yahoo: { name: 'Yahoo', shortName: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
-  duck: { name: 'Duck', shortName: 'Duck', url: 'https://duckduckgo.com/?q=' },
-  baidu: { name: '百度', shortName: '百度', url: 'https://www.baidu.com/s?wd=' },
-  mieta: { name: '密塔', shortName: '密塔', url: 'https://metaso.cn/?q=' },
-  notion: { name: 'Notion', shortName: 'Notion', url: 'notion' }
-};
+// 初始化内部逻辑
+const { 
+  selectedKey: engineKey, 
+  currentEngine, 
+  showDropdown: showEngineDropdown, 
+  selectEngine, 
+  toggleDropdown: toggleEngineDropdown 
+} = useSearchEngine();
 
-// 搜索历史记录
-const searchHistory = ref(JSON.parse(localStorage.getItem('searchHistory') || '[]'));
-const showSearchHistory = ref(false);
+const { 
+  showHistory: showSearchHistory, 
+  filteredHistory, 
+  saveHistory, 
+  clearHistory: clearHistoryAction 
+} = useSearchHistory(searchQuery);
 
-// 搜索引擎下拉框状态
-const showEngineDropdown = ref(false);
-
-// 用于处理点击外部关闭下拉框和历史记录
-const searchInputRef = ref(null);
-
-// 计算过滤后的历史记录
-const filteredHistory = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return searchHistory.value; // 如果输入为空，显示所有历史记录
-  }
-  return searchHistory.value.filter(item =>
-    item.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
+// 计算属性：是否显示历史记录 (UI Logic)
+const shouldShowHistory = computed(() => {
+  return showSearchHistory.value && (filteredHistory.value.length > 0 || searchQuery.value);
 });
 
-// 初始化时从localStorage读取上次选择的搜索引擎
-onMounted(() => {
-  const savedEngine = localStorage.getItem('preferredSearchEngine');
-  if (savedEngine && searchEngines[savedEngine]) {
-    selectedEngine.value = savedEngine;
-  }
-
-  // 添加全局点击监听器来关闭下拉菜单
-  document.addEventListener('click', handleClickOutside);
-});
-
-// 组件卸载时移除监听器
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
-
-// 获取搜索引擎名称 - 支持响应式显示
-const getEngineName = (engineKey, useShort = false) => {
-  const engine = searchEngines[engineKey];
-  if (!engine) return '搜索';
-  return useShort ? engine.shortName : engine.name;
+// UI Event Handlers
+const handleFocus = () => {
+  isFocused.value = true;
+  showSearchHistory.value = true;
 };
 
-// 切换搜索引擎下拉框
-const toggleEngineDropdown = () => {
-  showEngineDropdown.value = !showEngineDropdown.value;
-};
-
-// 选择搜索引擎
-const selectEngine = (engineKey) => {
-  selectedEngine.value = engineKey;
-  localStorage.setItem('preferredSearchEngine', engineKey);
-  showEngineDropdown.value = false; // 选择后关闭下拉框
-};
-
-// 保存搜索记录
-const saveSearchHistory = (query) => {
-  if (!query.trim()) return;
-
-  // 去重并限制数量
-  const newHistory = [query, ...searchHistory.value.filter(item => item !== query)].slice(0, 10);
-  searchHistory.value = newHistory;
-  localStorage.setItem('searchHistory', JSON.stringify(newHistory));
-};
-
-// 处理输入框失焦
 const handleBlur = () => {
-  // 延迟关闭，允许点击历史记录项
+  isFocused.value = false;
+  // 延迟关闭以允许点击历史项
   setTimeout(() => {
-    // 检查当前是否有一个下拉菜单是打开的，如果是，则不关闭历史记录
     if (!showEngineDropdown.value) {
       showSearchHistory.value = false;
     }
-  }, 150); // 150ms 的延迟，比点击事件的响应稍长
+  }, 150);
 };
 
-// 处理搜索
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    // 如果是Notion搜索
-    if (selectedEngine.value === 'notion') {
-      // 触发Notion搜索事件，将搜索查询传递给父组件
-      emit('search', searchQuery.value);
-      saveSearchHistory(searchQuery.value);
-      searchQuery.value = '';
-      showSearchHistory.value = false; // 搜索后隐藏历史记录
-    } else {
-      // 外部搜索引擎搜索
-      const searchUrl = searchEngines[selectedEngine.value].url + encodeURIComponent(searchQuery.value);
-      window.open(searchUrl, '_blank');
-      saveSearchHistory(searchQuery.value);
-      searchQuery.value = '';
-      showSearchHistory.value = false; // 搜索后隐藏历史记录
-    }
+const selectHistory = (item) => {
+  searchQuery.value = item;
+  executeSearch();
+};
+
+const clearHistory = () => {
+  clearHistoryAction();
+  // 保持焦点以便用户继续输入
+  // nextTick(() => inputRef.value?.focus()); 
+};
+
+/**
+ * 核心搜索逻辑
+ * 重构说明：使用 Strategy Pattern (多态) 替代 If-Else。
+ * 根据配置中的 'type' 决定是打开 URL 还是触发事件。
+ */
+const executeSearch = () => {
+  const query = searchQuery.value.trim();
+  if (!query) return;
+
+  const config = currentEngine.value;
+
+  // 1. 保存历史
+  saveHistory(query);
+
+  // 2. 执行策略
+  if (config.type === 'event') {
+    EMITS(config.eventName, query);
+  } else if (config.type === 'external') {
+    window.open(config.url + encodeURIComponent(query), '_blank');
+  }
+
+  // 3. 重置 UI 状态
+  searchQuery.value = '';
+  showSearchHistory.value = false;
+  if(document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
   }
 };
 
-// 从历史记录选择搜索词
-const selectHistoryItem = (item) => {
-  searchQuery.value = item;
-  // 自动触发搜索
-  handleSearch();
-  // 保持历史记录打开，直到用户下次操作，或者在handleSearch里关闭
-};
-
-// 清除搜索历史
-const clearSearchHistory = () => {
-  searchHistory.value = [];
-  localStorage.removeItem('searchHistory');
-  showSearchHistory.value = false; // 清除后隐藏
-};
-
-// 点击页面其他地方时关闭下拉菜单和历史记录
+/**
+ * 全局点击监听优化
+ * 使用 Guard Clauses 提前返回。
+ */
 const handleClickOutside = (event) => {
-  // 检查点击的目标是否在搜索引擎选择器或输入框内部
-  const isClickInsideEngineSelector = event.target.closest('.engine-selector-container');
-  const isClickInsideInputContainer = event.target.closest('.search-input-container');
+  // 如果两个下拉都关闭，直接返回，避免计算 DOM
+  if (!showEngineDropdown.value && !showSearchHistory.value) return;
 
-  if (!isClickInsideEngineSelector) {
+  const target = event.target;
+  const inEngine = engineSelectorRef.value?.contains(target);
+  const inInput = inputContainerRef.value?.contains(target);
+
+  if (!inEngine && showEngineDropdown.value) {
     showEngineDropdown.value = false;
   }
-  if (!isClickInsideInputContainer) {
+  if (!inInput && showSearchHistory.value) {
     showSearchHistory.value = false;
   }
 };
 
-// 定义组件的事件
-const emit = defineEmits(['search', 'toggle-settings']);
+// Lifecycle
+onMounted(() => document.addEventListener('click', handleClickOutside));
+onUnmounted(() => document.removeEventListener('click', handleClickOutside));
+
 </script>
 
 <style scoped>
-/* HeroUI 整体容器，用于居中和背景 */
-/* 确保这个 wrapper 有 position: relative; z-index: 100; */
+/* 保持原有 HeroUI 样式，添加少量状态类优化 */
 .app-search-wrapper {
   position: relative;
-  z-index: 200; /* 提高层级，确保搜索框层级高于标签和页面卡片 */
-  width: 100%; /* 确保它占满App.vue中的可用宽度 */
-  padding: 0; /* 移除内边距，让header控制布局 */
-  box-sizing: border-box; /* 包含padding的宽度 */
+  z-index: 200;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .search-container {
   width: 100%;
-  max-width: 100%; /* 默认占满容器宽度 */
+  max-width: 100%;
   margin: 0 auto;
   transition: max-width 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   will-change: max-width, transform;
-  transform-origin: center center;
   transform: translateZ(0);
 }
 
-/* 响应式宽度调整 */
-@media (min-width: 768px) {
-  .search-container {
-    max-width: 42rem; /* md:max-w-2xl */
-  }
-}
+@media (min-width: 768px) { .search-container { max-width: 42rem; } }
+@media (min-width: 1024px) { .search-container { max-width: 56rem; } }
+@media (min-width: 1280px) { .search-container { max-width: 72rem; } }
 
-@media (min-width: 1024px) {
-  .search-container {
-    max-width: 56rem; /* lg:max-w-4xl */
-  }
-}
-
-@media (min-width: 1280px) {
-  .search-container {
-    max-width: 72rem; /* xl:max-w-6xl */
-  }
-}
-
-/* HeroUI 搜索框整体样式 */
 .search-box {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* 12px */
-  background: rgba(255, 255, 255, 0.2); /* 增强透明背景 */
-  backdrop-filter: blur(20px); /* 增强毛玻璃效果 */
-  -webkit-backdrop-filter: blur(20px); /* Safari 兼容 */
-  border-radius: 28px; /* 更大圆角 */
-  padding: 0.75rem 1.25rem; /* 增加内边距 */
-  box-shadow: 
-    0 8px 25px rgba(var(--primary-color-rgb), 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3); /* 增强阴影和内光 */
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* HeroUI 风格过渡 */
-  position: relative; /* 用于定位下拉菜单 */
-  border: 1px solid rgba(255, 255, 255, 0.25); /* 增强边框 */
-  flex-wrap: wrap; /* 允许在小屏幕上换行 */
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 8px 25px rgba(var(--primary-color-rgb), 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  flex-wrap: wrap;
   will-change: transform, box-shadow;
-  transform-origin: center center;
   transform: translateZ(0);
 }
 
-/* 小屏幕优化 - 保持一行布局 */
-@media (max-width: 640px) {
-  .search-box {
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-  }
-  
-  .engine-selector-container {
-    flex-shrink: 0;
-  }
-  
-  .search-input-container {
-    flex: 1;
-    min-width: 0; /* 允许收缩 */
-  }
-}
-
-/* 小尺寸屏幕优化 */
-@media (max-width: 450px) {
-  .search-box {
-    gap: 0.5rem;
-    padding: 0.75rem;
-    border-radius: 20px;
-    /* 增强小尺寸屏幕下的视觉效果，因为它现在是主要元素 */
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    box-shadow: 
-      0 12px 32px rgba(var(--primary-color-rgb), 0.2),
-      0 4px 12px rgba(var(--secondary-color-rgb), 0.15),
-      inset 0 2px 0 rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-  }
-  
-  .selected-engine {
-    padding: 0.625rem 1rem;
-    font-size: 13px;
-    border-radius: 14px;
-  }
-  
-  .search-input {
-    padding: 0.625rem;
-    font-size: 15px;
-  }
-  
-  .search-actions {
-    gap: 0.125rem;
-  }
-  
-  .search-button,
-  .settings-button {
-    padding: 0.5rem;
-  }
-  
-  /* 小尺寸屏幕下增强设置按钮可见性 */
-  .settings-button {
-    background: rgba(var(--primary-color-rgb), 0.15);
-    border-color: rgba(var(--primary-color-rgb), 0.3);
-    box-shadow: 0 3px 10px rgba(var(--primary-color-rgb), 0.2);
-  }
-  
-  .settings-button:hover {
-    transform: scale(1.15) rotate(90deg);
-    box-shadow: 0 6px 16px rgba(var(--primary-color-rgb), 0.4);
-  }
-  
-  /* 增强焦点状态，因为搜索框现在是页面焦点 */
-  .search-box:focus-within {
-    background: rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
-    box-shadow: 
-      0 16px 40px rgba(var(--primary-color-rgb), 0.3),
-      0 0 0 3px rgba(var(--primary-color-rgb), 0.4),
-      inset 0 2px 0 rgba(255, 255, 255, 0.5);
-    transform: translateY(-3px);
-  }
-}
-
+/* 使用 CSS 类控制焦点状态，替代 :focus-within 提高可维护性 */
+.search-box.is-focused,
 .search-box:focus-within {
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 
-    0 12px 40px rgba(var(--primary-color-rgb), 0.25),
-    0 0 0 2px rgba(var(--primary-color-rgb), 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 12px 40px rgba(var(--primary-color-rgb), 0.25), 0 0 0 2px rgba(var(--primary-color-rgb), 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   border-color: rgba(var(--primary-color-rgb), 0.4);
   transform: translateY(-2px);
 }
 
-/* 搜索引擎选择器容器 */
-.engine-selector-container {
-  position: relative;
-  z-index: 250; /* 提高层级，确保下拉菜单能正确显示 */
+/* 小屏幕优化 */
+@media (max-width: 640px) {
+  .search-box { gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 20px; }
+  .engine-selector-container { flex-shrink: 0; }
+  .search-input-container { flex: 1; min-width: 0; }
 }
 
-/* HeroUI 已选搜索引擎样式 */
+@media (max-width: 450px) {
+  .search-box {
+    gap: 0.5rem; padding: 0.75rem; border-radius: 20px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(24px);
+  }
+  .selected-engine { padding: 0.625rem 1rem; font-size: 13px; border-radius: 14px; }
+  .search-input { padding: 0.625rem; font-size: 15px; }
+  .settings-button { background: rgba(var(--primary-color-rgb), 0.15); box-shadow: 0 3px 10px rgba(var(--primary-color-rgb), 0.2); }
+  
+  .search-box.is-focused,
+  .search-box:focus-within {
+    transform: translateY(-3px);
+  }
+}
+
+/* 引擎选择器 */
+.engine-selector-container { position: relative; z-index: 250; }
+
 .selected-engine {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem; /* 减小间距 */
-  padding: 0.625rem 1rem; /* 稍微减少内边距 */
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)); /* 渐变背景 */
+  display: flex; align-items: center; gap: 0.25rem; padding: 0.625rem 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 16px; /* 中等圆角 */
-  cursor: pointer;
-  font-size: 13px; /* 稍小字体 */
-  font-weight: 600; /* 增强字重 */
-  box-shadow: 
-    0 4px 12px rgba(var(--primary-color-rgb), 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5); /* 内部高光 */
+  border-radius: 16px; cursor: pointer; font-size: 13px; font-weight: 600;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap; /* 防止名称换行 */
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-  min-width: fit-content; /* 最小宽度适应内容 */
-  flex-shrink: 0; /* 防止收缩 */
+  white-space: nowrap; border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative; overflow: hidden; min-width: fit-content; flex-shrink: 0;
 }
+.selected-engine:hover { box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2); background-color: rgba(255, 255, 255, 0.85); }
 
-.selected-engine:hover {
-  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
-  background-color: rgba(255, 255, 255, 0.85);
-}
-
-/* HeroUI 搜索引擎下拉菜单 */
 .engine-dropdown {
-  position: absolute;
-  top: calc(100% + 6px); /* 距离选择器下方 */
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(16px);
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.2); /* 主色调更明显的阴影 */
-  padding: 12px 0;
-  z-index: 300; /* !!! 修正: 搜索引擎下拉菜单的 z-index 必须是最高的 !!! */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background-color: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px);
+  border-radius: 20px; box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.2);
+  padding: 12px 0; z-index: 300; border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .engine-option {
-  padding: 0.75rem 1rem; /* 12px 16px */
-  cursor: pointer;
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary); /* 深色文字 */
-  border-radius: 12px;
-  margin: 0 8px;
+  padding: 0.75rem 1rem; cursor: pointer; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px; font-weight: 500; color: var(--text-primary); border-radius: 12px; margin: 0 8px;
 }
+.engine-option:hover { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary); transform: translateX(4px); }
 
-.engine-option:hover {
-  background-color: rgba(var(--primary-color-rgb), 0.1);
-  color: var(--primary);
-  transform: translateX(4px);
-}
-
-/* 搜索输入框容器 */
-.search-input-container {
-  flex: 1; /* 占据剩余空间 */
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-/* HeroUI 搜索输入框 */
+/* 输入框 */
+.search-input-container { flex: 1; display: flex; align-items: center; position: relative; }
 .search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: 0.75rem 0.75rem; /* 12px */
-  font-size: 16px;
-  font-weight: 500;
-  outline: none;
-  color: var(--text-primary); /* HeroUI 默认文本颜色 */
-  width: 100%; /* 确保填充容器 */
+  flex: 1; background: transparent; border: none; padding: 0.75rem;
+  font-size: 16px; font-weight: 500; outline: none; color: var(--text-primary); width: 100%;
 }
+.search-input::placeholder { color: var(--text-tertiary); }
 
-.search-input::placeholder {
-  color: var(--text-tertiary); /* 占位符颜色 */
+/* 动作按钮 */
+.search-actions { display: flex; align-items: center; gap: 0.25rem; }
+.search-button, .settings-button {
+  background: transparent; border: none; color: var(--text-secondary);
+  cursor: pointer; padding: 0.5rem; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.5s; will-change: transform, background-color; transform: translateZ(0);
 }
+.search-button:hover { background-color: rgba(var(--primary-color-rgb), 0.1); transform: scale(1.08); color: var(--primary); }
 
-/* 搜索动作区域 */
-.search-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* HeroUI 搜索按钮 */
-.search-button {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary); /* 搜索图标颜色 */
-  cursor: pointer;
-  padding: 0.5rem; /* 8px */
-  border-radius: 16px; /* HeroUI 风格圆角 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  will-change: transform, background-color;
-  transform: translateZ(0);
-}
-
-.search-button:hover {
-  background-color: rgba(var(--primary-color-rgb), 0.1);
-  transform: scale(1.08); /* 悬停时放大一点，调整为更自然的比例 */
-  color: var(--primary);
-}
-
-/* HeroUI 设置按钮 */
 .settings-button {
-  background: rgba(var(--primary-color-rgb), 0.1);
-  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
-  color: var(--primary-color);
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  will-change: transform, background-color;
-  transform: translateZ(0);
-  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.15);
+  background: rgba(var(--primary-color-rgb), 0.1); border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+  color: var(--primary-color); box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.15);
 }
-
 .settings-button:hover {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  border-color: var(--primary-color);
-  transform: scale(1.1) rotate(90deg); /* 悬停时旋转 */
-  color: white;
+  border-color: var(--primary-color); transform: scale(1.1) rotate(90deg); color: white;
   box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
 }
 
-/* HeroUI 搜索历史记录 */
+/* 历史记录 */
 .search-history {
-  position: absolute;
-  top: calc(100% + 8px); /* 距离输入框下方 */
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 255, 255, 0.75); /* 半透明背景 */
-  backdrop-filter: blur(16px); /* 毛玻璃 */
-  border-radius: 20px; /* 大圆角 */
-  box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.15); /* 主色调更强的阴影 */
-  padding: 12px 0;
-  z-index: 240; /* 调整 z-index，确保历史记录能正确显示，但低于引擎下拉菜单 */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background-color: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px);
+  border-radius: 20px; box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.15);
+  padding: 12px 0; z-index: 240; border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-.search-history-content {
-  /* 内部内容容器 */
-}
-
 .search-history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem 0.5rem 1rem; /* 0 16px 8px 16px */
-  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1); /* 主色调细分隔线 */
-  font-size: 13px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 1rem 0.5rem 1rem; border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1); font-size: 13px;
 }
+.clear-history { font-weight: 500; color: var(--primary); transition: color 0.8s; }
+.clear-history:hover { color: var(--secondary); }
 
-.clear-history {
-  font-weight: 500;
-  color: var(--primary);
-  transition: color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.clear-history:hover {
-  color: var(--secondary);
-}
-
-.history-items {
-  max-height: 200px; /* 限制历史记录显示的高度 */
-  overflow-y: auto;
-  padding-top: 8px; /* 历史记录项上面的顶部间距 */
-}
-
+.history-items { max-height: 200px; overflow-y: auto; padding-top: 8px; }
 .history-item {
-  padding: 0.75rem 1rem; /* 12px 16px */
-  cursor: pointer;
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
-  border-radius: 12px;
-  margin: 0 8px;
+  padding: 0.75rem 1rem; cursor: pointer; transition: all 0.8s;
+  font-size: 14px; font-weight: 500; color: var(--text-primary); border-radius: 12px; margin: 0 8px;
 }
+.history-item:hover { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary); transform: translateX(4px); }
+.no-history { padding: 1rem; text-align: center; font-size: 13px; color: var(--text-tertiary); }
 
-.history-item:hover {
-  background-color: rgba(var(--primary-color-rgb), 0.1);
-  color: var(--primary);
-  transform: translateX(4px);
-}
-
-.no-history {
-  padding: 1rem; /* 16px */
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-tertiary);
-}
-
-/* HeroUI 过渡动画 */
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(12px) scale(0.95);
-}
-
-.dropdown-enter-to,
-.dropdown-leave-from {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* HeroUI 箭头旋转动画 */
-.rotate-180 {
-  transform: rotate(180deg);
-}
-
-/* Tailwind CSS 类的覆写/调整 */
-/* 确保外层容器有相对定位，以便内部 absolute 元素能正确定位 */
-.app-search-wrapper {
-  position: relative;
-  z-index: 100; /* 确保搜索框层级高于页面卡片 */
-}
-
+/* 动画 */
+.dropdown-enter-active, .dropdown-leave-active { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(12px) scale(0.95); }
+.dropdown-enter-to, .dropdown-leave-from { opacity: 1; transform: translateY(0) scale(1); }
+.rotate-180 { transform: rotate(180deg); }
 </style>
