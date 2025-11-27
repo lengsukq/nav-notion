@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import NavConfigTable from '../components/NavConfigTable.vue';
 import NavigationPage from '../components/NavigationPage.vue';
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: NavigationPage

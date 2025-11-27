@@ -46,7 +46,7 @@
         <!-- 搜索框（已集成设置按钮） -->
         <div class="flex items-center w-full">
           <div class="flex-grow">
-            <SearchBox @search="$emit('search', $event)" @toggle-settings="$emit('toggle-settings')" />
+            <SearchBox @search="emit('search', $event)" @toggle-settings="emit('toggle-settings')" />
           </div>
         </div>
       </div>
@@ -54,21 +54,24 @@
   </header>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SearchBox from './SearchBox.vue';
 import TimeDisplay from './TimeDisplay.vue';
 
-// 定义组件的props
-defineProps({
+interface Props {
   databaseInfo: {
-    type: Object,
-    required: true,
-    default: () => ({ title: '导航中心', description: '正在从 Notion 加载...' })
-  }
-});
+    title: string;
+    description: string;
+  };
+}
 
-// 定义组件的事件
-defineEmits(['search', 'toggle-settings']);
+interface Emits {
+  search: [query: string];
+  'toggle-settings': [];
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 </script>
 
 <style scoped>

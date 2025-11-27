@@ -23,7 +23,7 @@
           <p class="text-gray-600 dark:text-gray-400">{{ error }}</p>
         </div>
         <button 
-          @click="$emit('retry')" 
+          @click="emit('retry')" 
           class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
         >
           重新加载
@@ -58,53 +58,39 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import NavigationCard from './NavigationCard.vue';
 import { computed } from 'vue';
 
+// 定义接口类型
+interface Props {
+  loading: boolean;
+  error: string | null;
+  navigationLinks: any[];
+  searchQuery: string;
+  cardSizeMode: 'small' | 'medium' | 'large';
+  isFetchingMore: boolean;
+}
+
+interface Emits {
+  retry: [];
+}
+
 // 定义组件的props
-const props = defineProps({
-  loading: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
-  error: {
-    type: String,
-    required: false,
-    default: null
-  },
-  navigationLinks: {
-    type: Array,
-    required: true,
-    default: () => []
-  },
-  searchQuery: {
-    type: String,
-    required: true,
-    default: ''
-  },
-  cardSizeMode: {
-    type: String,
-    required: true,
-    default: 'large'
-  },
-  isFetchingMore: {
-    type: Boolean,
-    required: true,
-    default: false
-  }
-});
+const props = defineProps<Props>();
 
 // 定义组件的事件
-defineEmits(['retry']);
+const emit = defineEmits<Emits>();
 
 // 根据卡片大小设置动态计算网格布局的 class
-const cardContainerClasses = computed(() => {
+const cardContainerClasses = computed((): string => {
   const baseClasses = 'gap-3 sm:gap-4 mt-8';
   if (props.cardSizeMode === 'small') {
     // 小卡模式显示更多列：手机3列，平板4列，桌面5-6列，大屏幕7-8列
     return `grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 ${baseClasses}`;
+  } else if (props.cardSizeMode === 'medium') {
+    // 中卡模式：手机2列，平板3列，桌面4列，大屏幕5-6列
+    return `grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 ${baseClasses}`;
   } else {
     // 大卡模式平衡布局：确保内容清晰且充分利用空间
     return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${baseClasses}`;

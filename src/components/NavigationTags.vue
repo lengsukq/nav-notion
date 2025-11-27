@@ -15,32 +15,36 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import FilterTag from './FilterTag.vue';
 import { useSettingsStore } from '../store/settings';
 
+// 定义标签数据类型
+interface Tag {
+  name: string;
+  color: string;
+}
+
 // 定义组件的props
-defineProps({
-  availableTags: {
-    type: Array,
-    required: true,
-    default: () => []
-  },
-  selectedTags: {
-    type: Array,
-    required: true,
-    default: () => []
-  }
-});
+interface Props {
+  availableTags: Tag[];
+  selectedTags: string[];
+}
+
+const props = defineProps<Props>();
 
 // 定义组件的事件
-const emit = defineEmits(['tag-click']);
+interface Emits {
+  (e: 'tag-click', tagName: string): void;
+}
+
+const emit = defineEmits<Emits>();
 
 // 获取设置store
 const settingsStore = useSettingsStore();
 
 // 处理标签点击事件
-const handleTagClick = (tagName) => {
+const handleTagClick = (tagName: string): void => {
   // 直接向上传递事件，让父组件处理具体的逻辑
   emit('tag-click', tagName);
 };

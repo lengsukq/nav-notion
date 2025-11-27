@@ -8,8 +8,9 @@
         <!-- 1. 搜索引擎选择器 -->
         <div class="engine-selector-container" ref="engineSelectorRef">
           <div class="selected-engine" @click.stop="toggleEngineDropdown">
-            <span class="engine-name hidden sm:inline">{{ currentEngine.name }}</span>
-            <span class="engine-name-short sm:hidden">{{ currentEngine.shortName }}</span>
+            <span class="engine-icon">{{ engineIcon }}</span>
+            <span class="engine-name hidden sm:inline">{{ currentEngine?.name || 'Search' }}</span>
+            <span class="engine-name-short sm:hidden">{{ currentEngine?.shortName || 'S' }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 transition-transform duration-800 will-change-transform" :class="{'rotate-180': showEngineDropdown}">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -43,7 +44,7 @@
             <button @click.stop="executeSearch" class="search-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
-            <button @click.stop="$emit('toggle-settings')" class="settings-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
+            <button @click.stop="emit('toggle-settings')" class="settings-button transform transition-all duration-800 hover:scale-110 hover:bg-primary/10">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -77,18 +78,28 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue';
 
 // ==========================================
 // 1. Constants & Configuration (Memory Opt)
 // ==========================================
+// 定义搜索引擎配置类型
+interface SearchEngineConfig {
+  name: string;
+  shortName: string;
+  icon?: string;
+  type: 'external' | 'event';
+  url?: string;
+  eventName?: string;
+}
+
 /**
  * 搜索引擎配置
  * 移出 Setup，避免每次渲染重新分配内存。
  * type: 'external' (跳转 URL) | 'event' (Emit 事件)
  */
-const SEARCH_CONFIG = {
+const SEARCH_CONFIG: Record<string, SearchEngineConfig> = {
   bing:   { name: 'Bing', shortName: 'Bing', type: 'external', url: 'https://www.bing.com/search?q=' },
   google: { name: 'Google', shortName: 'Google', type: 'external', url: 'https://www.google.com/search?q=' },
   yahoo:  { name: 'Yahoo', shortName: 'Yahoo', type: 'external', url: 'https://search.yahoo.com/search?p=' },
@@ -98,7 +109,14 @@ const SEARCH_CONFIG = {
   notion: { name: 'Notion', shortName: 'Notion', type: 'event', eventName: 'search' }
 };
 
-const EMITS = defineEmits(['search', 'toggle-settings']);
+// 定义emits类型
+interface Emits {
+  search: [query: string];
+  'toggle-settings': [];
+}
+
+// 定义emits
+const emit = defineEmits<Emits>();
 
 // ==========================================
 // 2. Logic Abstraction (Composables)
@@ -109,18 +127,18 @@ const EMITS = defineEmits(['search', 'toggle-settings']);
  * 封装选择逻辑，降低主组件复杂度。
  */
 const useSearchEngine = () => {
-  const selectedKey = ref('bing');
-  const showDropdown = ref(false);
+  const selectedKey: Ref<string> = ref('bing');
+  const showDropdown: Ref<boolean> = ref(false);
 
   const currentEngine = computed(() => SEARCH_CONFIG[selectedKey.value] || SEARCH_CONFIG.bing);
 
-  const selectEngine = (key) => {
+  const selectEngine = (key: string): void => {
     selectedKey.value = key;
     localStorage.setItem('preferredSearchEngine', key);
     showDropdown.value = false;
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (): void => {
     showDropdown.value = !showDropdown.value;
   };
 
@@ -138,12 +156,12 @@ const useSearchEngine = () => {
  * 内部方法：管理搜索历史
  * 职责分离，专门处理 Storage 和过滤逻辑。
  */
-const useSearchHistory = (searchQueryRef) => {
-  const history = ref([]);
-  const showHistory = ref(false);
+const useSearchHistory = (searchQueryRef: Ref<string>) => {
+  const history: Ref<string[]> = ref([]);
+  const showHistory: Ref<boolean> = ref(false);
 
   // 安全读取 Storage
-  const loadHistory = () => {
+  const loadHistory = (): void => {
     try {
       history.value = JSON.parse(localStorage.getItem('searchHistory') || '[]');
     } catch (e) {
@@ -151,7 +169,7 @@ const useSearchHistory = (searchQueryRef) => {
     }
   };
 
-  const saveHistory = (query) => {
+  const saveHistory = (query: string): void => {
     if (!query || !query.trim()) return;
     // 去重并将新搜索置顶，保留最近 10 条
     const next = [query, ...history.value.filter(h => h !== query)].slice(0, 10);
@@ -159,7 +177,7 @@ const useSearchHistory = (searchQueryRef) => {
     localStorage.setItem('searchHistory', JSON.stringify(next));
   };
 
-  const clearHistory = () => {
+  const clearHistory = (): void => {
     history.value = [];
     localStorage.removeItem('searchHistory');
     showHistory.value = false;
@@ -180,10 +198,10 @@ const useSearchHistory = (searchQueryRef) => {
 // 3. Component Setup & Integration
 // ==========================================
 
-const searchQuery = ref('');
-const isFocused = ref(false); // 用于 UI 状态
-const engineSelectorRef = ref(null);
-const inputContainerRef = ref(null);
+const searchQuery: Ref<string> = ref('');
+const isFocused: Ref<boolean> = ref(false); // 用于 UI 状态
+const engineSelectorRef = ref<HTMLElement | null>(null);
+const inputContainerRef = ref<HTMLElement | null>(null);
 
 // 初始化内部逻辑
 const { 
@@ -206,13 +224,19 @@ const shouldShowHistory = computed(() => {
   return showSearchHistory.value && (filteredHistory.value.length > 0 || searchQuery.value);
 });
 
+// 动态设置搜索引擎图标
+const engineIcon = computed(() => {
+  const engine = currentEngine.value;
+  return engine?.icon || '🔍';
+});
+
 // UI Event Handlers
-const handleFocus = () => {
+const handleFocus = (): void => {
   isFocused.value = true;
   showSearchHistory.value = true;
 };
 
-const handleBlur = () => {
+const handleBlur = (): void => {
   isFocused.value = false;
   // 延迟关闭以允许点击历史项
   setTimeout(() => {
@@ -222,12 +246,12 @@ const handleBlur = () => {
   }, 150);
 };
 
-const selectHistory = (item) => {
+const selectHistory = (item: string): void => {
   searchQuery.value = item;
   executeSearch();
 };
 
-const clearHistory = () => {
+const clearHistory = (): void => {
   clearHistoryAction();
   // 保持焦点以便用户继续输入
   // nextTick(() => inputRef.value?.focus()); 
@@ -238,20 +262,19 @@ const clearHistory = () => {
  * 重构说明：使用 Strategy Pattern (多态) 替代 If-Else。
  * 根据配置中的 'type' 决定是打开 URL 还是触发事件。
  */
-const executeSearch = () => {
+const executeSearch = (): void => {
   const query = searchQuery.value.trim();
   if (!query) return;
 
   const config = currentEngine.value;
 
-  // 1. 保存历史
-  saveHistory(query);
-
-  // 2. 执行策略
-  if (config.type === 'event') {
-    EMITS(config.eventName, query);
-  } else if (config.type === 'external') {
+  // 保存历史和执行搜索策略
+  if (config?.type === 'event' && config?.eventName) {
+    emit('search', query);
+    saveHistory(query);
+  } else if (config?.type === 'external' && config?.url) {
     window.open(config.url + encodeURIComponent(query), '_blank');
+    saveHistory(query);
   }
 
   // 3. 重置 UI 状态
@@ -266,11 +289,11 @@ const executeSearch = () => {
  * 全局点击监听优化
  * 使用 Guard Clauses 提前返回。
  */
-const handleClickOutside = (event) => {
+const handleClickOutside = (event: MouseEvent): void => {
   // 如果两个下拉都关闭，直接返回，避免计算 DOM
   if (!showEngineDropdown.value && !showSearchHistory.value) return;
 
-  const target = event.target;
+  const target = event.target as Node;
   const inEngine = engineSelectorRef.value?.contains(target);
   const inInput = inputContainerRef.value?.contains(target);
 

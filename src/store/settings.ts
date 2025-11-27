@@ -2,23 +2,33 @@ import { defineStore } from 'pinia';
 import { debounce, clamp } from 'lodash';
 import navigationCache from '../utils/cache';
 
+// 类型定义
+export type CardSizeMode = 'small' | 'medium' | 'large';
+export type TagFilterMode = 'single' | 'multiple';
+
+interface ThemeColorRGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
 // 定义设置状态管理Store
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    cardSizeMode: localStorage.getItem('cardSizeMode') || 'large',
+    cardSizeMode: (localStorage.getItem('cardSizeMode') as CardSizeMode) || 'large',
     isSettingsOpen: false,
     themeColor: localStorage.getItem('themeColor') || '#3B82F6',
     secondaryColor: localStorage.getItem('secondaryColor') || '#d1d1d1',
-    tagFilterMode: localStorage.getItem('tagFilterMode') || 'single',
+    tagFilterMode: (localStorage.getItem('tagFilterMode') as TagFilterMode) || 'single',
     // 缓存设置
-    cacheExpiryTime: parseInt(localStorage.getItem('cacheExpiryTime')) || 24 // 默认24小时过期，0表示不缓存
+    cacheExpiryTime: parseInt(localStorage.getItem('cacheExpiryTime') || '24') || 24 // 默认24小时过期，0表示不缓存
   }),
   actions: {
-    setCardSizeMode(mode) {
+    setCardSizeMode(mode: CardSizeMode) {
       this.cardSizeMode = mode;
       this.saveSettings();
     },
-    setThemeColor(color) {
+    setThemeColor(color: string) {
       this.themeColor = color;
       document.documentElement.style.setProperty('--primary-color', color);
       // 计算并设置浅色和深色变体
@@ -28,10 +38,12 @@ export const useSettingsStore = defineStore('settings', {
       document.documentElement.style.setProperty('--primary-color-dark', darkColor);
       // 设置RGB格式变量
       const rgb = this.hexToRgb(color);
-      document.documentElement.style.setProperty('--primary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+      if (rgb) {
+        document.documentElement.style.setProperty('--primary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+      }
       this.saveSettings();
     },
-    setSecondaryColor(color) {
+    setSecondaryColor(color: string) {
       this.secondaryColor = color;
       document.documentElement.style.setProperty('--secondary-color', color);
       // 计算并设置浅色和深色变体
@@ -41,15 +53,17 @@ export const useSettingsStore = defineStore('settings', {
       document.documentElement.style.setProperty('--secondary-color-dark', darkColor);
       // 设置RGB格式变量
       const rgb = this.hexToRgb(color);
-      document.documentElement.style.setProperty('--secondary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+      if (rgb) {
+        document.documentElement.style.setProperty('--secondary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+      }
       this.saveSettings();
     },
-    setTagFilterMode(mode) {
+    setTagFilterMode(mode: TagFilterMode) {
       this.tagFilterMode = mode;
       this.saveSettings();
     },
     // 缓存相关方法
-    setCacheExpiryTime(hours) {
+    setCacheExpiryTime(hours: number) {
       this.cacheExpiryTime = hours;
       this.saveSettings();
       
@@ -58,18 +72,18 @@ export const useSettingsStore = defineStore('settings', {
         navigationCache.clearAllCache();
       }
     },
-    toggleSettings() {
+    toggleSettings(): void {
       console.log('toggleSettings called, current state:', this.isSettingsOpen);
       this.isSettingsOpen = !this.isSettingsOpen;
       console.log('toggleSettings updated state:', this.isSettingsOpen);
     },
-    closeSettings() {
+    closeSettings(): void {
       this.isSettingsOpen = false;
     },
-    setSettingsOpen(value) {
+    setSettingsOpen(value: boolean): void {
       this.isSettingsOpen = value;
     },
-    saveSettings() {
+    saveSettings(): void {
       localStorage.setItem('cardSizeMode', this.cardSizeMode);
       localStorage.setItem('themeColor', this.themeColor);
       localStorage.setItem('secondaryColor', this.secondaryColor);
@@ -77,7 +91,7 @@ export const useSettingsStore = defineStore('settings', {
       // 保存缓存设置
       localStorage.setItem('cacheExpiryTime', this.cacheExpiryTime.toString());
     },
-    resetSettings() {
+    resetSettings(): void {
       // 恢复默认设置
       this.cardSizeMode = 'large';
       this.themeColor = '#3B82F6';
@@ -95,7 +109,9 @@ export const useSettingsStore = defineStore('settings', {
       document.documentElement.style.setProperty('--primary-color-light', primaryLightColor);
       document.documentElement.style.setProperty('--primary-color-dark', primaryDarkColor);
       const primaryRgb = this.hexToRgb(this.themeColor);
-      document.documentElement.style.setProperty('--primary-color-rgb', `${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}`);
+      if (primaryRgb) {
+        document.documentElement.style.setProperty('--primary-color-rgb', `${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}`);
+      }
       
       document.documentElement.style.setProperty('--secondary-color', this.secondaryColor);
       const secondaryLightColor = this.lightenColor(this.secondaryColor, 0.2);
@@ -103,53 +119,55 @@ export const useSettingsStore = defineStore('settings', {
       document.documentElement.style.setProperty('--secondary-color-light', secondaryLightColor);
       document.documentElement.style.setProperty('--secondary-color-dark', secondaryDarkColor);
       const secondaryRgb = this.hexToRgb(this.secondaryColor);
-      document.documentElement.style.setProperty('--secondary-color-rgb', `${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}`);
+      if (secondaryRgb) {
+        document.documentElement.style.setProperty('--secondary-color-rgb', `${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}`);
+      }
       // 保存默认设置
       this.saveSettings();
     },
-    lightenColor(color, percent) {
+    lightenColor(color: string, percent: number): string {
       // 使用 lodash 的 clamp 简化颜色变浅逻辑
       const r = clamp(parseInt(color.substring(1,3), 16) * (1 + percent), 0, 255);
       const g = clamp(parseInt(color.substring(3,5), 16) * (1 + percent), 0, 255);
       const b = clamp(parseInt(color.substring(5,7), 16) * (1 + percent), 0, 255);
 
       // 使用 padStart 确保两位数
-      const toHex = (value) => Math.round(value).toString(16).padStart(2, '0');
+      const toHex = (value: number) => Math.round(value).toString(16).padStart(2, '0');
       
       return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     },
     // 将十六进制颜色转换为RGB对象
-    hexToRgb(hex) {
+    hexToRgb(hex: string): ThemeColorRGB | null {
       // 使用 lodash 的 clamp 确保值在有效范围内
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
+      if (!result || !result[1] || !result[2] || !result[3]) {
+        return null;
+      }
+      return {
         r: clamp(parseInt(result[1], 16), 0, 255),
         g: clamp(parseInt(result[2], 16), 0, 255),
         b: clamp(parseInt(result[3], 16), 0, 255)
-      } : null;
+      };
     },
-    darkenColor(color, percent) {
+    darkenColor(color: string, percent: number): string {
       // 使用 lodash 的 clamp 简化颜色变深逻辑
       const r = clamp(parseInt(color.substring(1,3), 16) * (1 - percent), 0, 255);
       const g = clamp(parseInt(color.substring(3,5), 16) * (1 - percent), 0, 255);
       const b = clamp(parseInt(color.substring(5,7), 16) * (1 - percent), 0, 255);
 
       // 使用 padStart 确保两位数
-      const toHex = (value) => Math.round(value).toString(16).padStart(2, '0');
+      const toHex = (value: number) => Math.round(value).toString(16).padStart(2, '0');
       
       return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
   },
-  created() {
-
-  },
   getters: {
     // 获取当前卡片大小模式
-    getCardSizeMode() {
+    getCardSizeMode(): CardSizeMode {
       return this.cardSizeMode;
     },
     // 获取设置模态框显示状态
-    getIsSettingsOpen() {
+    getIsSettingsOpen(): boolean {
       return this.isSettingsOpen;
     }
   }

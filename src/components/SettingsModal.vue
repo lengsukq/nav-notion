@@ -28,18 +28,27 @@
             </svg>
             卡片显示设置
           </h4>
-          <div class="flex space-x-3">
+          <div class="grid grid-cols-3 gap-3">
             <button 
               @click="setCardSizeMode('small')"
-              :class="[cardSizeMode === 'small' ? 'button-primary selected' : 'button-secondary', 'flex-1 px-4 py-2 rounded-lg text-sm font-medium button']"
+              :class="[cardSizeMode === 'small' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500', 'flex-1 px-4 py-3 rounded-lg border-2 transition-all duration-200']"
             >
-              小卡模式
+              <div class="text-sm font-medium">小卡模式</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">紧凑显示</div>
+            </button>
+            <button 
+              @click="setCardSizeMode('medium')"
+              :class="[cardSizeMode === 'medium' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500', 'flex-1 px-4 py-3 rounded-lg border-2 transition-all duration-200']"
+            >
+              <div class="text-sm font-medium">中卡模式</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">平衡显示</div>
             </button>
             <button 
               @click="setCardSizeMode('large')"
-              :class="[cardSizeMode === 'large' ? 'button-primary selected' : 'button-secondary', 'flex-1 px-4 py-2 rounded-lg text-sm font-medium button']"
+              :class="[cardSizeMode === 'large' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500', 'flex-1 px-4 py-3 rounded-lg border-2 transition-all duration-200']"
             >
-              大卡模式
+              <div class="text-sm font-medium">大卡模式</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">完整显示</div>
             </button>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">选择适合您的导航卡片大小</p>
@@ -63,7 +72,7 @@
               <input
                 type="color"
                 v-model="themeColor"
-                @change="setThemeColor($event.target.value)"
+                @change="setThemeColor(($event.target as HTMLInputElement).value)"
                   class="w-8 h-8 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg flex-shrink-0"
               >
               <input
@@ -83,7 +92,7 @@
               <input
                 type="color"
                 v-model="secondaryColor"
-                @change="setSecondaryColor($event.target.value)"
+                @change="setSecondaryColor(($event.target as HTMLInputElement).value)"
                   class="w-8 h-8 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-0 p-0 appearance-none outline-none box-border hover:shadow-lg flex-shrink-0"
               >
               <input
@@ -198,7 +207,7 @@
                   min="0" 
                   max="168" 
                   v-model="cacheExpiryTime" 
-                  @input="setCacheExpiryTime(parseInt(cacheExpiryTime) || 0)"
+                  @input="setCacheExpiryTime(parseInt(String(cacheExpiryTime)) || 0)"
                   class="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary outline-none"
                 >
                 <span class="text-sm text-gray-600 dark:text-gray-400">小时</span>
@@ -279,12 +288,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import { watch, ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue-sonner';
 import { debounce } from 'lodash';
+
+// Type definitions
+type AnimationState = 'enter' | 'exit';
+
+interface Position {
+  x: number;
+  y: number;
+}
 
 // 获取设置store
 const settingsStore = useSettingsStore();
@@ -294,17 +311,17 @@ const { cardSizeMode, isSettingsOpen, themeColor, secondaryColor, tagFilterMode,
 const { setCardSizeMode, setSettingsOpen, setThemeColor, setSecondaryColor, resetSettings, setTagFilterMode, setCacheExpiryTime } = settingsStore;
 
 // 预设颜色应用模式切换
-const applyToSecondary = ref(false);
+const applyToSecondary = ref<boolean>(false);
 
 // 动画相关的状态
-const isAnimating = ref(false);
-const animationState = ref('enter'); // 'enter' | 'exit'
-const settingsButtonPosition = ref({ x: 0, y: 0 });
-const modalBackdrop = ref(null);
-const modalContainer = ref(null);
+const isAnimating = ref<boolean>(false);
+const animationState = ref<AnimationState>('enter');
+const settingsButtonPosition = ref<Position>({ x: 0, y: 0 });
+const modalBackdrop = ref<HTMLElement | null>(null);
+const modalContainer = ref<HTMLElement | null>(null);
 
 // 计算动画类名
-const modalBackdropClasses = computed(() => {
+const modalBackdropClasses = computed<string>(() => {
   if (!isAnimating.value) return '';
   
   return animationState.value === 'enter' 
@@ -312,7 +329,7 @@ const modalBackdropClasses = computed(() => {
     : 'animate-out fade-out duration-200 ease-in';
 });
 
-const modalContainerClasses = computed(() => {
+const modalContainerClasses = computed<string>(() => {
   if (!isAnimating.value) return '';
   
   return animationState.value === 'enter' 
@@ -322,7 +339,9 @@ const modalContainerClasses = computed(() => {
 
 // 计算模态框容器的变换原点样式
 const modalContainerStyle = computed(() => {
-  if (!isAnimating.value) return {};
+  if (!isAnimating.value) {
+    return {};
+  }
   
   // 将设置按钮的屏幕坐标转换为相对于模态框的位置
   const viewportWidth = window.innerWidth;
@@ -341,7 +360,7 @@ const modalContainerStyle = computed(() => {
 });
 
 // 应用颜色的函数
-const applyColor = (color) => {
+const applyColor = (color: string): void => {
   if (applyToSecondary.value) {
     setSecondaryColor(color);
   } else {
@@ -350,8 +369,8 @@ const applyColor = (color) => {
 };
 
 // 获取设置按钮的位置
-const getSettingsButtonPosition = () => {
-  const settingsButton = document.querySelector('.settings-button');
+const getSettingsButtonPosition = (): void => {
+  const settingsButton = document.querySelector('.settings-button') as HTMLElement;
   if (settingsButton) {
     const rect = settingsButton.getBoundingClientRect();
     settingsButtonPosition.value = {
@@ -362,7 +381,7 @@ const getSettingsButtonPosition = () => {
 };
 
 // 关闭设置的函数，带有iOS风格动画效果
-const closeSettings = () => {
+const closeSettings = (): void => {
   isAnimating.value = true;
   animationState.value = 'exit';
   
@@ -377,7 +396,7 @@ const closeSettings = () => {
 };
 
 // 监听设置开启状态，触发进入动画
-watch(isSettingsOpen, (newValue) => {
+watch(isSettingsOpen, (newValue: boolean) => {
   if (newValue) {
     // 获取设置按钮位置
     getSettingsButtonPosition();

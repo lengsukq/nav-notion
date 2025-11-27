@@ -56,7 +56,7 @@
       </header>
 
       <!-- 描述与标签 (仅大卡片显示) -->
-      <template v-if="!isSmall">
+      <template v-if="!isSmall && !isMedium">
         <p class="mt-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2" :title="description">
           {{ description }}
         </p>
@@ -82,21 +82,31 @@
   </article>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
-const props = defineProps({
-  name: { type: String, required: true },
-  description: { type: String, required: true, default: '' },
-  icon: { type: String, default: null },
-  tags: { type: Array, default: () => [] },
-  url: { type: String, required: true },
-  delay: { type: String, default: '0s' },
-  size: { type: String, default: 'large', validator: v => ['small', 'large'].includes(v) }
+// 定义Props接口
+interface Props {
+  name: string;
+  description: string;
+  icon?: string | null;
+  tags?: string[];
+  url: string;
+  delay?: string;
+  size?: 'small' | 'medium' | 'large';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  description: '',
+  icon: null,
+  tags: () => [],
+  delay: '0s',
+  size: 'large'
 });
 
 // Logic Simplification: Internal state helpers
 const isSmall = computed(() => props.size === 'small');
+const isMedium = computed(() => props.size === 'medium');
 const processedIcon = computed(() => props.icon?.trim());
 const initialLetter = computed(() => props.name.charAt(0).toUpperCase());
 const hasTags = computed(() => props.tags && props.tags.length > 0);
@@ -106,7 +116,7 @@ const displayTags = computed(() => props.tags.slice(0, 3));
 const remainingTagsCount = computed(() => Math.max(0, props.tags.length - 3));
 
 // Navigation Logic
-const handleNavigation = () => {
+const handleNavigation = (): void => {
   if (!props.url) return;
   // 安全性：确保 noopener 防止新页面访问 window.opener
   window.open(props.url, '_blank', 'noopener,noreferrer');
@@ -116,7 +126,8 @@ const handleNavigation = () => {
 
 const containerClasses = computed(() => ({
   'h-[110px] md:h-[120px]': isSmall.value,
-  'h-full min-h-[160px]': !isSmall.value,
+  'h-[140px] md:h-[160px]': isMedium.value,
+  'h-full min-h-[200px]': !isSmall.value && !isMedium.value,
   'hero-fade-in': true
 }));
 
@@ -127,11 +138,15 @@ const headerClasses = computed(() => isSmall.value
 
 const iconSizeClasses = computed(() => isSmall.value
   ? 'w-9 h-9 md:w-10 md:h-10' // Small card icon
+  : isMedium.value
+  ? 'w-10 h-10 md:w-11 md:h-11' // Medium card icon  
   : 'w-11 h-11 shrink-0'      // Large card icon
 );
 
 const titleClasses = computed(() => isSmall.value
   ? 'text-sm font-semibold text-center line-clamp-2 w-full px-1'
+  : isMedium.value
+  ? 'text-base font-bold line-clamp-1 flex-1'
   : 'text-lg font-bold line-clamp-1 flex-1'
 );
 </script>

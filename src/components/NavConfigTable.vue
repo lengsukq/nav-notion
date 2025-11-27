@@ -59,30 +59,60 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
+// Type definitions
+interface NavItem {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  tag: string;
+  icon: string;
+}
+
+interface NavGroup {
+  name: string;
+  children?: NavItem[];
+}
+
+interface NavConfig {
+  navConfig: NavGroup[];
+}
+
+interface ConfigItem {
+  id?: string;
+  name: string;
+  type: string;
+  url?: string;
+  src?: string;
+  config?: {
+    title?: string;
+  };
+}
+
 // Memory: 仅保留用于渲染的最终扁平化数据，不存储原始的大型 JSON 对象
-const navItems = ref([]);
-const currentFileName = ref('');
+const navItems = ref<NavItem[]>([]);
+const currentFileName = ref<string>('');
 
 /**
  * Logic: 纯函数，将嵌套的 Config 结构转换为扁平的表格数据
  * 使用 flatMap 替代嵌套的 forEach，减少代码复杂度 (Complexity)
  */
-const transformConfigData = (json) => {
+const transformConfigData = (json: any): NavItem[] => {
   if (!json?.navConfig || !Array.isArray(json.navConfig)) {
     throw new Error('JSON 格式错误：缺少 navConfig 数组');
   }
 
-  return json.navConfig.flatMap(group => {
+  return json.navConfig.flatMap((group: any) => {
     if (!group.children || !group.children.length) return [];
     
     // SRP: 过滤逻辑内聚
     return group.children
-      .filter(item => ['text', 'icon'].includes(item.type))
-      .map(item => ({
+      .filter((item: any) => ['text', 'icon'].includes(item.type))
+      .map((item: any): NavItem => ({
         id: item.id || crypto.randomUUID(), // 确保有唯一 key
         name: item.name,
         url: item.url || '-',
@@ -96,18 +126,19 @@ const transformConfigData = (json) => {
 /**
  * Async Helper: 将 FileReader 封装为 Promise，避免回调地狱
  */
-const readFileAsText = (file) => {
+const readFileAsText = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target.result);
+    reader.onload = (e) => resolve(e.target?.result as string);
     reader.onerror = (e) => reject(e);
     reader.readAsText(file);
   });
 };
 
 // 主处理流程
-const handleFileUpload = async (event) => {
-  const file = event.target.files?.[0];
+const handleFileUpload = async (event: Event): Promise<void> => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
   if (!file) return; // 用户取消选择
 
   // Reset state
@@ -134,12 +165,12 @@ const handleFileUpload = async (event) => {
     // 区分 JSON 解析错误和其他错误
     const errorMsg = error instanceof SyntaxError 
       ? '文件不是有效的 JSON 格式' 
-      : (error.message || '读取文件失败');
+      : (error instanceof Error ? error.message : '读取文件失败');
       
     toast.error('解析失败', { description: errorMsg });
   } finally {
     // 清空 input value，确保即使再次选择同一个文件也能触发 change 事件
-    event.target.value = '';
+    target.value = '';
   }
 };
 </script>

@@ -5,6 +5,7 @@ import './style.css'
 import App from './App.vue'
 import router from './router/index'
 import 'vue-sonner/style.css'
+
 const app = createApp(App)
   .use(pinia)
   .use(router)

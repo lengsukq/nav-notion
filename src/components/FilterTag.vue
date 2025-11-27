@@ -10,30 +10,29 @@
   </span>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 import Color from 'colorjs.io';
 
-const props = defineProps({
-  tagName: {
-    type: String,
-    required: true
-  },
-  tagColor: {
-    type: String,
-    required: true
-  },
-  isSelected: {
-    type: Boolean,
-    default: false
-  }
-});
+// 定义Props接口
+interface Props {
+  tagName: string;
+  tagColor: string;
+  isSelected?: boolean;
+}
 
-defineEmits(['tag-click']);
+const props = defineProps<Props>();
+
+// 定义Emits接口
+interface Emits {
+  (e: 'tag-click', tagName: string): void;
+}
+
+defineEmits<Emits>();
 
 // 配置：预定义颜色映射，用于消除 magic strings 和重复的列表检查
 // Memory: 放在模块顶层作为常量，避免每次组件渲染都重新分配内存
-const COLOR_VARIANT_MAP = {
+const COLOR_VARIANT_MAP: Record<string, string> = {
   primary: 'tag-primary',
   blue: 'tag-primary',
   indigo: 'tag-primary',
@@ -44,13 +43,13 @@ const COLOR_VARIANT_MAP = {
   default: 'tag-default'
 };
 
-const tagVariant = computed(() => {
+const tagVariant = computed((): string => {
   // Logic: 优先处理选中状态，否则查表返回对应变体，兜底为 default
   if (props.isSelected) return 'tag-primary-selected';
   return COLOR_VARIANT_MAP[props.tagColor] || 'tag-default';
 });
 
-const tagStyle = computed(() => {
+const tagStyle = computed((): Record<string, string> => {
   // DRY: 如果是预定义颜色，由 class 处理样式，不需要内联 style
   if (COLOR_VARIANT_MAP.hasOwnProperty(props.tagColor)) {
     return {};
@@ -58,7 +57,7 @@ const tagStyle = computed(() => {
 
   // Memory/SRP: 内部辅助函数，仅在当前作用域生效，处理颜色解析逻辑
   // 解决了 try-catch 代码块过大导致逻辑不清晰的问题
-  const resolveColorValues = () => {
+  const resolveColorValues = (): { bg: string; border: string | null } => {
     try {
       const color = new Color(props.tagColor);
       const alpha = props.isSelected ? 0.95 : 0.4;
@@ -81,7 +80,7 @@ const tagStyle = computed(() => {
   const { bg, border } = resolveColorValues();
 
   // DRY: 统一构建样式对象，不再分别在 try 和 catch 中重复写两遍样式定义
-  const styles = {
+  const styles: Record<string, string> = {
     backgroundColor: bg,
   };
 

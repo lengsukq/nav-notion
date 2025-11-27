@@ -12,14 +12,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const currentTime = ref('');
-let timeInterval = null;
+const currentTime = ref<string>('');
+let timeInterval: number | null = null;
 
 // 更新时间显示
-const updateTime = () => {
+const updateTime = (): void => {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -30,17 +30,17 @@ const updateTime = () => {
   currentTime.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-onMounted(() => {
+onMounted((): void => {
   // 首次立即更新
   updateTime();
   // 设置定时器每秒更新
-  timeInterval = setInterval(updateTime, 1000);
+  timeInterval = window.setInterval(updateTime, 1000);
 });
 
-onUnmounted(() => {
+onUnmounted((): void => {
   // 组件卸载时清除定时器，防止内存泄漏
-  if (timeInterval) {
-    clearInterval(timeInterval);
+  if (timeInterval !== null) {
+    window.clearInterval(timeInterval);
   }
 });
 </script>

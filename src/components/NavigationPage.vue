@@ -25,7 +25,7 @@
         :navigation-links="navigationLinks" 
         :search-query="searchQuery" 
         :card-size-mode="cardSizeMode" 
-        :is-fetching-more="isFetchingMore" 
+        :is-fetching-more="pagination.isFetchingMore" 
         @retry="handleRetry"
       />
 
@@ -34,7 +34,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import NavigationHeader from './NavigationHeader.vue';
 import NavigationTags from './NavigationTags.vue';
 import NavigationCards from './NavigationCards.vue';
@@ -43,6 +43,60 @@ import { useSettingsStore } from '../store/settings';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import navigationCache from '../utils/cache';
+
+// ==========================================
+// 1. Type Definitions
+// ==========================================
+
+interface DatabaseInfo {
+  title: string;
+  description: string;
+}
+
+interface Tag {
+  name: string;
+  color: string;
+}
+
+interface NavigationLink {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  icon?: string;
+  tags: string[];
+}
+
+interface Pagination {
+  nextCursor: string | null;
+  hasMore: boolean;
+  isFetchingMore: boolean;
+}
+
+interface FetchOptions {
+  isLoadMore?: boolean;
+  tags?: string[];
+  search?: string;
+}
+
+interface Metadata {
+  title: string;
+  description: string;
+  availableTags: Tag[];
+  tags: Tag[];
+  backgroundImageUrl: string | null;
+}
+
+interface NotionAPIResponse {
+  results: any[];
+  next_cursor: string | null;
+  has_more: boolean;
+}
+
+interface CacheEntry {
+  data: NavigationLink[];
+  metadata: Pagination;
+}
 
 // --- 配置与环境常量 ---
 const CONFIG = {
@@ -53,16 +107,16 @@ const CONFIG = {
 };
 
 // --- 响应式状态 ---
-const navigationLinks = ref([]);
-const loading = ref(true);
-const error = ref(null);
-const databaseInfo = ref({ title: '导航中心', description: '正在从 Notion 加载...' });
-const availableTags = ref([]);
-const selectedTags = ref([]);
-const searchQuery = ref('');
+const navigationLinks = ref<NavigationLink[]>([]);
+const loading = ref<boolean>(true);
+const error = ref<string | null>(null);
+const databaseInfo = ref<DatabaseInfo>({ title: '导航中心', description: '正在从 Notion 加载...' });
+const availableTags = ref<Tag[]>([]);
+const selectedTags = ref<string[]>([]);
+const searchQuery = ref<string>('');
 
 // 分页状态
-const pagination = ref({
+const pagination = ref<Pagination>({
   nextCursor: null,
   hasMore: false,
   isFetchingMore: false
@@ -90,7 +144,7 @@ const createNotionClient = () => {
   });
 
   // 通用请求方法，封装 fetch 和 错误处理
-  const request = async (endpoint, method = 'GET', body = null) => {
+  const request = async (endpoint: string, method = 'GET', body = null) => {
     validateConfig();
     const url = `${CONFIG.PROXY}https://api.notion.com/v1/${endpoint}`;
     
@@ -109,13 +163,13 @@ const createNotionClient = () => {
   };
 
   return {
-    queryDatabase: (filters = null, cursor = null) => {
-      const body = {};
+    queryDatabase: (filters: any = null, cursor: string | null = null): Promise<NotionAPIResponse> => {
+      const body: any = {};
       if (filters) body.filter = filters;
       if (cursor) body.start_cursor = cursor;
       return request(`databases/${CONFIG.DB_ID}/query`, 'POST', body);
     },
-    retrieveDatabase: () => request(`databases/${CONFIG.DB_ID}`, 'GET')
+    retrieveDatabase: (): Promise<any> => request(`databases/${CONFIG.DB_ID}`, 'GET')
   };
 };
 
@@ -127,7 +181,7 @@ const notionApi = createNotionClient();
 // ==========================================
 
 // 解析 Notion 响应数据
-const parseNotionResults = (results) => {
+const parseNotionResults = (results: any[]): NavigationLink[] => {
   if (!Array.isArray(results)) return [];
   
   return results
@@ -135,20 +189,21 @@ const parseNotionResults = (results) => {
     .map(item => {
       const { properties } = item;
       return {
+        id: item.id,
         name: properties['name']?.title?.[0]?.plain_text || '未命名',
         url: properties['url']?.rich_text?.[0]?.text?.link?.url || 
              properties['url']?.rich_text?.[0]?.plain_text || '#',
         description: properties['description']?.rich_text?.[0]?.plain_text || '无描述',
         icon: item.icon?.type === 'external' ? item.icon.external.url : 
               (item.icon?.type === 'file' ? item.icon.file.url : null),
-        tags: properties['tag']?.multi_select?.map(tag => tag.name) || []
+        tags: properties['tag']?.multi_select?.map((tag: any) => tag.name) || []
       };
     })
     .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase(), 'zh-CN', { sensitivity: 'base' }));
 };
 
 // 构建查询过滤器
-const buildFilterQuery = (tags, mode, query) => {
+const buildFilterQuery = (tags: string[], mode: string, query: string): any => {
   // 搜索模式优先
   if (query) {
     return {
@@ -180,7 +235,7 @@ const buildFilterQuery = (tags, mode, query) => {
 
 // 背景图管理逻辑 (DOM 操作隔离)
 const useDynamicBackground = () => {
-  const setBackground = (imageUrl) => {
+  const setBackground = (imageUrl: string | null) => {
     const existingLayer = document.getElementById('dynamic-background-layer');
     if (existingLayer) {
       existingLayer.remove();
@@ -206,7 +261,7 @@ const backgroundManager = useDynamicBackground();
 // ==========================================
 
 // 核心数据加载方法 - 降低复杂度，拆分流程
-const fetchContent = async (options = {}) => {
+const fetchContent = async (options: FetchOptions = {}): Promise<void> => {
   const { 
     isLoadMore = false, 
     tags = selectedTags.value, 
@@ -241,7 +296,11 @@ const fetchContent = async (options = {}) => {
     // 4. API 调用
     const data = await notionApi.queryDatabase(filter, cursor);
     const processedLinks = parseNotionResults(data.results);
-    const metadata = { nextCursor: data.next_cursor, hasMore: data.has_more };
+    const metadata: Pagination = { 
+      nextCursor: data.next_cursor, 
+      hasMore: data.has_more,
+      isFetchingMore: false
+    };
 
     // 5. 更新状态与缓存
     applyDataToState(processedLinks, metadata, isLoadMore);
@@ -258,7 +317,7 @@ const fetchContent = async (options = {}) => {
     }
 
   } catch (err) {
-    error.value = `获取数据失败: ${err.message}`;
+    error.value = `获取数据失败: ${err instanceof Error ? err.message : '未知错误'}`;
   } finally {
     loading.value = false;
     pagination.value.isFetchingMore = false;
@@ -266,7 +325,7 @@ const fetchContent = async (options = {}) => {
 };
 
 // 辅助：统一应用数据到状态
-const applyDataToState = (links, metadata, append) => {
+const applyDataToState = (links: NavigationLink[], metadata: Pagination, append: boolean): void => {
   if (append) {
     navigationLinks.value = [...navigationLinks.value, ...links];
   } else {
@@ -277,15 +336,22 @@ const applyDataToState = (links, metadata, append) => {
 };
 
 // 初始化元数据 (标题、描述、背景、标签)
-const initMetadata = async () => {
+const initMetadata = async (): Promise<void> => {
   // 尝试缓存
   const cachedMeta = navigationCache.getMetadataCache(cacheExpiryTime.value * 3600000);
   if (cachedMeta) {
     const { title, description, availableTags: tags, backgroundImageUrl } = cachedMeta.data;
-    applyMetadata({ title, description, tags, backgroundImageUrl });
+    const metadata: Metadata = {
+      title,
+      description,
+      availableTags: tags,
+      tags: tags,
+      backgroundImageUrl
+    };
+    applyMetadata(metadata);
     
     // 如果有缓存，直接用缓存的标签触发数据加载
-    const hasHome = tags.find(t => t.name === '主页');
+    const hasHome = tags.find((t: Tag) => t.name === '主页');
     if (hasHome) selectedTags.value = ['主页'];
     fetchContent(); 
     return;
@@ -294,10 +360,11 @@ const initMetadata = async () => {
   try {
     const data = await notionApi.retrieveDatabase();
     
-    const meta = {
+    const meta: Metadata = {
       title: data.title?.[0]?.plain_text || '导航中心',
       description: data.description?.[0]?.plain_text || 'Notion 驱动的导航站',
-      tags: data.properties?.tag?.multi_select?.options.map(o => ({ name: o.name, color: o.color })) || [],
+      availableTags: data.properties?.tag?.multi_select?.options.map((o: any) => ({ name: o.name, color: o.color })) || [],
+      tags: data.properties?.tag?.multi_select?.options.map((o: any) => ({ name: o.name, color: o.color })) || [],
       backgroundImageUrl: data.cover?.file?.url || data.cover?.external?.url || null
     };
 
@@ -313,7 +380,7 @@ const initMetadata = async () => {
     }
 
     // 设置默认标签并加载
-    const hasHome = meta.tags.find(t => t.name === '主页');
+    const hasHome = meta.tags.find((t: Tag) => t.name === '主页');
     if (hasHome) selectedTags.value = ['主页'];
     fetchContent();
 
@@ -324,7 +391,7 @@ const initMetadata = async () => {
   }
 };
 
-const applyMetadata = ({ title, description, tags, backgroundImageUrl }) => {
+const applyMetadata = ({ title, description, tags, backgroundImageUrl }: Metadata): void => {
   databaseInfo.value = { title, description };
   availableTags.value = tags;
   backgroundManager.setBackground(backgroundImageUrl);
@@ -334,7 +401,7 @@ const applyMetadata = ({ title, description, tags, backgroundImageUrl }) => {
 // 5. Event Handlers
 // ==========================================
 
-const handleTagClick = (tagName) => {
+const handleTagClick = (tagName: string): void => {
   // 优化：简化 If-Else 逻辑，使用更清晰的流控制
   if (settingsStore.tagFilterMode === 'single') {
     if (selectedTags.value.includes(tagName)) return; // 避免重复点击
@@ -353,7 +420,7 @@ const handleTagClick = (tagName) => {
   fetchContent({ isLoadMore: false, search: '' });
 };
 
-const handleSearch = (query) => {
+const handleSearch = (query: string): void => {
   searchQuery.value = query;
   if (query.trim()) {
     selectedTags.value = []; // 搜索时清空标签
@@ -363,11 +430,11 @@ const handleSearch = (query) => {
   }
 };
 
-const handleRetry = () => {
+const handleRetry = (): void => {
   fetchContent({ isLoadMore: false });
 };
 
-const handleScroll = () => {
+const handleScroll = (): void => {
   const { isFetchingMore, hasMore } = pagination.value;
   if (isFetchingMore || !hasMore) return;
 
@@ -381,7 +448,7 @@ const handleScroll = () => {
 // 6. Lifecycle & Watchers
 // ==========================================
 
-watch(() => databaseInfo.value.title, (newTitle) => {
+watch(() => databaseInfo.value.title, (newTitle: string) => {
   if (newTitle) document.title = newTitle;
 }, { immediate: true });
 
