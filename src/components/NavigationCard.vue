@@ -55,14 +55,15 @@
         </h3>
       </header>
 
-      <!-- 描述与标签 (仅大卡片显示) -->
-      <template v-if="!isSmall && !isMedium">
-        <p class="mt-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2" :title="description">
+      <!-- 描述与标签 (大卡片显示描述+标签，中卡片只显示标签) -->
+      <template v-if="!isSmall">
+        <!-- 仅大卡片显示描述 -->
+        <p v-if="!isMedium && !isSmall" class="mt-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2" :title="description">
           {{ description }}
         </p>
         
-        <!-- 标签区域 -->
-        <div v-if="hasTags" class="mt-auto pt-4 flex flex-wrap gap-2 items-center">
+        <!-- 标签区域 (大卡片和中卡片都显示) -->
+        <div v-if="hasTags" :class="isMedium ? 'mt-3' : 'mt-auto pt-4'" class="flex flex-wrap gap-2 items-center">
           <span 
             v-for="(tag, index) in displayTags" 
             :key="`tag-${index}`" 

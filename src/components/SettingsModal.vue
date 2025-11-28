@@ -223,40 +223,22 @@
                 不缓存
               </button>
               <button 
-                @click="setCacheExpiryTime(1)" 
-                :class="[cacheExpiryTime === 1 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
-              >
-                1小时
-              </button>
-              <button 
-                @click="setCacheExpiryTime(6)" 
-                :class="[cacheExpiryTime === 6 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
-              >
-                6小时
-              </button>
-              <button 
-                @click="setCacheExpiryTime(12)" 
-                :class="[cacheExpiryTime === 12 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
-              >
-                12小时
-              </button>
-              <button 
                 @click="setCacheExpiryTime(24)" 
                 :class="[cacheExpiryTime === 24 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
               >
                 1天
               </button>
               <button 
-                @click="setCacheExpiryTime(72)" 
-                :class="[cacheExpiryTime === 72 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
-              >
-                3天
-              </button>
-              <button 
                 @click="setCacheExpiryTime(168)" 
                 :class="[cacheExpiryTime === 168 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
               >
                 1周
+              </button>
+              <button 
+                @click="setCacheExpiryTime(720)" 
+                :class="[cacheExpiryTime === 720 ? 'button-primary selected' : 'button-secondary', 'px-1.5 py-1 rounded text-xs button']"
+              >
+                1月
               </button>
             </div>
             
