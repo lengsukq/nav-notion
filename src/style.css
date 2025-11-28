@@ -781,3 +781,56 @@ html {
 }
 
 /* ========== 统一样式定义结束 ========== */
+
+/* HeroUI 卡片标签样式 - 跟随主题色变化 */
+.hero-tag {
+  /* 基础样式 */
+  @apply px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-300 backdrop-blur-md;
+  
+  /* 主题色变量 - 确保跟随主题色变化 */
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  border-color: rgba(var(--primary-color-rgb), 0.3);
+}
+
+/* 标签悬浮效果 - 使用CSS选择器 */
+.hero-tag:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.15);
+}
+
+/* 标签激活状态 */
+.hero-tag:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
+}
+
+/* 深色模式下的标签样式 */
+@media (prefers-color-scheme: dark) {
+  .hero-tag {
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    border-color: rgba(var(--primary-color-rgb), 0.4);
+    color: var(--primary-color-light);
+  }
+  
+  .hero-tag:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.25);
+    border-color: rgba(var(--primary-color-rgb), 0.6);
+    box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.2);
+  }
+}
+
+/* 移动设备优化 */
+@media (max-width: 768px) {
+  .hero-tag {
+    @apply px-2 py-1 text-xs;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-tag {
+    @apply px-1.5 py-0.5 text-xs rounded-lg;
+  }
+}
