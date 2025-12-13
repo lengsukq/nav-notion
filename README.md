@@ -1,183 +1,151 @@
-# Nav-Notion - 个人导航中心
+# Notion 导航管理系统
 
-> 一个基于 Vue 3 和 Notion API 的现代化个人导航页面，支持自定义主题、标签筛选和响应式设计。
+基于 Next.js 15 和 HeroUI 的现代化导航管理系统，使用 Notion API 作为数据源。
 
-![预览图](https://via.placeholder.com/800x400?text=Nav-Notion+Preview)
+## ✨ 功能特性
 
-## ✨ 特性
+- 🚀 **现代化界面** - 使用 HeroUI + Tailwind CSS 构建的响应式界面
+- 🔗 **Notion 集成** - 直接从 Notion 数据库获取导航数据
+- 🔍 **智能搜索** - 支持标题和描述的全文搜索
+- 🏷️ **标签过滤** - 基于标签的导航分类
+- 💾 **本地缓存** - 智能缓存机制，提升加载速度
+- ⚙️ **灵活配置** - 可配置的 Notion Token 和数据库 ID
+- 📱 **响应式设计** - 完美适配移动端和桌面端
+- 🎨 **深色主题** - 优雅的深色渐变背景
 
-- 🎨 **现代化设计** - 采用毛玻璃效果和渐变色彩，提供优雅的视觉体验
-- 📱 **完全响应式** - 适配各种设备尺寸，从手机到桌面设备
-- 🔍 **智能搜索** - 快速查找导航链接
-- 🏷️ **标签筛选** - 支持单选和多选两种筛选模式
-- 🎯 **卡片布局** - 提供大卡和小卡两种显示模式
-- 🌈 **主题定制** - 可自定义主次主题色，提供多种预设颜色
-- ⏰ **时间显示** - 实时显示当前时间
-- 🔄 **无限滚动** - 自动加载更多内容
-- 📁 **配置导入** - 支持通过 JSON 文件导入导航配置
-- 🖼️ **动态背景** - 支持从 Notion 数据库加载背景图片
+## 🛠️ 技术栈
+
+- **前端框架**: Next.js 15 (App Router)
+- **UI 组件库**: HeroUI
+- **样式**: Tailwind CSS
+- **类型安全**: TypeScript
+- **图标**: Lucide React
+- **数据存储**: 本地存储 + Notion API
 
 ## 🚀 快速开始
 
-### 环境要求
+### 1. 克隆项目
 
-- Node.js 16.0 或更高版本
-- npm 或 yarn 包管理器
+```bash
+git clone <your-repo-url>
+cd nav-notion
+```
 
-### 安装步骤
+### 2. 安装依赖
 
-1. **克隆仓库**
-   ```bash
-   git clone https://github.com/lengsukq/nav-notion.git
-   cd nav-notion
-   ```
+```bash
+npm install
+```
 
-2. **安装依赖**
-   ```bash
-   npm install
-   # 或
-   yarn install
-   ```
+### 3. 配置环境变量
 
-3. **配置环境变量**
-   
-   创建 `.env` 文件并添加以下内容：
-   ```env
-   # Notion API 配置
-   VITE_APP_NOTION_TOKEN=your_notion_integration_token_here
-   VITE_APP_NOTION_VERSION=2022-06-28
-   VITE_APP_NOTION_DATABASE_ID=your_notion_database_id_here
-   VITE_APP_PROXY_URL=https://cors-anywhere.herokuapp.com/
-   ```
+创建 `.env.local` 文件：
 
-4. **启动开发服务器**
-   ```bash
-   npm run dev
-   # 或
-   yarn dev
-   ```
+```env
+NOTION_TOKEN=your_notion_integration_token
+NOTION_DATABASE_ID=your_database_id
+```
 
-5. **构建生产版本**
-   ```bash
-   npm run build
-   # 或
-   yarn build
-   ```
+### 4. 启动开发服务器
 
-## 🔧 Notion 数据库设置
+```bash
+npm run dev
+```
 
-### 创建 Notion 集成
+访问 http://localhost:3000 查看应用
 
-1. 访问 [Notion Integrations](https://www.notion.so/my-integrations) 页面
-2. 点击 "+ New integration" 创建新集成
-3. 填写集成名称，选择关联的工作空间
-4. 记录 "Internal Integration Token"，这将是你的 `VITE_APP_NOTION_TOKEN`
+## 📋 Notion 数据库配置
 
-### 创建导航数据库
+### 数据库结构
 
-1. 在 Notion 中创建一个新的数据库
-2. 添加以下属性：
-   - `name` (标题) - 导航项名称
-   - `url` (文本) - 导航链接
-   - `description` (文本) - 导航项描述
-   - `tag` (多选) - 导航项标签
-   - `icon` (文件 & 媒体) - 导航项图标（可选）
-3. 记录数据库 ID，这将是你的 `VITE_APP_NOTION_DATABASE_ID`
+创建一个新的 Notion 数据库，包含以下属性：
 
-### 共享数据库给集成
+| 属性名 | 类型 | 说明 |
+|--------|------|------|
+| Title | 标题 | 导航标题 |
+| URL | URL | 链接地址 |
+| Description | 富文本 | 描述信息 |
+| Tags | 多选 | 标签 |
+| Category | 单选 | 分类 |
+| Icon | 富文本 | 图标 |
+| Priority | 数字 | 优先级 |
+| Status | 单选 | 状态 (Published/Draft) |
 
-1. 点击数据库右上角的 "Share" 按钮
-2. 点击 "Invite" 
-3. 选择你之前创建的集成
-4. 点击 "Invite" 完成共享
+### 设置步骤
+
+1. **创建 Notion 集成**
+   - 访问 [Notion 集成页面](https://www.notion.so/my-integrations)
+   - 创建新的集成并获取 Token
+
+2. **连接数据库**
+   - 在数据库页面添加你的集成连接
+   - 确保集成有读取权限
+
+3. **获取数据库 ID**
+   - 从数据库 URL 中提取 32 位 ID
+
+详细设置指南请访问应用的 `/setup` 页面。
 
 ## 📁 项目结构
 
 ```
-nav-notion/
-├── public/              # 静态资源
-├── src/
-│   ├── components/      # Vue 组件
-│   │   ├── FilterTag.vue        # 标签筛选组件
-│   │   ├── NavConfigTable.vue  # 导航配置表格
-│   │   ├── NavigationCard.vue   # 导航卡片
-│   │   ├── NavigationCards.vue  # 导航卡片列表
-│   │   ├── NavigationHeader.vue # 导航头部
-│   │   ├── NavigationPage.vue   # 导航页面
-│   │   ├── NavigationTags.vue   # 导航标签
-│   │   ├── SearchBox.vue        # 搜索框
-│   │   ├── SettingsModal.vue    # 设置模态框
-│   │   └── TimeDisplay.vue      # 时间显示
-│   ├── router/          # 路由配置
-│   ├── store/           # 状态管理
-│   ├── App.vue          # 根组件
-│   ├── main.js          # 入口文件
-│   └── style.css        # 全局样式
-├── .env                 # 环境变量
-├── .gitignore           # Git 忽略文件
-├── index.html           # HTML 模板
-├── package.json         # 项目依赖
-├── tailwind.config.js   # Tailwind 配置
-└── vite.config.js       # Vite 配置
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API 路由
+│   │   ├── navigation/    # 导航数据 API
+│   │   └── auth/          # 认证检查 API
+│   ├── layout.tsx         # 根布局
+│   ├── page.tsx           # 主页
+│   └── setup/             # 设置指南页面
+├── components/            # React 组件
+│   └── NavigationPage.tsx # 主页面组件
+├── lib/                   # 工具库
+│   ├── notion.ts          # Notion API 服务
+│   └── storage.ts         # 本地存储工具
+├── types/                 # TypeScript 类型定义
+└── utils/                 # 工具函数
 ```
 
-## 🎨 自定义配置
+## 🔧 开发
 
-### 主题色设置
+### 开发模式
 
-通过设置模态框可以自定义主题色：
+```bash
+npm run dev
+```
 
-1. 点击页面右上角的设置按钮
-2. 在"主题色调色板"部分选择或输入颜色值
-3. 可以从预设颜色中快速选择
-4. 支持分别设置主色和次色
+### 构建生产版本
 
-### 卡片显示模式
+```bash
+npm run build
+npm start
+```
 
-- **大卡模式** - 显示完整信息，包括标题、描述和标签
-- **小卡模式** - 紧凑布局，仅显示标题和图标
+### 代码检查
 
-### 标签筛选模式
+```bash
+npm run lint
+```
 
-- **单选模式** - 一次只能选择一个标签进行筛选
-- **多选模式** - 可以选择多个标签，显示同时匹配所有选中标签的结果
+## 📝 使用说明
 
-## 🚀 部署
-
-### Vercel 部署
-
-1. 将代码推送到 GitHub 仓库
-2. 在 [Vercel](https://vercel.com) 导入项目
-3. 配置环境变量（与本地开发相同）
-4. 部署项目
-
-### 其他平台部署
-
-项目基于 Vite 构建，可以轻松部署到任何支持静态网站的平台：
-
-- Netlify
-- GitHub Pages
-- Cloudflare Pages
+1. **首次使用**: 点击右上角的帮助图标查看设置指南
+2. **配置连接**: 在设置中输入你的 Notion Token 和 Database ID
+3. **添加数据**: 在 Notion 数据库中添加导航项目
+4. **搜索过滤**: 使用搜索框和标签进行内容过滤
+5. **数据刷新**: 点击刷新按钮获取最新数据
 
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
 
-1. Fork 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开一个 Pull Request
-
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+MIT License
 
 ## 🙏 致谢
 
-- [Vue 3](https://vuejs.org/) - 渐进式 JavaScript 框架
-- [Vite](https://vitejs.dev/) - 下一代前端构建工具
-- [Notion API](https://developers.notion.com/) - 强大的内容管理 API
-- [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
-- [Pinia](https://pinia.vuejs.org/) - Vue 状态管理库
-- [Vue Sonner](https://vue-sonner.vercel.app/) - Vue 3 通知组件
+- [Next.js](https://nextjs.org/) - 强大的 React 框架
+- [HeroUI](https://heroui.com/) - 美观的 UI 组件库
+- [Notion](https://notion.so/) - 优秀的笔记和数据库工具
+- [Tailwind CSS](https://tailwindcss.com/) - 实用的 CSS 框架

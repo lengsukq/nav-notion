@@ -1,35 +1,39 @@
 {
-  "name": "nav-pro",
+  "name": "nav-notion-nextjs",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview",
-    "type-check": "vue-tsc --noEmit"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
+    "@heroui/react": "^2.8.5",
+    "@heroui/theme": "^2.4.23",
     "@notionhq/client": "^4.0.1",
-    "@tailwindcss/vite": "^4.1.11",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@tailwindcss/typography": "^0.5.19",
     "colorjs.io": "^0.5.2",
+    "framer-motion": "^12.23.26",
     "lodash": "^4.17.21",
-    "pinia": "^3.0.3",
-    "tailwindcss-animate": "^1.0.7",
-    "vue": "^3.5.17",
-    "vue-router": "^4.5.1",
-    "vue-sonner": "^2.0.2"
+    "lucide-react": "^0.561.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/lodash": "^4.17.21",
     "@types/node": "^24.10.1",
-    "@vitejs/plugin-vue": "^6.0.0",
-    "@vue/tsconfig": "^0.8.1",
-    "autoprefixer": "^10.4.21",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.22",
+    "eslint": "^8",
+    "eslint-config-next": "^16.0.0",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11",
-    "typescript": "^5.9.3",
-    "vite": "^7.0.4",
-    "vue-tsc": "^3.1.5"
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
   }
 }

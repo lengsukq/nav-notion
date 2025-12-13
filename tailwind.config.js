@@ -1,13 +1,27 @@
-/** @type {import('tailwindcss').Config} */
-import animate from 'tailwindcss-animate';
+import {heroui} from '@heroui/react';
 
-export default {
+/** @type {import('tailwindcss').Config} */
+const config = {
   content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+      },
+    },
   },
-  plugins: [animate],
+  darkMode: 'class',
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/line-clamp'),
+    heroui(),
+  ],
 }
+
+export default config;
