@@ -28,7 +28,7 @@ export function SearchFilters({
 
   return (
     <div className="sticky top-2 md:top-4 z-50 mb-4 md:mb-6">
-      <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl shadow-black/20 mx-2 md:mx-0">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl shadow-black/20">
         <CardBody className="p-3 md:p-4">
           <div className="flex flex-col lg:flex-row gap-3 md:gap-4">
             {/* 搜索输入框 */}
