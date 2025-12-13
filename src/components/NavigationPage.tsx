@@ -489,85 +489,93 @@ export function NavigationPage() {
             </CardBody>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6">
             {filteredData.map((item, index) => (
               <Card 
                 key={item.id} 
-                className="group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer overflow-hidden p-0 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2"
+                className="group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer overflow-hidden p-0 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1"
                 isPressable
                 as={Link}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  animationDelay: `${index * 50}ms`
+                  animationDelay: `${index * 30}ms`
                 }}
               >
                 {/* 动态背景光效 */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
-                {/* 动态渐变边框 */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm -z-10"></div>
-                
-                <CardBody className="relative p-6 h-full flex flex-col">
-                  {/* 头部区域 - 图标和状态 */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="relative">
-                      <div className="w-16 h-16 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-3xl">{item.icon || '🌐'}</span>
+                <CardBody className="relative p-3 md:p-4 lg:p-5 h-full flex flex-col">
+                  {/* 标题和状态 - 移除图标 */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm md:text-base lg:text-lg font-bold text-white truncate group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 group-hover:bg-clip-text transition-all duration-300">
+                        {item.title}
+                      </h3>
+                      <div className="flex items-center gap-1 ml-2">
+                        {/* 状态指示器 */}
+                        <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="light"
+                          className="text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10 w-5 h-5 md:w-6 md:h-6"
+                        >
+                          <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
+                        </Button>
                       </div>
-                      {/* 图标光晕效果 */}
-                      <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
-                      {/* 状态指示器 */}
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                      <Button
-                        isIconOnly
-                        size="sm"
-                        variant="light"
-                        className="text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    {/* 装饰线 - 仅桌面端 */}
+                    <div className="hidden lg:block w-6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 mt-1"></div>
                   </div>
                   
-                  {/* 标题区域 */}
-                  <div className="mb-3">
-                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 group-hover:bg-clip-text transition-all duration-300">
-                      {item.title}
-                    </h3>
-                    <div className="w-8 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-                  </div>
-                  
-                  {/* 描述区域 */}
-                  <p className="text-gray-300 text-sm mb-4 line-clamp-2 leading-relaxed">
+                  {/* 描述区域 - 仅桌面端 */}
+                  <p className="hidden md:block text-gray-300 text-xs lg:text-sm mt-2 lg:mt-3 line-clamp-1 lg:line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
                   
-                  {/* 标签区域 */}
-                  <div className="mt-auto">
-                    <div className="flex flex-wrap gap-2">
-                      {item.tags.slice(0, 3).map(tag => (
+                  {/* 标签区域 - 仅桌面端 */}
+                  <div className="hidden lg:block mt-auto">
+                    <div className="flex flex-wrap gap-1">
+                      {item.tags.slice(0, 2).map(tag => (
                         <span
                           key={tag}
-                          className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-full text-xs text-gray-300 hover:text-white transition-all duration-200 hover:scale-105"
+                          className="px-2 py-0.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded text-xs text-gray-300 hover:text-white transition-all duration-200 hover:scale-105"
                         >
                           {tag}
                         </span>
                       ))}
-                      {item.tags.length > 3 && (
-                        <span className="px-3 py-1 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-full text-xs text-purple-300">
-                          +{item.tags.length - 3}
+                      {item.tags.length > 2 && (
+                        <span className="px-2 py-0.5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded text-xs text-purple-300">
+                          +{item.tags.length - 2}
                         </span>
                       )}
                     </div>
                   </div>
                   
-                  {/* 悬停时的额外信息 */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  {/* 移动端简单标签 */}
+                  <div className="block lg:hidden mt-2">
+                    <div className="flex items-center gap-1">
+                      {item.tags.slice(0, 1).map(tag => (
+                        <span
+                          key={tag}
+                          className="px-1.5 py-0.5 bg-white/10 border border-white/10 rounded text-xs text-gray-300"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {item.tags.length > 1 && (
+                        <span className="text-xs text-gray-400">
+                          +{item.tags.length - 1}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* 悬停时的额外信息 - 仅桌面端 */}
+                  <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="flex items-center justify-between text-xs text-gray-400">
                       <span>点击访问</span>
                       <span className="flex items-center gap-1">
