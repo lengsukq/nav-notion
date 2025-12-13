@@ -1,7 +1,6 @@
 'use client'
 
-import { Card, CardBody, Button } from '@heroui/react'
-import { ExternalLink } from 'lucide-react'
+import { Card, CardBody } from '@heroui/react'
 import { Link } from '@heroui/react'
 import { NavigationItem } from '@/lib/notion'
 
@@ -10,7 +9,10 @@ interface NavigationCardProps {
   index: number
 }
 
-export function NavigationCard({ item, index }: NavigationCardProps) {
+export function NavigationCard({ 
+  item, 
+  index
+}: NavigationCardProps) {
   return (
     <Card 
       key={item.id} 
@@ -31,20 +33,12 @@ export function NavigationCard({ item, index }: NavigationCardProps) {
         {/* 标题和状态 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm md:text-base lg:text-lg font-bold text-white truncate group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 group-hover:bg-clip-text transition-all duration-300">
+            <h3 className="text-sm md:text-base lg:text-lg font-bold text-white line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 group-hover:bg-clip-text transition-all duration-300">
               {item.title}
             </h3>
             <div className="flex items-center gap-1 ml-2">
               {/* 状态指示器 */}
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-              <Button
-                isIconOnly
-                size="sm"
-                variant="light"
-                className="text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10 w-5 h-5 md:w-6 md:h-6"
-              >
-                <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
-              </Button>
             </div>
           </div>
           
@@ -94,17 +88,7 @@ export function NavigationCard({ item, index }: NavigationCardProps) {
             )}
           </div>
         </div>
-        
-        {/* 悬停时的额外信息 - 仅桌面端 */}
-        <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="flex items-center justify-between text-xs text-gray-400">
-            <span>点击访问</span>
-            <span className="flex items-center gap-1">
-              <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
-              在线
-            </span>
-          </div>
-        </div>
+
       </CardBody>
     </Card>
   )

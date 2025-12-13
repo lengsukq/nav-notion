@@ -1,7 +1,8 @@
 'use client'
 
-import { Card, CardBody, Button, Chip } from '@heroui/react'
-import { Github, RefreshCw, HelpCircle, Clock } from 'lucide-react'
+import { Card, CardBody, Button, Chip, Avatar, Dropdown } from '@heroui/react'
+import { DropdownMenu, DropdownItem, DropdownTrigger } from '@heroui/react'
+import { Github, RefreshCw, HelpCircle, Clock, MoreVertical, Settings, Info } from 'lucide-react'
 import { Link } from '@heroui/react'
 
 interface NavigationHeaderProps {
@@ -12,6 +13,8 @@ interface NavigationHeaderProps {
   filteredCount: number
   originalCount: number
   onRefresh: () => void
+  onShowSettings?: () => void
+  onShowAbout?: () => void
 }
 
 export function NavigationHeader({
@@ -21,16 +24,22 @@ export function NavigationHeader({
   tagCount,
   filteredCount,
   originalCount,
-  onRefresh
+  onRefresh,
+  onShowSettings,
+  onShowAbout
 }: NavigationHeaderProps) {
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
       <CardBody className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
-              <span className="text-white font-bold text-xl">N</span>
-            </div>
+            <Avatar
+              name="N"
+              size="lg"
+              classNames={{
+                base: "bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg shadow-purple-500/25"
+              }}
+            />
             <div>
               <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 导航管理
@@ -52,31 +61,58 @@ export function NavigationHeader({
               <RefreshCw className="w-5 h-5" />
             </Button>
             
-            <Button
-              isIconOnly
-              variant="flat"
-              color="secondary"
-              as={Link}
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-300"
-              size="lg"
-            >
-              <Github className="w-5 h-5" />
-            </Button>
-            
-            <Button
-              isIconOnly
-              variant="flat"
-              color="secondary"
-              as={Link}
-              href="/setup"
-              className="text-gray-300"
-              size="lg"
-            >
-              <HelpCircle className="w-5 h-5" />
-            </Button>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  isIconOnly
+                  variant="flat"
+                  color="secondary"
+                  className="text-gray-300"
+                  size="lg"
+                >
+                  <MoreVertical className="w-5 h-5" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu 
+                aria-label="操作菜单"
+                variant="flat"
+              >
+                <DropdownItem
+                  key="github"
+                  startContent={<Github className="w-4 h-4" />}
+                  as={Link}
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  查看 GitHub
+                </DropdownItem>
+                <DropdownItem
+                  key="setup"
+                  startContent={<HelpCircle className="w-4 h-4" />}
+                  as={Link}
+                  href="/setup"
+                >
+                  配置指南
+                </DropdownItem>
+                <DropdownItem
+                  key="settings"
+                  startContent={<Settings className="w-4 h-4" />}
+                  onPress={() => onShowSettings?.()}
+                  className={!onShowSettings ? 'hidden' : ''}
+                >
+                  设置
+                </DropdownItem>
+                <DropdownItem
+                  key="about"
+                  startContent={<Info className="w-4 h-4" />}
+                  onPress={() => onShowAbout?.()}
+                  className={!onShowAbout ? 'hidden' : ''}
+                >
+                  关于
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
             
             <Chip
               startContent={<Clock className="w-4 h-4" />}

@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardBody, Spinner } from '@heroui/react'
+import { Card, CardBody, Spinner, Progress } from '@heroui/react'
 
 interface LoadingStateProps {
   totalItems: number
@@ -8,6 +8,8 @@ interface LoadingStateProps {
 }
 
 export function LoadingState({ totalItems, loadedItems }: LoadingStateProps) {
+  const progress = totalItems > 0 ? (loadedItems / totalItems) * 100 : undefined
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center animate-gradient">
       <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 shadow-2xl max-w-md w-full mx-4">
@@ -39,29 +41,28 @@ export function LoadingState({ totalItems, loadedItems }: LoadingStateProps) {
               <div className="space-y-3">
                 <div className="flex justify-between text-sm text-gray-400">
                   <span>加载进度</span>
-                  <span>{Math.round((loadedItems / totalItems) * 100)}%</span>
+                  <span>{Math.round(progress || 0)}%</span>
                 </div>
-                <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
-                    style={{width: `${(loadedItems / totalItems) * 100}%`}}
-                  ></div>
-                </div>
+                <Progress
+                  value={progress}
+                  className="max-w-md"
+                  color="secondary"
+                  showValueLabel={false}
+                  classNames={{
+                    base: "bg-white/10",
+                    indicator: "bg-gradient-to-r from-purple-500 to-pink-500",
+                    track: "bg-white/10"
+                  }}
+                />
                 <div className="text-center text-xs text-gray-500">
                   {loadedItems} / {totalItems} 个项目已加载
                 </div>
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style={{width: '70%', animation: 'pulse 2s infinite'}}></div>
-                </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse" style={{width: '50%', animation: 'pulse 2s infinite 0.5s'}}></div>
-                </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style={{width: '30%', animation: 'pulse 2s infinite 1s'}}></div>
-                </div>
+                <Progress isIndeterminate color="secondary" className="max-w-sm" />
+                <Progress isIndeterminate color="primary" className="max-w-sm" />
+                <Progress isIndeterminate color="secondary" className="max-w-sm" />
               </div>
             )}
           </div>
