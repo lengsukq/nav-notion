@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Button, Chip, Avatar, Dropdown } from '@heroui/react'
 import { DropdownMenu, DropdownItem, DropdownTrigger } from '@heroui/react'
-import { Github, RefreshCw, HelpCircle, Clock, MoreVertical, Settings, Info } from 'lucide-react'
+import { Github, RefreshCw, Clock, MoreVertical } from 'lucide-react'
 import { Link } from '@heroui/react'
 
 interface NavigationHeaderProps {
@@ -13,8 +13,6 @@ interface NavigationHeaderProps {
   filteredCount: number
   originalCount: number
   onRefresh: () => void
-  onShowSettings?: () => void
-  onShowAbout?: () => void
 }
 
 export function NavigationHeader({
@@ -24,9 +22,7 @@ export function NavigationHeader({
   tagCount,
   filteredCount,
   originalCount,
-  onRefresh,
-  onShowSettings,
-  onShowAbout
+  onRefresh
 }: NavigationHeaderProps) {
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
@@ -81,35 +77,11 @@ export function NavigationHeader({
                   key="github"
                   startContent={<Github className="w-4 h-4" />}
                   as={Link}
-                  href="https://github.com"
+                  href="https://github.com/lengsukq/nav-notion/tree/nextjs-migration"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   查看 GitHub
-                </DropdownItem>
-                <DropdownItem
-                  key="setup"
-                  startContent={<HelpCircle className="w-4 h-4" />}
-                  as={Link}
-                  href="/setup"
-                >
-                  配置指南
-                </DropdownItem>
-                <DropdownItem
-                  key="settings"
-                  startContent={<Settings className="w-4 h-4" />}
-                  onPress={() => onShowSettings?.()}
-                  className={!onShowSettings ? 'hidden' : ''}
-                >
-                  设置
-                </DropdownItem>
-                <DropdownItem
-                  key="about"
-                  startContent={<Info className="w-4 h-4" />}
-                  onPress={() => onShowAbout?.()}
-                  className={!onShowAbout ? 'hidden' : ''}
-                >
-                  关于
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
