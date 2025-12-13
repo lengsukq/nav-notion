@@ -342,95 +342,146 @@ export function NavigationPage() {
           </Card>
         )}
 
-        {/* Search and Filters */}
-        <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
-          <CardBody>
-            <div className="flex flex-col gap-6">
-              <Input
-                placeholder="搜索导航..."
-                value={searchTerm}
-                onValueChange={setSearchTerm}
-                startContent={
-                  <Search className="w-5 h-5 text-gray-400" />
-                }
-                endContent={
-                  searchTerm && (
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      onPress={() => setSearchTerm('')}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      ×
-                    </Button>
-                  )
-                }
-                classNames={{
-                  input: 'text-white placeholder:text-gray-400 text-lg',
-                  inputWrapper: 'bg-white/10 border-white/20 hover:bg-white/15 focus-within:bg-white/15 transition-colors duration-200'
-                }}
-                size="lg"
-              />
-              
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-white font-medium">标签筛选</h3>
-                  {selectedTag && (
-                    <Button
-                      size="sm"
-                      color="secondary"
-                      variant="flat"
-                      onPress={() => setSelectedTag('')}
-                      className="text-xs"
-                    >
-                      清除
-                    </Button>
-                  )}
+        {/* Search and Filters - Sticky */}
+        <div className="sticky top-2 md:top-4 z-50 mb-4 md:mb-6">
+          <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl shadow-black/20 mx-2 md:mx-0">
+            <CardBody className="p-3 md:p-4">
+              {/* 桌面端：水平布局，移动端：垂直布局 */}
+              <div className="flex flex-col lg:flex-row gap-3 md:gap-4">
+                {/* 左侧：搜索输入框 */}
+                <div className="w-full lg:w-1/3">
+                  <div className="relative">
+                    <Input
+                      placeholder="搜索导航..."
+                      value={searchTerm}
+                      onValueChange={setSearchTerm}
+                      startContent={
+                        <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+                      }
+                      endContent={
+                        searchTerm && (
+                          <Button
+                            isIconOnly
+                            size="sm"
+                            variant="light"
+                            onPress={() => setSearchTerm('')}
+                            className="text-gray-400 hover:text-white min-w-7 w-7 h-7 md:min-w-8 md:w-8 md:h-8"
+                          >
+                            ×
+                          </Button>
+                        )
+                      }
+                      classNames={{
+                        input: 'text-white placeholder:text-gray-400 text-sm md:text-base',
+                        inputWrapper: 'bg-white/10 border-white/20 hover:bg-white/15 focus-within:bg-white/15 focus-within:border-purple-400/50 transition-all duration-200 h-10 md:h-12'
+                      }}
+                      size="lg"
+                    />
+                    {/* 搜索框光效 */}
+                    {searchTerm && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg blur-xl -z-10 animate-pulse"></div>
+                    )}
+                  </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
-                  {allTags.map(tag => (
-                    <Chip
-                      key={tag}
-                      onClick={() => setSelectedTag(tag === '全部' ? '' : tag)}
-                      color={selectedTag === tag || (tag === '全部' && !selectedTag) ? 'secondary' : 'default'}
-                      variant={selectedTag === tag || (tag === '全部' && !selectedTag) ? 'solid' : 'bordered'}
-                      className="cursor-pointer transition-all duration-200 hover:scale-105"
-                      classNames={{
-                        base: selectedTag === tag || (tag === '全部' && !selectedTag) 
-                          ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent" 
-                          : "bg-white/10 text-gray-300 border-white/20 hover:bg-white/20"
-                      }}
-                    >
-                      {tag}
-                    </Chip>
-                  ))}
+                {/* 右侧：标签筛选区域 */}
+                <div className="flex-1">
+                  <div className="flex flex-col gap-2 md:gap-3">
+                    {/* 标签标题和统计 */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <h3 className="text-white font-medium text-xs md:text-sm">标签筛选</h3>
+                        <span className="text-xs text-gray-400 bg-white/10 px-2 py-0.5 rounded-full">
+                          {allTags.length - 1} 个
+                        </span>
+                      </div>
+                      {selectedTag && (
+                        <Button
+                          size="sm"
+                          color="secondary"
+                          variant="flat"
+                          onPress={() => setSelectedTag('')}
+                          className="text-xs bg-white/5 hover:bg-white/10 border-white/20 h-6 md:h-7 px-1.5 md:px-2"
+                        >
+                          清除
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {/* 标签云 */}
+                    <div className="flex flex-wrap gap-1 md:gap-1.5">
+                      {allTags.map((tag, index) => {
+                        const isActive = selectedTag === tag || (tag === '全部' && !selectedTag)
+                        return (
+                          <Chip
+                            key={tag}
+                            onClick={() => setSelectedTag(tag === '全部' ? '' : tag)}
+                            color={isActive ? 'secondary' : 'default'}
+                            variant={isActive ? 'solid' : 'bordered'}
+                            className={`cursor-pointer transition-all duration-300 hover:scale-105 text-xs ${
+                              isActive 
+                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-lg shadow-purple-500/25' 
+                                : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:border-white/20'
+                            }`}
+                            style={{
+                              animationDelay: `${index * 50}ms`
+                            }}
+                            size="sm"
+                          >
+                            {tag}
+                          </Chip>
+                        )
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardBody>
-        </Card>
+              
+              {/* 筛选结果统计 - 始终显示 */}
+              <div className="flex items-center justify-between pt-2 md:pt-3 mt-3 md:mt-4 border-t border-white/10">
+                <span className="text-xs md:text-sm text-gray-400">
+                   {filteredData.length !== navigationData.length ? '筛选结果' : '共 ' + (allTags.length - 1) + ' 个标签'}
+                 </span>
+                <div className="flex items-center gap-2">
+                  {filteredData.length !== navigationData.length && (
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  )}
+                  <span className="text-xs md:text-sm text-white font-medium">
+                    {filteredData.length !== navigationData.length 
+                      ? `${filteredData.length} / ${navigationData.length}`
+                      : `共 ${navigationData.length} 个导航`
+                    }
+                  </span>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
 
         {/* Navigation Cards */}
         {filteredData.length === 0 && !loading ? (
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-            <CardBody className="text-center py-12">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
-                  <Search className="w-8 h-8 text-gray-300" />
+          <Card className="bg-white/5 backdrop-blur-xl border-white/10 shadow-2xl">
+            <CardBody className="text-center py-16">
+              <div className="flex flex-col items-center gap-6">
+                <div className="relative">
+                  <div className="w-24 h-24 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center shadow-xl">
+                    <Search className="w-12 h-12 text-gray-300" />
+                  </div>
+                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white mb-2">没有找到匹配的导航项目</h3>
-                  <p className="text-gray-400">尝试调整搜索关键词或筛选标签</p>
+                  <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-gray-300 to-gray-400 bg-clip-text text-transparent">没有找到匹配的导航项目</h3>
+                  <p className="text-gray-400 text-lg">尝试调整搜索关键词或筛选标签</p>
                 </div>
                 <Button
                   color="secondary"
                   variant="bordered"
+                  size="lg"
                   onPress={() => {
                     setSearchTerm('')
                     setSelectedTag('')
                   }}
+                  className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
                 >
                   清除筛选条件
                 </Button>
@@ -438,74 +489,94 @@ export function NavigationPage() {
             </CardBody>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredData.map(item => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredData.map((item, index) => (
               <Card 
                 key={item.id} 
-                className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-purple-500/20 hover:scale-[1.02] hover:border-purple-400/30 p-4"
+                className="group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer overflow-hidden p-0 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2"
                 isPressable
                 as={Link}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{
+                  animationDelay: `${index * 50}ms`
+                }}
               >
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="text-4xl group-hover:scale-110 transition-transform duration-300">
-                      {item.icon || '🌐'}
+                {/* 动态背景光效 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                {/* 动态渐变边框 */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm -z-10"></div>
+                
+                <CardBody className="relative p-6 h-full flex flex-col">
+                  {/* 头部区域 - 图标和状态 */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="relative">
+                      <div className="w-16 h-16 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm border border-white/10 group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-3xl">{item.icon || '🌐'}</span>
+                      </div>
+                      {/* 图标光晕效果 */}
+                      <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      className="text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </Button>
+                    
+                    <div className="flex items-center gap-2">
+                      {/* 状态指示器 */}
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        className="text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                   
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors duration-300">
-                    {item.title}
-                  </h3>
+                  {/* 标题区域 */}
+                  <div className="mb-3">
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 group-hover:bg-clip-text transition-all duration-300">
+                      {item.title}
+                    </h3>
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                  </div>
                   
-                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                  {/* 描述区域 */}
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
                   
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {item.tags.map(tag => (
-                      <Chip 
-                        key={tag} 
-                        size="sm" 
-                        variant="flat" 
-                        color="secondary"
-                        classNames={{
-                          base: "bg-purple-500/20 text-purple-300 border-purple-500/30"
-                        }}
-                      >
-                        {tag}
-                      </Chip>
-                    ))}
+                  {/* 标签区域 */}
+                  <div className="mt-auto">
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags.slice(0, 3).map(tag => (
+                        <span
+                          key={tag}
+                          className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-full text-xs text-gray-300 hover:text-white transition-all duration-200 hover:scale-105"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {item.tags.length > 3 && (
+                        <span className="px-3 py-1 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-full text-xs text-purple-300">
+                          +{item.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   
-                  {item.category && (
-                    <div className="mt-auto">
-                      <Chip 
-                        size="sm" 
-                        variant="flat" 
-                        color="primary"
-                        startContent={
-                          <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                        }
-                        classNames={{
-                          base: "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                        }}
-                      >
-                        {item.category}
-                      </Chip>
+                  {/* 悬停时的额外信息 */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span>点击访问</span>
+                      <span className="flex items-center gap-1">
+                        <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
+                        在线
+                      </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                </CardBody>
               </Card>
             ))}
           </div>
