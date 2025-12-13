@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardBody, CardHeader, Input, Button, Chip, Spinner, Alert, Link, Grid } from '@heroui/react'
+import { Card, CardBody, CardHeader, Input, Button, Chip, Spinner, Alert, Link } from '@heroui/react'
 import { Github, Search, Clock, ExternalLink, RefreshCw, HelpCircle, AlertCircle } from 'lucide-react'
-import { NavigationItem } from '@/types'
+import { NavigationItem } from '@/lib/notion'
 import { loadCachedData, saveCachedData } from '@/lib/storage'
 
 export function NavigationPage() {
@@ -15,6 +15,8 @@ export function NavigationPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [totalItems, setTotalItems] = useState(0)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,6 +34,7 @@ export function NavigationPage() {
     try {
       setLoading(true)
       setError(null)
+      setLoadingProgress(0)
 
       // 尝试使用缓存
       if (useCache) {
@@ -58,6 +61,8 @@ export function NavigationPage() {
         setNavigationData(result.data)
         updateTags(result.data)
         saveCachedData(result)
+        setTotalItems(result.count)
+        setLoadingProgress(100)
       } else {
         throw new Error('No data received')
       }
@@ -124,7 +129,9 @@ export function NavigationPage() {
               正在加载导航数据...
             </h2>
             
-            <p className="text-gray-300 mb-6 text-lg">正在从 Notion 获取您的导航数据</p>
+            <p className="text-gray-300 mb-6 text-lg">
+              {totalItems > 0 ? `已加载 ${navigationData.length} / ${totalItems} 个导航项目` : '正在从 Notion 获取您的导航数据'}
+            </p>
             
             <div className="space-y-4">
               <div className="flex justify-center space-x-2">
@@ -133,17 +140,39 @@ export function NavigationPage() {
                 <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
               </div>
               
-              <div className="space-y-2">
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style={{width: '70%', animation: 'pulse 2s infinite'}}></div>
+              {/* 进度条 */}
+              {totalItems > 0 && (
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm text-gray-400">
+                    <span>加载进度</span>
+                    <span>{Math.round((navigationData.length / totalItems) * 100)}%</span>
+                  </div>
+                  <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
+                      style={{width: `${(navigationData.length / totalItems) * 100}%`}}
+                    ></div>
+                  </div>
+                  <div className="text-center text-xs text-gray-500">
+                    {navigationData.length} / {totalItems} 个项目已加载
+                  </div>
                 </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse" style={{width: '50%', animation: 'pulse 2s infinite 0.5s'}}></div>
+              )}
+              
+              {/* 动画加载条 */}
+              {totalItems === 0 && (
+                <div className="space-y-2">
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style={{width: '70%', animation: 'pulse 2s infinite'}}></div>
+                  </div>
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse" style={{width: '50%', animation: 'pulse 2s infinite 0.5s'}}></div>
+                  </div>
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style={{width: '30%', animation: 'pulse 2s infinite 1s'}}></div>
+                  </div>
                 </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style={{width: '30%', animation: 'pulse 2s infinite 1s'}}></div>
-                </div>
-              </div>
+              )}
             </div>
             
             <div className="mt-6 text-gray-400 text-sm">

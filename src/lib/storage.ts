@@ -3,7 +3,8 @@ import { NavigationState, Settings } from '@/types'
 const STORAGE_KEYS = {
   SETTINGS: 'nav_notion_settings',
   NAVIGATION_DATA: 'nav_notion_data',
-  CACHE_TIMESTAMP: 'nav_notion_cache_timestamp'
+  CACHE_TIMESTAMP: 'nav_notion_cache_timestamp',
+  LOADING_STATE: 'nav_notion_loading_state'
 } as const
 
 export function loadSettings(): Settings {
@@ -86,7 +87,41 @@ export function clearCache(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.NAVIGATION_DATA)
     localStorage.removeItem(STORAGE_KEYS.CACHE_TIMESTAMP)
+    localStorage.removeItem(STORAGE_KEYS.LOADING_STATE)
   } catch (error) {
     console.error('Error clearing cache:', error)
   }
+}
+
+export interface LoadingState {
+  isLoading: boolean
+  progress: number
+  totalItems: number
+  loadedItems: number
+  startTime: number
+}
+
+export function saveLoadingState(state: LoadingState): void {
+  if (typeof window === 'undefined') return
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.LOADING_STATE, JSON.stringify(state))
+  } catch (error) {
+    console.error('Error saving loading state:', error)
+  }
+}
+
+export function loadLoadingState(): LoadingState | null {
+  if (typeof window === 'undefined') return null
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.LOADING_STATE)
+    if (stored) {
+      return JSON.parse(stored)
+    }
+  } catch (error) {
+    console.error('Error loading loading state:', error)
+  }
+
+  return null
 }

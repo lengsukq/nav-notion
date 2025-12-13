@@ -31,23 +31,51 @@ export class NotionService {
 
   async getNavigationItems(): Promise<NavigationItem[]> {
     try {
-      console.log('NotionService - Starting database query:', {
+      console.log('NotionService - Starting database query with pagination:', {
         databaseId: this.databaseId,
         databaseIdLength: this.databaseId.length
       })
 
-      const response = await this.client.databases.query({
-        database_id: this.databaseId,
-        sorts: [
-          {
-            property: 'name', // 按名称排序
-            direction: 'ascending'
-          }
-        ]
-      })
+      const allResults: NavigationItem[] = []
+      let hasMore = true
+      let startCursor: string | undefined = undefined
+      let pageCount = 0
 
-      console.log('NotionService - Database query successful, results count:', response.results.length)
-      return response.results.map(page => this.transformPageToNavigationItem(page))
+      // 分批加载，每批100个
+      while (hasMore) {
+        pageCount++
+        console.log(`NotionService - Loading page ${pageCount}, cursor: ${startCursor}`)
+
+        const response = await this.client.databases.query({
+          database_id: this.databaseId,
+          sorts: [
+            {
+              property: 'name', // 按名称排序
+              direction: 'ascending'
+            }
+          ],
+          start_cursor: startCursor,
+          page_size: 100 // Notion API 限制每页最多100个
+        })
+
+        console.log(`NotionService - Page ${pageCount} loaded, results: ${response.results.length}`)
+        
+        // 转换当前页的数据
+        const pageItems = response.results.map(page => this.transformPageToNavigationItem(page))
+        allResults.push(...pageItems)
+
+        // 检查是否还有更多数据
+        hasMore = response.has_more
+        startCursor = response.next_cursor || undefined
+
+        // 如果还有更多数据，继续加载
+        if (hasMore) {
+          console.log('NotionService - More data available, loading next page...')
+        }
+      }
+
+      console.log(`NotionService - Database query completed, total results: ${allResults.length}, pages loaded: ${pageCount}`)
+      return allResults
     } catch (error) {
       console.error('Error fetching Notion data:', error)
       if (error instanceof Error) {
