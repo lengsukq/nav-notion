@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardBody, Input, Button, Chip } from '@heroui/react'
+import { Pagination } from '@heroui/react'
 import { Search } from 'lucide-react'
 
 interface SearchFiltersProps {
@@ -9,9 +10,13 @@ interface SearchFiltersProps {
   tags: string[]
   filteredCount: number
   originalCount: number
+  currentPage: number
+  totalPages: number
+  itemsPerPage: number
   onSearchChange: (term: string) => void
   onTagChange: (tag: string) => void
   onClearFilters: () => void
+  onPageChange: (page: number) => void
 }
 
 export function SearchFilters({
@@ -20,9 +25,13 @@ export function SearchFilters({
   tags,
   filteredCount,
   originalCount,
+  currentPage,
+  totalPages,
+  itemsPerPage,
   onSearchChange,
   onTagChange,
-  onClearFilters
+  onClearFilters,
+  onPageChange
 }: SearchFiltersProps) {
   const allTags = ['全部', ...tags]
 
@@ -118,23 +127,33 @@ export function SearchFilters({
             </div>
           </div>
           
-          {/* 筛选结果统计 */}
-          <div className="flex items-center justify-between pt-2 md:pt-3 mt-3 md:mt-4 border-t border-white/10">
-            <span className="text-xs md:text-sm text-gray-400">
-              {filteredCount !== originalCount ? '筛选结果' : `共 ${tags.length} 个标签`}
-            </span>
-            <div className="flex items-center gap-2">
-              {filteredCount !== originalCount && (
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              )}
-              <span className="text-xs md:text-sm text-white font-medium">
-                {filteredCount !== originalCount 
-                  ? `${filteredCount} / ${originalCount}`
-                  : `共 ${originalCount} 个导航`
-                }
-              </span>
+
+
+          {/* 分页组件 */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-4 pt-3 border-t border-white/10">
+              <Pagination
+                total={totalPages}
+                page={currentPage}
+                onChange={onPageChange}
+                showControls
+                showShadow={false}
+                color="secondary"
+                size="sm"
+                classNames={{
+                  item: [
+                    "bg-white/10 text-gray-300 border-white/20",
+                    "hover:bg-white/15 hover:text-white hover:border-white/30",
+                    "data-[active=true]:bg-gradient-to-r data-[active=true]:from-purple-500 data-[active=true]:to-pink-500 data-[active=true]:text-white data-[active=true]:border-transparent",
+                    "transition-all duration-200"
+                  ].join(" "),
+                  cursor: "bg-gradient-to-r from-purple-500 to-pink-500",
+                  prev: "bg-white/5 text-gray-300 hover:bg-white/10 border-white/20",
+                  next: "bg-white/5 text-gray-300 hover:bg-white/10 border-white/20"
+                }}
+              />
             </div>
-          </div>
+          )}
         </CardBody>
       </Card>
     </div>

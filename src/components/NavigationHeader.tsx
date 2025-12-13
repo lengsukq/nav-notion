@@ -12,6 +12,9 @@ interface NavigationHeaderProps {
   tagCount: number
   filteredCount: number
   originalCount: number
+  currentPage: number
+  totalPages: number
+  itemsPerPage: number
   onRefresh: () => void
 }
 
@@ -22,6 +25,9 @@ export function NavigationHeader({
   tagCount,
   filteredCount,
   originalCount,
+  currentPage,
+  totalPages,
+  itemsPerPage,
   onRefresh
 }: NavigationHeaderProps) {
   return (
@@ -117,6 +123,11 @@ export function NavigationHeader({
               <div className="text-gray-400 text-xs sm:text-sm">
                 <span className="text-white font-medium">{tagCount}</span> 个标签
               </div>
+              {totalPages > 1 && (
+                <div className="text-gray-400 text-xs sm:text-sm">
+                  第 <span className="text-white font-medium">{currentPage}</span> / <span className="text-white font-medium">{totalPages}</span> 页
+                </div>
+              )}
             </div>
             
             {filteredCount !== originalCount && (
