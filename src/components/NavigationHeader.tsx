@@ -27,24 +27,24 @@ export function NavigationHeader({
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
       <CardBody className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Avatar
               name="N"
-              size="lg"
+              size="sm"
               classNames={{
                 base: "bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg shadow-purple-500/25"
               }}
             />
-            <div>
-              <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
                 导航管理
               </h1>
-              <p className="text-gray-300 text-lg mt-1">基于 Notion 的导航管理系统</p>
+              <p className="text-gray-300 text-xs sm:text-sm lg:text-base xl:text-lg mt-1 hidden sm:block">基于 Notion 的导航管理系统</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               isIconOnly
               variant="flat"
@@ -52,9 +52,9 @@ export function NavigationHeader({
               onPress={onRefresh}
               isLoading={refreshing}
               className="text-gray-300"
-              size="lg"
+              size="sm"
             >
-              <RefreshCw className="w-5 h-5" />
+              <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
             
             <Dropdown>
@@ -64,9 +64,9 @@ export function NavigationHeader({
                   variant="flat"
                   color="secondary"
                   className="text-gray-300"
-                  size="lg"
+                  size="sm"
                 >
-                  <MoreVertical className="w-5 h-5" />
+                  <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu 
@@ -104,23 +104,23 @@ export function NavigationHeader({
         </div>
         
         {/* Stats Bar */}
-        <div className="mt-6 pt-6 border-t border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+        <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-gray-300 text-sm">系统正常</span>
+                <span className="text-gray-300 text-xs sm:text-sm">系统正常</span>
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-xs sm:text-sm">
                 共 <span className="text-white font-medium">{totalCount}</span> 个导航
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-xs sm:text-sm">
                 <span className="text-white font-medium">{tagCount}</span> 个标签
               </div>
             </div>
             
             {filteredCount !== originalCount && (
-              <div className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-xs sm:text-sm">
                 显示 <span className="text-white font-medium">{filteredCount}</span> 个结果
               </div>
             )}
