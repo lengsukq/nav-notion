@@ -1,0 +1,35 @@
+{
+  "name": "nav-pro",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@notionhq/client": "^4.0.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "colorjs.io": "^0.5.2",
+    "lodash": "^4.17.21",
+    "pinia": "^3.0.3",
+    "tailwindcss-animate": "^1.0.7",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1",
+    "vue-sonner": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.21",
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/tsconfig": "^0.8.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.3",
+    "vite": "^7.0.4",
+    "vue-tsc": "^3.1.5"
+  }
+}
