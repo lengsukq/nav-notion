@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Clock } from 'lucide-react'
-import { theme as themeConfig } from '@/lib/theme'
+import { theme as themeConfig, glassStyle } from '@/lib/theme'
 
 interface TimeDisplayProps {
   currentTime: Date
@@ -39,24 +39,32 @@ export function TimeDisplay({
     return `${year}-${month}-${day}`
   }
 
+  // 响应式尺寸配置 - 根据屏幕大小自适应
   const sizeClasses = {
     sm: {
       icon: 'w-3 h-3',
-      time: 'text-xs',
-      date: 'text-[10px]',
-      container: 'px-2 py-1 gap-1.5'
+      time: 'text-[10px]',
+      date: 'text-[8px]',
+      container: 'px-2 py-1 gap-1',
+      gap: 'gap-1'
     },
     md: {
       icon: 'w-4 h-4',
-      time: 'text-sm',
-      date: 'text-xs',
-      container: 'px-3 py-1.5 gap-2'
+      time: 'text-xs sm:text-sm',
+      date: 'text-[10px] sm:text-xs',
+      container: 'px-2.5 py-1.5 sm:px-3 sm:py-2 gap-1.5 sm:gap-2',
+      gap: 'gap-1.5 sm:gap-2'
     },
     lg: {
-      icon: 'w-5 h-5 sm:w-6 sm:h-6',
-      time: 'text-base sm:text-lg md:text-xl font-semibold',
-      date: 'text-xs sm:text-sm',
-      container: 'px-4 py-2 sm:px-5 sm:py-2.5 gap-2 sm:gap-3'
+      // 图标：小屏4x4，中屏5x5，大屏6x6
+      icon: 'w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6',
+      // 时间：小屏sm，中屏base，大屏lg/xl，超大屏2xl
+      time: 'text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-semibold',
+      // 日期：小屏隐藏或极小，中屏xs，大屏sm
+      date: 'text-[10px] sm:text-xs md:text-sm',
+      // 容器：小屏紧凑，中屏适中，大屏宽松
+      container: 'px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3 gap-1.5 sm:gap-2 md:gap-3',
+      gap: 'gap-1.5 sm:gap-2 md:gap-3'
     }
   }
 
@@ -66,35 +74,23 @@ export function TimeDisplay({
     <div 
       className={`
         flex items-center ${classes.container}
-        ${themeConfig.classes.card} ${themeConfig.classes.rounded.medium}
-        backdrop-blur-md border border-white/30 dark:border-white/20
-        shadow-lg transition-all duration-300 hover:shadow-xl
+        ${themeConfig.classes.card} ${themeConfig.classes.glassBg}
+        ${themeConfig.classes.rounded.card}
+        border border-white/20 dark:border-white/10
+        shadow-xl transition-all duration-300
+        hover:shadow-[0_12px_40px_rgba(var(--primary-color-rgb),0.15)]
+        hover:border-[var(--primary-color)]/30
+        hover:scale-[1.02]
       `}
-      style={{
-        background: `
-          linear-gradient(145deg, 
-            rgba(255, 255, 255, 0.25) 0%, 
-            rgba(255, 255, 255, 0.15) 100%
-          ),
-          linear-gradient(to bottom right, 
-            rgba(var(--primary-color-rgb), 0.1), 
-            rgba(var(--secondary-color-rgb), 0.05)
-          )
-        `,
-        borderColor: 'rgba(var(--primary-color-rgb), 0.2)',
-        boxShadow: `
-          0 8px 32px rgba(var(--primary-color-rgb), 0.15),
-          0 4px 16px rgba(var(--primary-color-rgb), 0.1)
-        `
-      }}
+      style={glassStyle}
     >
       <Clock 
-        className={`${classes.icon} text-primary`}
+        className={`${classes.icon} shrink-0`}
         style={{ color: 'var(--primary-color)' }}
       />
-      <div className="flex flex-col items-start">
+      <div className={`flex flex-col items-start ${classes.gap} min-w-0`}>
         <div 
-          className={`${classes.time} font-mono tracking-wider text-foreground`}
+          className={`${classes.time} font-mono tracking-wider leading-tight`}
           style={{
             background: `linear-gradient(to right, var(--primary-color), var(--secondary-color))`,
             WebkitBackgroundClip: 'text',
@@ -105,7 +101,7 @@ export function TimeDisplay({
           {formatTime()}
         </div>
         {showDate && (
-          <div className={`${classes.date} text-default-600 font-medium`}>
+          <div className={`${classes.date} text-default-600 font-medium leading-tight hidden sm:block`}>
             {formatDate()}
           </div>
         )}
