@@ -13,21 +13,38 @@ export function EmptyState({ onClearFilters }: EmptyStateProps) {
       <CardBody className="text-center py-16">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <div className="w-24 h-24 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center shadow-xl">
-              <Search className="w-12 h-12 text-gray-300" />
+            <div 
+              className="w-24 h-24 rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-sm border border-white/20"
+              style={{
+                background: `linear-gradient(to bottom right, rgba(var(--primary-color-rgb), 0.1), rgba(var(--secondary-color-rgb), 0.1))`
+              }}
+            >
+              <Search className="w-12 h-12 text-default-600" />
             </div>
-            <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
+            <div 
+              className="absolute -inset-4 rounded-2xl blur-xl opacity-50 animate-pulse"
+              style={{
+                background: `linear-gradient(to right, rgba(var(--primary-color-rgb), 0.2), rgba(var(--secondary-color-rgb), 0.2))`
+              }}
+            ></div>
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-gray-300 to-gray-400 bg-clip-text text-transparent">没有找到匹配的导航项目</h3>
-            <p className="text-gray-400 text-lg">尝试调整搜索关键词或筛选标签</p>
+            <h3 
+              className="text-2xl font-bold text-foreground mb-3 bg-clip-text text-transparent"
+              style={{
+                backgroundImage: `linear-gradient(to right, var(--primary-color-light), var(--secondary-color))`
+              }}
+            >
+              没有找到匹配的导航项目
+            </h3>
+            <p className="text-default-500 text-lg">尝试调整搜索关键词或筛选标签</p>
           </div>
           <Button
             color="secondary"
             variant="bordered"
             size="lg"
             onPress={onClearFilters}
-            className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
+            className="bg-default-100/30 border-default-200 text-foreground hover:bg-default-100/50 hover:border-default-300 transition-all duration-300"
           >
             清除筛选条件
           </Button>

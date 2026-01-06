@@ -37,7 +37,7 @@ export function SearchFilters({
 
   return (
     <div className="sticky top-2 md:top-4 z-50 mb-4 md:mb-6">
-      <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl shadow-black/20">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl shadow-white/10">
         <CardBody className="p-3 md:p-4">
           <div className="flex flex-col lg:flex-row gap-3 md:gap-4">
             {/* 搜索输入框 */}
@@ -64,8 +64,8 @@ export function SearchFilters({
                     )
                   }
                   classNames={{
-                    input: 'text-white placeholder:text-gray-400 text-sm md:text-base',
-                    inputWrapper: 'bg-white/10 border-white/20 hover:bg-white/15 focus-within:bg-white/15 transition-all duration-200 h-10 md:h-12 [&:focus-within]:border-[var(--primary-color)]'
+                    input: 'text-foreground placeholder:text-default-500 text-sm md:text-base',
+                    inputWrapper: 'bg-default-100/50 border-default-200 hover:bg-default-100 focus-within:bg-default-100 transition-all duration-200 h-10 md:h-12 [&:focus-within]:border-[var(--primary-color)]'
                   }}
                   size="lg"
                 />
@@ -85,8 +85,8 @@ export function SearchFilters({
               <div className="flex flex-col gap-2 md:gap-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 md:gap-3">
-                    <h3 className="text-white font-medium text-xs md:text-sm">标签筛选</h3>
-                    <span className="text-xs text-gray-400 bg-white/10 px-2 py-0.5 rounded-full">
+                    <h3 className="text-foreground font-medium text-xs md:text-sm">标签筛选</h3>
+                    <span className="text-xs text-default-500 bg-default-100/50 px-2 py-0.5 rounded-full">
                       {tags.length} 个
                     </span>
                   </div>
@@ -116,7 +116,7 @@ export function SearchFilters({
                         className={`cursor-pointer transition-all duration-300 hover:scale-105 text-xs ${
                           isActive 
                             ? 'text-white border-transparent shadow-lg' 
-                            : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:border-white/20'
+                            : 'bg-default-100/30 text-default-700 border-default-200 hover:bg-default-100/50 hover:border-default-300'
                         }`}
                         style={isActive ? {
                           background: `linear-gradient(to right, var(--primary-color), var(--secondary-color))`,
@@ -151,14 +151,14 @@ export function SearchFilters({
                 size="sm"
                 classNames={{
                   item: [
-                    "bg-white/10 text-gray-300 border-white/20",
-                    "hover:bg-white/15 hover:text-white hover:border-white/30",
+                    "bg-default-100/50 text-default-700 border-default-200",
+                    "hover:bg-default-100 hover:text-foreground hover:border-default-300",
                     "data-[active=true]:text-white data-[active=true]:border-transparent",
                     "transition-all duration-200"
                   ].join(" "),
                   cursor: "[&>span]:bg-gradient-to-r [&>span]:from-[var(--primary-color)] [&>span]:to-[var(--secondary-color)]",
-                  prev: "bg-white/5 text-gray-300 hover:bg-white/10 border-white/20",
-                  next: "bg-white/5 text-gray-300 hover:bg-white/10 border-white/20"
+                  prev: "bg-default-100/30 text-default-600 hover:bg-default-100/50 border-default-200",
+                  next: "bg-default-100/30 text-default-600 hover:bg-default-100/50 border-default-200"
                 }}
               />
             </div>

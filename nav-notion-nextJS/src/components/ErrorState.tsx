@@ -20,11 +20,11 @@ export function ErrorState({ error, onRetry }: ErrorStateProps) {
       icon={<AlertCircle className="w-5 h-5" />}
     >
       <div className="mt-4 space-y-2">
-        <p className="text-gray-300 text-sm">请检查以下配置：</p>
+        <p className="text-default-600 text-sm">请检查以下配置：</p>
         <ul className="space-y-1 ml-4">
-          <li className="text-gray-400 text-xs">• 确保已正确设置环境变量 NOTION_TOKEN 和 NOTION_DATABASE_ID</li>
-          <li className="text-gray-400 text-xs">• 确认 Notion 集成有访问数据库的权限</li>
-          <li className="text-gray-400 text-xs">• 检查数据库结构是否符合要求</li>
+          <li className="text-default-500 text-xs">• 确保已正确设置环境变量 NOTION_TOKEN 和 NOTION_DATABASE_ID</li>
+          <li className="text-default-500 text-xs">• 确认 Notion 集成有访问数据库的权限</li>
+          <li className="text-default-500 text-xs">• 检查数据库结构是否符合要求</li>
         </ul>
         
         <div className="flex items-center gap-3 mt-4">

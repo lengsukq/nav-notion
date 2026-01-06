@@ -21,13 +21,14 @@
   --secondary-color-rgb: 209, 209, 209;
 }
 
-@media (prefers-color-scheme: dark) {
+/* 默认使用浅色模式，移除深色模式自动切换 */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
-}
+} */
 
 body {
   color: rgb(var(--foreground-rgb));
@@ -93,23 +94,32 @@ body:not(.has-dynamic-bg) {
   overflow: hidden;
 }
 
-/* 自定义滚动条 */
+/* 自定义滚动条 - 浅色风格 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.5);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
 }
 
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s ease;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.7);
+  background: rgba(var(--primary-color-rgb), 0.6);
+  border-color: rgba(var(--primary-color-rgb), 0.3);
+}
+
+/* 使用主题色的滚动条 */
+::-webkit-scrollbar-thumb:active {
+  background: rgba(var(--primary-color-rgb), 0.8);
 }
 
 /* 颜色选择器样式 */

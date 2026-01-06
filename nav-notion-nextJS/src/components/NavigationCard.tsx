@@ -46,7 +46,7 @@ export function NavigationCard({
         {/* 标题和状态 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm md:text-base lg:text-lg font-bold text-white line-clamp-2 transition-all duration-300">
+            <h3 className="text-sm md:text-base lg:text-lg font-bold text-foreground line-clamp-2 transition-all duration-300">
               {item.title}
             </h3>
             <div className="flex items-center gap-1 ml-2">
@@ -65,7 +65,7 @@ export function NavigationCard({
         </div>
         
         {/* 描述区域 */}
-        <p className="hidden md:block text-xs lg:text-sm text-gray-300 mt-2 lg:mt-3 leading-relaxed line-clamp-1 lg:line-clamp-2">
+        <p className="hidden md:block text-xs lg:text-sm text-default-600 mt-2 lg:mt-3 leading-relaxed line-clamp-1 lg:line-clamp-2">
           {item.description}
         </p>
         
@@ -75,13 +75,13 @@ export function NavigationCard({
             {item.tags.slice(0, 2).map(tag => (
               <span
                 key={tag}
-                className="text-xs text-gray-400 hover:text-white transition-colors duration-200"
+                className="text-xs text-default-500 hover:text-foreground transition-colors duration-200"
               >
                 {tag}
               </span>
             ))}
             {item.tags.length > 2 && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-default-500">
                 +{item.tags.length - 2}
               </span>
             )}
@@ -94,13 +94,13 @@ export function NavigationCard({
             {item.tags.slice(0, 1).map(tag => (
               <span
                 key={tag}
-                className="text-xs text-gray-400"
+                className="text-xs text-default-500"
               >
                 {tag}
               </span>
             ))}
             {item.tags.length > 1 && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-default-500">
                 +{item.tags.length - 1}
               </span>
             )}

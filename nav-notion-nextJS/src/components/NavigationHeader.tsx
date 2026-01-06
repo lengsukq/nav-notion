@@ -2,8 +2,9 @@
 
 import { Card, CardBody, Button, Chip, Avatar, Dropdown } from '@heroui/react'
 import { DropdownMenu, DropdownItem, DropdownTrigger } from '@heroui/react'
-import { Github, RefreshCw, Clock, MoreVertical, Settings } from 'lucide-react'
+import { Github, RefreshCw, Clock, MoreVertical, Settings, Sun, Moon } from 'lucide-react'
 import { Link } from '@heroui/react'
+import { useTheme } from '@/hooks/useTheme'
 
 interface NavigationHeaderProps {
   currentTime: Date
@@ -32,6 +33,8 @@ export function NavigationHeader({
   onRefresh,
   onSettingsClick
 }: NavigationHeaderProps) {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
       <CardBody className="p-6">
@@ -47,14 +50,14 @@ export function NavigationHeader({
             />
             <div className="min-w-0">
               <h1 
-                className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white bg-clip-text text-transparent truncate"
+                className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-foreground bg-clip-text text-transparent truncate"
                 style={{
                   backgroundImage: `linear-gradient(to right, var(--primary-color-light), var(--secondary-color))`
                 }}
               >
                 导航管理
               </h1>
-              <p className="text-gray-300 text-xs sm:text-sm lg:text-base xl:text-lg mt-1 hidden sm:block">基于 Notion 的导航管理系统</p>
+              <p className="text-default-600 text-xs sm:text-sm lg:text-base xl:text-lg mt-1 hidden sm:block">基于 Notion 的导航管理系统</p>
             </div>
           </div>
           
@@ -65,10 +68,26 @@ export function NavigationHeader({
               color="secondary"
               onPress={onRefresh}
               isLoading={refreshing}
-              className="text-gray-300"
+              className="text-default-600"
               size="sm"
             >
               <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
+            </Button>
+            
+            <Button
+              isIconOnly
+              variant="flat"
+              color="secondary"
+              onPress={toggleTheme}
+              className="text-default-600"
+              size="sm"
+              title={theme === 'light' ? '切换到深色模式' : '切换到浅色模式'}
+            >
+              {theme === 'light' ? (
+                <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
             </Button>
             
             {onSettingsClick && (
@@ -77,7 +96,7 @@ export function NavigationHeader({
                 variant="flat"
                 color="secondary"
                 onPress={onSettingsClick}
-                className="text-gray-300 settings-button"
+                className="text-default-600 settings-button"
                 size="sm"
               >
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -90,7 +109,7 @@ export function NavigationHeader({
                   isIconOnly
                   variant="flat"
                   color="secondary"
-                  className="text-gray-300"
+                  className="text-default-600"
                   size="sm"
                 >
                   <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -117,7 +136,7 @@ export function NavigationHeader({
               startContent={<Clock className="w-4 h-4" />}
               classNames={{
                 base: "backdrop-blur-sm",
-                content: "font-mono text-sm text-white"
+                content: "font-mono text-sm text-foreground"
               }}
               style={{
                 background: `linear-gradient(to right, rgba(var(--primary-color-rgb), 0.2), rgba(var(--secondary-color-rgb), 0.2))`,
@@ -140,24 +159,24 @@ export function NavigationHeader({
             <div className="flex flex-wrap items-center gap-3 sm:gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-gray-300 text-xs sm:text-sm">系统正常</span>
+                <span className="text-default-600 text-xs sm:text-sm">系统正常</span>
               </div>
-              <div className="text-gray-400 text-xs sm:text-sm">
-                共 <span className="text-white font-medium">{totalCount}</span> 个导航
+              <div className="text-default-500 text-xs sm:text-sm">
+                共 <span className="text-foreground font-medium">{totalCount}</span> 个导航
               </div>
-              <div className="text-gray-400 text-xs sm:text-sm">
-                <span className="text-white font-medium">{tagCount}</span> 个标签
+              <div className="text-default-500 text-xs sm:text-sm">
+                <span className="text-foreground font-medium">{tagCount}</span> 个标签
               </div>
               {totalPages > 1 && (
-                <div className="text-gray-400 text-xs sm:text-sm">
-                  第 <span className="text-white font-medium">{currentPage}</span> / <span className="text-white font-medium">{totalPages}</span> 页
+                <div className="text-default-500 text-xs sm:text-sm">
+                  第 <span className="text-foreground font-medium">{currentPage}</span> / <span className="text-foreground font-medium">{totalPages}</span> 页
                 </div>
               )}
             </div>
             
             {filteredCount !== originalCount && (
-              <div className="text-gray-400 text-xs sm:text-sm">
-                显示 <span className="text-white font-medium">{filteredCount}</span> 个结果
+              <div className="text-default-500 text-xs sm:text-sm">
+                显示 <span className="text-foreground font-medium">{filteredCount}</span> 个结果
               </div>
             )}
           </div>

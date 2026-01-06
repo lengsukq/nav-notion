@@ -59,7 +59,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       scrollBehavior="inside"
       classNames={{
         base: 'bg-white/10 dark:bg-white/5 backdrop-blur-xl backdrop-saturate-150 border border-white/20 dark:border-white/10 shadow-2xl',
-        backdrop: 'bg-black/50 backdrop-blur-sm',
+        backdrop: 'bg-white/10 backdrop-blur-sm',
         header: 'border-b border-white/10 dark:border-white/5',
         footer: 'border-t border-white/10 dark:border-white/5',
         body: 'py-6 overflow-y-auto'
@@ -68,23 +68,23 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       <ModalContent>
         {() => (
           <>
-            <ModalHeader className="flex items-center gap-2 text-white">
+            <ModalHeader className="flex items-center gap-2 text-foreground">
               <Settings className="w-5 h-5 text-primary" />
               <span className="text-xl font-semibold">设置</span>
             </ModalHeader>
-            <ModalBody className="gap-6 text-white">
+            <ModalBody className="gap-6 text-foreground">
 
               {/* 主题色设置 */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Palette className="w-4 h-4 text-primary" />
-                  <h4 className="text-base font-semibold text-white">主题色调色板</h4>
+                  <h4 className="text-base font-semibold text-foreground">主题色调色板</h4>
                 </div>
                 
                 <div className="space-y-4">
                   {/* 主色 */}
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-white/80 w-12 flex-shrink-0">主色</span>
+                    <span className="text-sm text-default-600 w-12 flex-shrink-0">主色</span>
                     <input
                       type="color"
                       value={settings.themeColor}
@@ -104,7 +104,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       placeholder="#RRGGBB"
                       size="sm"
                       classNames={{
-                        input: 'text-xs text-white',
+                        input: 'text-xs text-foreground',
                         inputWrapper: 'h-9 bg-white/10 border-white/20'
                       }}
                     />
@@ -132,7 +132,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       placeholder="#RRGGBB"
                       size="sm"
                       classNames={{
-                        input: 'text-xs text-white',
+                        input: 'text-xs text-foreground',
                         inputWrapper: 'h-9 bg-white/10 border-white/20'
                       }}
                     />
@@ -142,7 +142,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                   {/* 预设颜色 */}
                   <div className="space-y-3">
-                    <p className="text-xs text-white/70 font-medium">快速选择</p>
+                    <p className="text-xs text-default-500 font-medium">快速选择</p>
                     <div className="grid grid-cols-8 gap-2">
                       {PRESET_COLORS.map((preset) => (
                         <Button
@@ -157,7 +157,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       ))}
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-xs text-white/70">
+                      <p className="text-xs text-default-500">
                         点击色块应用到{applyToSecondary ? '次主题色' : '主题色'}
                       </p>
                       <Button
@@ -179,12 +179,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Database className="w-4 h-4 text-primary" />
-                  <h4 className="text-base font-semibold text-white">数据缓存设置</h4>
+                  <h4 className="text-base font-semibold text-foreground">数据缓存设置</h4>
                 </div>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">缓存过期时间</span>
+                    <span className="text-sm text-default-600">缓存过期时间</span>
                     <div className="flex items-center gap-2">
                       <Input
                         type="number"
@@ -194,11 +194,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         onValueChange={(value) => setCacheExpiryTime(parseInt(value) || 0)}
                         size="sm"
                         classNames={{
-                          input: 'text-xs w-16 text-center text-white',
+                          input: 'text-xs w-16 text-center text-foreground',
                           inputWrapper: 'h-9 w-20 bg-white/10 border-white/20'
                         }}
                       />
-                      <span className="text-sm text-white/70">小时</span>
+                      <span className="text-sm text-default-500">小时</span>
                     </div>
                   </div>
                   
@@ -224,7 +224,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     ))}
                   </div>
                   
-                  <p className="text-xs text-white/70">
+                  <p className="text-xs text-default-500">
                     设置为0表示不使用缓存，缓存首页数据可减少API调用，提高加载速度
                   </p>
                 </div>
