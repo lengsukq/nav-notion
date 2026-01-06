@@ -89,7 +89,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       type="color"
                       value={settings.themeColor}
                       onChange={(e) => setThemeColor(e.target.value)}
-                      className="w-10 h-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-2 border-default-200"
+                      className="w-10 h-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-2 border-white/30"
                       style={{
                         WebkitAppearance: 'none',
                         MozAppearance: 'none',
@@ -104,20 +104,20 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       placeholder="#RRGGBB"
                       size="sm"
                       classNames={{
-                        input: 'text-xs',
-                        inputWrapper: 'h-9'
+                        input: 'text-xs text-white',
+                        inputWrapper: 'h-9 bg-white/10 border-white/20'
                       }}
                     />
                   </div>
 
                   {/* 次色 */}
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-default-600 w-12 flex-shrink-0">次色</span>
+                    <span className="text-sm text-white/80 w-12 flex-shrink-0">次色</span>
                     <input
                       type="color"
                       value={settings.secondaryColor}
                       onChange={(e) => setSecondaryColor(e.target.value)}
-                      className="w-10 h-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-2 border-default-200"
+                      className="w-10 h-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 border-2 border-white/30"
                       style={{
                         WebkitAppearance: 'none',
                         MozAppearance: 'none',
@@ -132,17 +132,17 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       placeholder="#RRGGBB"
                       size="sm"
                       classNames={{
-                        input: 'text-xs',
-                        inputWrapper: 'h-9'
+                        input: 'text-xs text-white',
+                        inputWrapper: 'h-9 bg-white/10 border-white/20'
                       }}
                     />
                   </div>
 
-                  <Divider />
+                  <Divider className="bg-white/10" />
 
                   {/* 预设颜色 */}
                   <div className="space-y-3">
-                    <p className="text-xs text-default-500 font-medium">快速选择</p>
+                    <p className="text-xs text-white/70 font-medium">快速选择</p>
                     <div className="grid grid-cols-8 gap-2">
                       {PRESET_COLORS.map((preset) => (
                         <Button
@@ -157,7 +157,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       ))}
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-xs text-default-500">
+                      <p className="text-xs text-white/70">
                         点击色块应用到{applyToSecondary ? '次主题色' : '主题色'}
                       </p>
                       <Button
@@ -179,12 +179,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Database className="w-4 h-4 text-primary" />
-                  <h4 className="text-base font-semibold">数据缓存设置</h4>
+                  <h4 className="text-base font-semibold text-white">数据缓存设置</h4>
                 </div>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-default-700">缓存过期时间</span>
+                    <span className="text-sm text-white/80">缓存过期时间</span>
                     <div className="flex items-center gap-2">
                       <Input
                         type="number"
@@ -194,15 +194,15 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         onValueChange={(value) => setCacheExpiryTime(parseInt(value) || 0)}
                         size="sm"
                         classNames={{
-                          input: 'text-xs w-16 text-center',
-                          inputWrapper: 'h-9 w-20'
+                          input: 'text-xs w-16 text-center text-white',
+                          inputWrapper: 'h-9 w-20 bg-white/10 border-white/20'
                         }}
                       />
-                      <span className="text-sm text-default-500">小时</span>
+                      <span className="text-sm text-white/70">小时</span>
                     </div>
                   </div>
                   
-                  <Divider />
+                  <Divider className="bg-white/10" />
                   
                   {/* 快速选择按钮 */}
                   <div className="flex flex-wrap gap-2">
@@ -224,7 +224,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     ))}
                   </div>
                   
-                  <p className="text-xs text-default-500">
+                  <p className="text-xs text-white/70">
                     设置为0表示不使用缓存，缓存首页数据可减少API调用，提高加载速度
                   </p>
                 </div>

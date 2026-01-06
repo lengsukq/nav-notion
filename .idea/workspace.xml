@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0628e045-9665-4ce5-852a-c2e1c0401156" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationHeader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/hooks/useNavigationData.ts" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/hooks/useNavigationData.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/lib/storage.ts" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/lib/storage.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/types/index.ts" afterDir="false" />
-    </list>
+    <list default="true" id="0628e045-9665-4ce5-852a-c2e1c0401156" name="更改" comment="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -75,8 +65,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767690899768</updated>
-      <workItem from="1767690900911" duration="1397000" />
+      <workItem from="1767690900911" duration="2006000" />
     </task>
+    <task id="LOCAL-00001" summary="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化">
+      <option name="closed" value="true" />
+      <created>1767693371820</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1767693371820</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -97,5 +96,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化" />
   </component>
 </project>
