@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Button, Chip, Avatar, Dropdown } from '@heroui/react'
 import { DropdownMenu, DropdownItem, DropdownTrigger } from '@heroui/react'
-import { Github, RefreshCw, Clock, MoreVertical } from 'lucide-react'
+import { Github, RefreshCw, Clock, MoreVertical, Settings } from 'lucide-react'
 import { Link } from '@heroui/react'
 
 interface NavigationHeaderProps {
@@ -16,6 +16,7 @@ interface NavigationHeaderProps {
   totalPages: number
   itemsPerPage: number
   onRefresh: () => void
+  onSettingsClick?: () => void
 }
 
 export function NavigationHeader({
@@ -28,7 +29,8 @@ export function NavigationHeader({
   currentPage,
   totalPages,
   itemsPerPage,
-  onRefresh
+  onRefresh,
+  onSettingsClick
 }: NavigationHeaderProps) {
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
@@ -62,6 +64,19 @@ export function NavigationHeader({
             >
               <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
+            
+            {onSettingsClick && (
+              <Button
+                isIconOnly
+                variant="flat"
+                color="secondary"
+                onPress={onSettingsClick}
+                className="text-gray-300 settings-button"
+                size="sm"
+              >
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+            )}
             
             <Dropdown>
               <DropdownTrigger>

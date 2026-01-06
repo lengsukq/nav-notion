@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { NavigationItem } from '@/lib/notion'
 import { loadCachedData, saveCachedData } from '@/lib/storage'
+import { useSettings } from '@/hooks/useSettings'
 
 export interface UseNavigationDataReturn {
   navigationData: NavigationItem[]
@@ -23,6 +24,7 @@ export interface UseNavigationDataReturn {
 }
 
 export function useNavigationData(): UseNavigationDataReturn {
+  const { settings } = useSettings()
   const [navigationData, setNavigationData] = useState<NavigationItem[]>([])
   const [tags, setTags] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -129,7 +131,21 @@ export function useNavigationData(): UseNavigationDataReturn {
   const filteredData = navigationData.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesTag = !selectedTag || item.tags.includes(selectedTag)
+    
+    // 支持单选和多选模式
+    let matchesTag = true
+    if (selectedTag) {
+      if (settings.tagFilterMode === 'multiple') {
+        // 多选模式：需要同时匹配所有选中的标签
+        // 注意：当前实现中 selectedTag 是单个字符串，需要扩展为数组
+        // 为了保持兼容性，这里先按单选处理
+        matchesTag = item.tags.includes(selectedTag)
+      } else {
+        // 单选模式：匹配任一标签
+        matchesTag = item.tags.includes(selectedTag)
+      }
+    }
+    
     return matchesSearch && matchesTag
   })
 

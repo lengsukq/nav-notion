@@ -13,6 +13,7 @@ export function NavigationCard({
   item, 
   index
 }: NavigationCardProps) {
+  
   return (
     <Card 
       key={item.id} 
@@ -29,7 +30,7 @@ export function NavigationCard({
       {/* 动态背景光效 */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
-      <CardBody className="relative p-3 md:p-4 lg:p-5 h-full flex flex-col">
+      <CardBody className="relative h-full flex flex-col p-3 md:p-4 lg:p-5">
         {/* 标题和状态 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
@@ -46,8 +47,8 @@ export function NavigationCard({
           <div className="hidden lg:block w-6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 mt-1"></div>
         </div>
         
-        {/* 描述区域 - 仅桌面端 */}
-        <p className="hidden md:block text-gray-300 text-xs lg:text-sm mt-2 lg:mt-3 line-clamp-1 lg:line-clamp-2 leading-relaxed">
+        {/* 描述区域 */}
+        <p className="hidden md:block text-xs lg:text-sm text-gray-300 mt-2 lg:mt-3 leading-relaxed line-clamp-1 lg:line-clamp-2">
           {item.description}
         </p>
         

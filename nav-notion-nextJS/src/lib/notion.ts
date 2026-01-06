@@ -161,4 +161,48 @@ export class NotionService {
     }
     return '🌐'
   }
+
+  async getDatabaseMetadata(): Promise<{
+    title: string
+    description: string
+    backgroundImageUrl: string | null
+    tags: Array<{ name: string; color: string }>
+  }> {
+    try {
+      const database = await this.client.databases.retrieve({
+        database_id: this.databaseId
+      })
+
+      const title = database.title?.[0]?.plain_text || '导航中心'
+      const description = database.description?.[0]?.plain_text || 'Notion 驱动的导航站'
+      
+      // 获取背景图 URL
+      let backgroundImageUrl: string | null = null
+      if (database.cover) {
+        if (database.cover.type === 'external') {
+          backgroundImageUrl = database.cover.external.url
+        } else if (database.cover.type === 'file') {
+          backgroundImageUrl = database.cover.file.url
+        }
+      }
+
+      // 获取标签选项
+      const tags = database.properties?.tag?.type === 'multi_select'
+        ? database.properties.tag.multi_select.options.map((option: any) => ({
+            name: option.name,
+            color: option.color || 'default'
+          }))
+        : []
+
+      return {
+        title,
+        description,
+        backgroundImageUrl,
+        tags
+      }
+    } catch (error) {
+      console.error('Error fetching database metadata:', error)
+      throw new Error(`Failed to fetch database metadata: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  }
 }

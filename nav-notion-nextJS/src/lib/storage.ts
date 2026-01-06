@@ -14,14 +14,30 @@ export function loadSettings(): Settings {
       databaseId: '',
       theme: 'dark',
       autoRefresh: true,
-      refreshInterval: 300000 // 5 minutes
+      refreshInterval: 300000, // 5 minutes
+      themeColor: '#3B82F6',
+      secondaryColor: '#d1d1d1',
+      tagFilterMode: 'single',
+      cacheExpiryTime: 24 // 默认24小时
     }
   }
 
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.SETTINGS)
     if (stored) {
-      return JSON.parse(stored)
+      const parsed = JSON.parse(stored)
+      // 确保新字段有默认值（向后兼容）
+      return {
+        notionToken: parsed.notionToken || '',
+        databaseId: parsed.databaseId || '',
+        theme: parsed.theme || 'dark',
+        autoRefresh: parsed.autoRefresh !== undefined ? parsed.autoRefresh : true,
+        refreshInterval: parsed.refreshInterval || 300000,
+        themeColor: parsed.themeColor || '#3B82F6',
+        secondaryColor: parsed.secondaryColor || '#d1d1d1',
+        tagFilterMode: parsed.tagFilterMode || 'single',
+        cacheExpiryTime: parsed.cacheExpiryTime !== undefined ? parsed.cacheExpiryTime : 24
+      }
     }
   } catch (error) {
     console.error('Error loading settings:', error)
@@ -32,7 +48,11 @@ export function loadSettings(): Settings {
     databaseId: '',
     theme: 'dark',
     autoRefresh: true,
-    refreshInterval: 300000
+    refreshInterval: 300000,
+    themeColor: '#3B82F6',
+    secondaryColor: '#d1d1d1',
+    tagFilterMode: 'single',
+    cacheExpiryTime: 24
   }
 }
 
