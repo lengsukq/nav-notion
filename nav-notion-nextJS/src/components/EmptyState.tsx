@@ -40,11 +40,10 @@ export function EmptyState({ onClearFilters }: EmptyStateProps) {
             <p className="text-default-500 text-lg">尝试调整搜索关键词或筛选标签</p>
           </div>
           <Button
-            color="secondary"
-            variant="bordered"
+            color="primary"
+            variant="flat"
             size="lg"
             onPress={onClearFilters}
-            className="bg-default-100/30 border-default-200 text-foreground hover:bg-default-100/50 hover:border-default-300 transition-all duration-300"
           >
             清除筛选条件
           </Button>

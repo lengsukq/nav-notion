@@ -65,10 +65,9 @@ export function NavigationHeader({
             <Button
               isIconOnly
               variant="flat"
-              color="secondary"
+              color="primary"
               onPress={onRefresh}
               isLoading={refreshing}
-              className="text-default-600"
               size="sm"
             >
               <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -77,9 +76,8 @@ export function NavigationHeader({
             <Button
               isIconOnly
               variant="flat"
-              color="secondary"
+              color="primary"
               onPress={toggleTheme}
-              className="text-default-600"
               size="sm"
               title={theme === 'light' ? '切换到深色模式' : '切换到浅色模式'}
             >
@@ -94,9 +92,9 @@ export function NavigationHeader({
               <Button
                 isIconOnly
                 variant="flat"
-                color="secondary"
+                color="primary"
                 onPress={onSettingsClick}
-                className="text-default-600 settings-button"
+                className="settings-button"
                 size="sm"
               >
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -108,8 +106,7 @@ export function NavigationHeader({
                 <Button
                   isIconOnly
                   variant="flat"
-                  color="secondary"
-                  className="text-default-600"
+                  color="primary"
                   size="sm"
                 >
                   <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />

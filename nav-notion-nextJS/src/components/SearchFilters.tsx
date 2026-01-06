@@ -48,7 +48,7 @@ export function SearchFilters({
                   value={searchTerm}
                   onValueChange={onSearchChange}
                   startContent={
-                    <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+                    <Search className="w-4 h-4 md:w-5 md:h-5 text-default-500" />
                   }
                   endContent={
                     searchTerm && (
@@ -57,7 +57,7 @@ export function SearchFilters({
                         size="sm"
                         variant="light"
                         onPress={() => onSearchChange('')}
-                        className="text-gray-400 hover:text-white min-w-7 w-7 h-7 md:min-w-8 md:w-8 md:h-8"
+                        className="text-default-500 hover:text-primary min-w-7 w-7 h-7 md:min-w-8 md:w-8 md:h-8"
                       >
                         ×
                       </Button>
@@ -93,10 +93,10 @@ export function SearchFilters({
                   {selectedTag && (
                     <Button
                       size="sm"
-                      color="secondary"
+                      color="primary"
                       variant="flat"
                       onPress={onClearFilters}
-                      className="text-xs bg-white/5 hover:bg-white/10 border-white/20 h-6 md:h-7 px-1.5 md:px-2"
+                      className="text-xs h-6 md:h-7 px-1.5 md:px-2"
                     >
                       清除
                     </Button>
