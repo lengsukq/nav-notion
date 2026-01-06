@@ -40,12 +40,18 @@ export function NavigationHeader({
             <Avatar
               name="N"
               size="sm"
-              classNames={{
-                base: "bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg shadow-purple-500/25"
+              style={{
+                background: `linear-gradient(to right, var(--primary-color), var(--secondary-color))`,
+                boxShadow: `0 10px 15px -3px rgba(var(--primary-color-rgb), 0.25)`
               }}
             />
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
+              <h1 
+                className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white bg-clip-text text-transparent truncate"
+                style={{
+                  backgroundImage: `linear-gradient(to right, var(--primary-color-light), var(--secondary-color))`
+                }}
+              >
                 导航管理
               </h1>
               <p className="text-gray-300 text-xs sm:text-sm lg:text-base xl:text-lg mt-1 hidden sm:block">基于 Notion 的导航管理系统</p>
@@ -110,8 +116,12 @@ export function NavigationHeader({
             <Chip
               startContent={<Clock className="w-4 h-4" />}
               classNames={{
-                base: "bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border-purple-400/30",
+                base: "backdrop-blur-sm",
                 content: "font-mono text-sm text-white"
+              }}
+              style={{
+                background: `linear-gradient(to right, rgba(var(--primary-color-rgb), 0.2), rgba(var(--secondary-color-rgb), 0.2))`,
+                borderColor: `rgba(var(--primary-color-rgb), 0.3)`
               }}
               variant="bordered"
             >

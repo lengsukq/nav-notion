@@ -17,24 +17,36 @@ export function NavigationCard({
   return (
     <Card 
       key={item.id} 
-      className="group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer overflow-hidden p-0 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1"
+      className="group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer overflow-hidden p-0 hover:shadow-xl hover:-translate-y-1"
+      style={{
+        animationDelay: `${index * 30}ms`,
+        '--hover-shadow-color': 'rgba(var(--primary-color-rgb), 0.1)'
+      } as React.CSSProperties & { '--hover-shadow-color': string }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `0 20px 25px -5px rgba(var(--primary-color-rgb), 0.1), 0 10px 10px -5px rgba(var(--primary-color-rgb), 0.04)`
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = ''
+      }}
       isPressable
       as={Link}
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      style={{
-        animationDelay: `${index * 30}ms`
-      }}
     >
       {/* 动态背景光效 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: `linear-gradient(to bottom right, rgba(var(--primary-color-rgb), 0.05), transparent, rgba(var(--secondary-color-rgb), 0.05))`
+        }}
+      ></div>
       
       <CardBody className="relative h-full flex flex-col p-3 md:p-4 lg:p-5">
         {/* 标题和状态 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm md:text-base lg:text-lg font-bold text-white line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 group-hover:bg-clip-text transition-all duration-300">
+            <h3 className="text-sm md:text-base lg:text-lg font-bold text-white line-clamp-2 transition-all duration-300">
               {item.title}
             </h3>
             <div className="flex items-center gap-1 ml-2">
@@ -44,7 +56,12 @@ export function NavigationCard({
           </div>
           
           {/* 装饰线 - 仅桌面端 */}
-          <div className="hidden lg:block w-6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 mt-1"></div>
+          <div 
+            className="hidden lg:block w-6 h-0.5 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 mt-1"
+            style={{
+              background: `linear-gradient(to right, var(--primary-color), var(--secondary-color))`
+            }}
+          ></div>
         </div>
         
         {/* 描述区域 */}
@@ -58,13 +75,13 @@ export function NavigationCard({
             {item.tags.slice(0, 2).map(tag => (
               <span
                 key={tag}
-                className="px-2 py-0.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded text-xs text-gray-300 hover:text-white transition-all duration-200 hover:scale-105"
+                className="text-xs text-gray-400 hover:text-white transition-colors duration-200"
               >
                 {tag}
               </span>
             ))}
             {item.tags.length > 2 && (
-              <span className="px-2 py-0.5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded text-xs text-purple-300">
+              <span className="text-xs text-gray-400">
                 +{item.tags.length - 2}
               </span>
             )}
@@ -77,7 +94,7 @@ export function NavigationCard({
             {item.tags.slice(0, 1).map(tag => (
               <span
                 key={tag}
-                className="px-1.5 py-0.5 bg-white/10 border border-white/10 rounded text-xs text-gray-300"
+                className="text-xs text-gray-400"
               >
                 {tag}
               </span>

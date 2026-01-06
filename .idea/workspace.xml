@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0628e045-9665-4ce5-852a-c2e1c0401156" name="更改" comment="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化" />
+    <list default="true" id="0628e045-9665-4ce5-852a-c2e1c0401156" name="更改" comment="style(components): 调整设置模态框样式以适配深色主题&#10;&#10;- 更新颜色选择器边框样式为白色透明边框&#10;- 修改输入框文字颜色为主题白色&#10;- 调整输入框包装器背景色和边框色&#10;- 更新次色选择器边框样式为白色透明边框&#10;- 优化分隔线颜色为白色透明&#10;- 调整预设颜色标题文字颜色为白色透明&#10;- 更新颜色应用提示文字颜色为白色透明&#10;- 修改数据缓存标题文字颜色为主题白色&#10;- 调整缓存过期时间标签文字颜色为白色透明&#10;- 更新缓存说明文字颜色为白色透明&#10;- 优化缓存时间单位文字颜色为白色透明&#10;- 调整缓存设置分隔线颜色为白色透明">
+      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/SearchFilters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/SearchFilters.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/lib/notion.ts" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/lib/notion.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -65,7 +70,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767690899768</updated>
-      <workItem from="1767690900911" duration="2006000" />
+      <workItem from="1767690900911" duration="2325000" />
     </task>
     <task id="LOCAL-00001" summary="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化">
       <option name="closed" value="true" />
@@ -75,7 +80,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767693371820</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="style(components): 调整设置模态框样式以适配深色主题&#10;&#10;- 更新颜色选择器边框样式为白色透明边框&#10;- 修改输入框文字颜色为主题白色&#10;- 调整输入框包装器背景色和边框色&#10;- 更新次色选择器边框样式为白色透明边框&#10;- 优化分隔线颜色为白色透明&#10;- 调整预设颜色标题文字颜色为白色透明&#10;- 更新颜色应用提示文字颜色为白色透明&#10;- 修改数据缓存标题文字颜色为主题白色&#10;- 调整缓存过期时间标签文字颜色为白色透明&#10;- 更新缓存说明文字颜色为白色透明&#10;- 优化缓存时间单位文字颜色为白色透明&#10;- 调整缓存设置分隔线颜色为白色透明">
+      <option name="closed" value="true" />
+      <created>1767693474117</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1767693474117</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -99,6 +112,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化" />
+    <MESSAGE value="style(components): 调整设置模态框样式以适配深色主题&#10;&#10;- 更新颜色选择器边框样式为白色透明边框&#10;- 修改输入框文字颜色为主题白色&#10;- 调整输入框包装器背景色和边框色&#10;- 更新次色选择器边框样式为白色透明边框&#10;- 优化分隔线颜色为白色透明&#10;- 调整预设颜色标题文字颜色为白色透明&#10;- 更新颜色应用提示文字颜色为白色透明&#10;- 修改数据缓存标题文字颜色为主题白色&#10;- 调整缓存过期时间标签文字颜色为白色透明&#10;- 更新缓存说明文字颜色为白色透明&#10;- 优化缓存时间单位文字颜色为白色透明&#10;- 调整缓存设置分隔线颜色为白色透明" />
+    <option name="LAST_COMMIT_MESSAGE" value="style(components): 调整设置模态框样式以适配深色主题&#10;&#10;- 更新颜色选择器边框样式为白色透明边框&#10;- 修改输入框文字颜色为主题白色&#10;- 调整输入框包装器背景色和边框色&#10;- 更新次色选择器边框样式为白色透明边框&#10;- 优化分隔线颜色为白色透明&#10;- 调整预设颜色标题文字颜色为白色透明&#10;- 更新颜色应用提示文字颜色为白色透明&#10;- 修改数据缓存标题文字颜色为主题白色&#10;- 调整缓存过期时间标签文字颜色为白色透明&#10;- 更新缓存说明文字颜色为白色透明&#10;- 优化缓存时间单位文字颜色为白色透明&#10;- 调整缓存设置分隔线颜色为白色透明" />
   </component>
 </project>

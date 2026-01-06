@@ -65,12 +65,17 @@ export function SearchFilters({
                   }
                   classNames={{
                     input: 'text-white placeholder:text-gray-400 text-sm md:text-base',
-                    inputWrapper: 'bg-white/10 border-white/20 hover:bg-white/15 focus-within:bg-white/15 focus-within:border-purple-400/50 transition-all duration-200 h-10 md:h-12'
+                    inputWrapper: 'bg-white/10 border-white/20 hover:bg-white/15 focus-within:bg-white/15 transition-all duration-200 h-10 md:h-12 [&:focus-within]:border-[var(--primary-color)]'
                   }}
                   size="lg"
                 />
                 {searchTerm && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg blur-xl -z-10 animate-pulse"></div>
+                  <div 
+                    className="absolute inset-0 rounded-lg blur-xl -z-10 animate-pulse"
+                    style={{
+                      background: `linear-gradient(to right, rgba(var(--primary-color-rgb), 0.1), rgba(var(--secondary-color-rgb), 0.1))`
+                    }}
+                  ></div>
                 )}
               </div>
             </div>
@@ -110,10 +115,14 @@ export function SearchFilters({
                         variant={isActive ? 'solid' : 'bordered'}
                         className={`cursor-pointer transition-all duration-300 hover:scale-105 text-xs ${
                           isActive 
-                            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-lg shadow-purple-500/25' 
+                            ? 'text-white border-transparent shadow-lg' 
                             : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:border-white/20'
                         }`}
-                        style={{
+                        style={isActive ? {
+                          background: `linear-gradient(to right, var(--primary-color), var(--secondary-color))`,
+                          boxShadow: `0 10px 15px -3px rgba(var(--primary-color-rgb), 0.25)`,
+                          animationDelay: `${index * 50}ms`
+                        } : {
                           animationDelay: `${index * 50}ms`
                         }}
                         size="sm"
@@ -144,10 +153,10 @@ export function SearchFilters({
                   item: [
                     "bg-white/10 text-gray-300 border-white/20",
                     "hover:bg-white/15 hover:text-white hover:border-white/30",
-                    "data-[active=true]:bg-gradient-to-r data-[active=true]:from-purple-500 data-[active=true]:to-pink-500 data-[active=true]:text-white data-[active=true]:border-transparent",
+                    "data-[active=true]:text-white data-[active=true]:border-transparent",
                     "transition-all duration-200"
                   ].join(" "),
-                  cursor: "bg-gradient-to-r from-purple-500 to-pink-500",
+                  cursor: "[&>span]:bg-gradient-to-r [&>span]:from-[var(--primary-color)] [&>span]:to-[var(--secondary-color)]",
                   prev: "bg-white/5 text-gray-300 hover:bg-white/10 border-white/20",
                   next: "bg-white/5 text-gray-300 hover:bg-white/10 border-white/20"
                 }}

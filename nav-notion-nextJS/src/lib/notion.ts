@@ -171,7 +171,7 @@ export class NotionService {
     try {
       const database = await this.client.databases.retrieve({
         database_id: this.databaseId
-      })
+      }) as any
 
       const title = database.title?.[0]?.plain_text || '导航中心'
       const description = database.description?.[0]?.plain_text || 'Notion 驱动的导航站'
