@@ -188,13 +188,23 @@ input[type="color"]::-moz-color-swatch {
 
 /* 确保图标跟随主题色 */
 button[data-slot="base"].text-primary svg,
-button.text-primary svg {
+button.text-primary svg,
+a[data-slot="base"].text-primary svg,
+a.text-primary svg {
   color: var(--primary-color) !important;
   stroke: currentColor !important;
+  fill: none !important;
 }
 
 /* 确保分页组件的图标也跟随主题色 */
 [data-slot="prev"] svg,
 [data-slot="next"] svg {
   color: currentColor;
+}
+
+/* 确保 IconButton 组件中的图标跟随主题色 */
+button[class*="text-primary"] svg,
+a[class*="text-primary"] svg {
+  color: var(--primary-color) !important;
+  stroke: currentColor !important;
 }

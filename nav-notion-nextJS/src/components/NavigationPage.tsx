@@ -4,14 +4,12 @@ import { useState, useEffect } from 'react'
 import { useNavigationData } from '@/hooks/useNavigationData'
 import { useSettings } from '@/hooks/useSettings'
 import { useBackground } from '@/hooks/useBackground'
-import { NavigationHeader } from '@/components/NavigationHeader'
-import { SearchFilters } from '@/components/SearchFilters'
+import { NavigationHeaderWithFilters } from '@/components/NavigationHeaderWithFilters'
 import { NavigationCard } from '@/components/NavigationCard'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { EmptyState } from '@/components/EmptyState'
 import { SettingsModal } from '@/components/SettingsModal'
-import { Pagination } from '@heroui/react'
 
 export function NavigationPage() {
   const {
@@ -31,21 +29,32 @@ export function NavigationPage() {
     clearFilters
   } = useNavigationData()
 
-  const { settings, isSettingsOpen, setIsSettingsOpen, toggleSettings } = useSettings()
+  const { isSettingsOpen, setIsSettingsOpen, toggleSettings } = useSettings()
   const { setBackground } = useBackground()
 
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 50
+  const [databaseTitle, setDatabaseTitle] = useState('导航管理')
+  const [databaseDescription, setDatabaseDescription] = useState('基于 Notion 的导航管理系统')
 
-  // 获取并设置背景图
+  // 获取并设置元数据（标题、描述、背景图）
   useEffect(() => {
     const loadMetadata = async () => {
       try {
         const response = await fetch('/api/metadata')
         if (response.ok) {
           const result = await response.json()
-          if (result.data?.backgroundImageUrl) {
-            setBackground(result.data.backgroundImageUrl)
+          if (result.data) {
+            if (result.data.title) {
+              setDatabaseTitle(result.data.title)
+              document.title = result.data.title
+            }
+            if (result.data.description) {
+              setDatabaseDescription(result.data.description)
+            }
+            if (result.data.backgroundImageUrl) {
+              setBackground(result.data.backgroundImageUrl)
+            }
           }
         }
       } catch (error) {
@@ -81,30 +90,19 @@ export function NavigationPage() {
   return (
     <div className="min-h-screen bg-transparent p-4 relative">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <NavigationHeader
-            currentTime={currentTime}
-            refreshing={refreshing}
-            totalCount={navigationData.length}
-            tagCount={tags.length}
-            filteredCount={filteredData.length}
-            originalCount={navigationData.length}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            itemsPerPage={itemsPerPage}
-            onRefresh={handleRefresh}
-            onSettingsClick={toggleSettings}
-          />
-        </div>
-
         {/* Error Alert */}
         {error && (
-          <ErrorState error={error} onRetry={handleRefresh} />
+          <div className="mb-4">
+            <ErrorState error={error} onRetry={handleRefresh} />
+          </div>
         )}
 
-        {/* Search and Filters */}
-        <SearchFilters
+        {/* Header with Filters - 融合的头部和筛选栏 */}
+        <NavigationHeaderWithFilters
+          title={databaseTitle}
+          description={databaseDescription}
+          currentTime={currentTime}
+          refreshing={refreshing}
           selectedTag={selectedTag}
           tags={tags}
           filteredCount={filteredData.length}
@@ -112,6 +110,10 @@ export function NavigationPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
+          totalCount={navigationData.length}
+          tagCount={tags.length}
+          onRefresh={handleRefresh}
+          onSettingsClick={toggleSettings}
           onTagChange={setSelectedTag}
           onClearFilters={clearFilters}
           onPageChange={handlePageChange}
