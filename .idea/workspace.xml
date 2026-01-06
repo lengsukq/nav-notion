@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0628e045-9665-4ce5-852a-c2e1c0401156" name="更改" comment="style(components): 调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件使用动态主题色变量和新样式&#10;- 调整 ErrorState 组件文本颜色为默认主题色&#10;- 修改 globals.css 移除深色模式自动切换并更新滚动条样式&#10;- 添加 ThemeProvider 组件和 useTheme Hook 支持主题切换&#10;- 更新 LoadingState 组件使用动态主题色和新加载动画&#10;- 调整 NavigationCard 组件文本颜色为默认主题色&#10;- 修改 NavigationHeader 添加主题切换按钮并更新样式&#10;- 更新 providers.tsx 集成主题状态管理&#10;- 调整 SearchFilters 组件使用动态主题色变量&#10;- 更新 SettingsModal 组件文本颜色和背景样式&#10;- 优化各组件的深色模式适配和主题色应用">
+    <list default="true" id="0628e045-9665-4ce5-852a-c2e1c0401156" name="更改" comment="style(components): 统一调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件按钮样式为 primary 主题色&#10;- 调整全局滚动条样式适配主题色和深色模式&#10;- 修改 NavigationHeader 中所有按钮为 primary 主题色&#10;- 更新 SearchFilters 组件搜索图标和清除按钮颜色&#10;- 重构 SettingsModal 组件增加颜色组合选择功能&#10;- 添加更多预设颜色和推荐颜色组合选项&#10;- 优化设置模态框布局和交互体验">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/EmptyState.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/EmptyState.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/NavigationPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/SearchFilters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/SearchFilters.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nav-notion-nextJS/src/components/SettingsModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/nav-notion-nextJS/src/components/SettingsModal.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +73,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767690899768</updated>
-      <workItem from="1767690900911" duration="4185000" />
+      <workItem from="1767690900911" duration="5577000" />
     </task>
     <task id="LOCAL-00001" summary="feat(ui): 添加主题色和背景图设置功能&#10;&#10;- 添加主题色和次色的CSS变量定义&#10;- 实现动态背景图片的获取和显示功能&#10;- 添加设置模态框组件用于配置主题颜色&#10;- 新增标签筛选模式（单选/多选）设置选项&#10;- 添加缓存过期时间设置功能&#10;- 实现背景图片API路由&#10;- 添加useBackground和useSettings自定义Hook&#10;- 在导航页面集成设置按钮和模态框&#10;- 更新样式以支持动态背景和主题色变化">
       <option name="closed" value="true" />
@@ -106,7 +107,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767695097330</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="style(components): 统一调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件按钮样式为 primary 主题色&#10;- 调整全局滚动条样式适配主题色和深色模式&#10;- 修改 NavigationHeader 中所有按钮为 primary 主题色&#10;- 更新 SearchFilters 组件搜索图标和清除按钮颜色&#10;- 重构 SettingsModal 组件增加颜色组合选择功能&#10;- 添加更多预设颜色和推荐颜色组合选项&#10;- 优化设置模态框布局和交互体验">
+      <option name="closed" value="true" />
+      <created>1767695825897</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1767695825897</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -133,6 +142,7 @@
     <MESSAGE value="style(components): 调整设置模态框样式以适配深色主题&#10;&#10;- 更新颜色选择器边框样式为白色透明边框&#10;- 修改输入框文字颜色为主题白色&#10;- 调整输入框包装器背景色和边框色&#10;- 更新次色选择器边框样式为白色透明边框&#10;- 优化分隔线颜色为白色透明&#10;- 调整预设颜色标题文字颜色为白色透明&#10;- 更新颜色应用提示文字颜色为白色透明&#10;- 修改数据缓存标题文字颜色为主题白色&#10;- 调整缓存过期时间标签文字颜色为白色透明&#10;- 更新缓存说明文字颜色为白色透明&#10;- 优化缓存时间单位文字颜色为白色透明&#10;- 调整缓存设置分隔线颜色为白色透明" />
     <MESSAGE value="style(components): 调整导航卡片和头部组件样式以支持动态主题色&#10;&#10;- 更新 NavigationCard 组件的阴影效果为动态主题色&#10;- 替换 NavigationCard 背景渐变色为动态主题色变量&#10;- 调整 NavigationCard 标题渐变色为动态主题色&#10;- 更新 NavigationHeader 头像背景为动态主题色&#10;- 修改 NavigationHeader 标题渐变色为动态主题色&#10;- 调整 SearchFilters 搜索框包装器边框色为主题色&#10;- 更新 SearchFilters 搜索框背景渐变色为动态主题色&#10;- 修复 notion.ts 类型转换问题&#10;- 优化标签数量显示样式为动态主题色&#10;- 调整页签选择器游标样式为主题色渐变" />
     <MESSAGE value="style(components): 调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件使用动态主题色变量和新样式&#10;- 调整 ErrorState 组件文本颜色为默认主题色&#10;- 修改 globals.css 移除深色模式自动切换并更新滚动条样式&#10;- 添加 ThemeProvider 组件和 useTheme Hook 支持主题切换&#10;- 更新 LoadingState 组件使用动态主题色和新加载动画&#10;- 调整 NavigationCard 组件文本颜色为默认主题色&#10;- 修改 NavigationHeader 添加主题切换按钮并更新样式&#10;- 更新 providers.tsx 集成主题状态管理&#10;- 调整 SearchFilters 组件使用动态主题色变量&#10;- 更新 SettingsModal 组件文本颜色和背景样式&#10;- 优化各组件的深色模式适配和主题色应用" />
-    <option name="LAST_COMMIT_MESSAGE" value="style(components): 调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件使用动态主题色变量和新样式&#10;- 调整 ErrorState 组件文本颜色为默认主题色&#10;- 修改 globals.css 移除深色模式自动切换并更新滚动条样式&#10;- 添加 ThemeProvider 组件和 useTheme Hook 支持主题切换&#10;- 更新 LoadingState 组件使用动态主题色和新加载动画&#10;- 调整 NavigationCard 组件文本颜色为默认主题色&#10;- 修改 NavigationHeader 添加主题切换按钮并更新样式&#10;- 更新 providers.tsx 集成主题状态管理&#10;- 调整 SearchFilters 组件使用动态主题色变量&#10;- 更新 SettingsModal 组件文本颜色和背景样式&#10;- 优化各组件的深色模式适配和主题色应用" />
+    <MESSAGE value="style(components): 统一调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件按钮样式为 primary 主题色&#10;- 调整全局滚动条样式适配主题色和深色模式&#10;- 修改 NavigationHeader 中所有按钮为 primary 主题色&#10;- 更新 SearchFilters 组件搜索图标和清除按钮颜色&#10;- 重构 SettingsModal 组件增加颜色组合选择功能&#10;- 添加更多预设颜色和推荐颜色组合选项&#10;- 优化设置模态框布局和交互体验" />
+    <option name="LAST_COMMIT_MESSAGE" value="style(components): 统一调整组件样式以支持动态主题色和深色模式&#10;&#10;- 更新 EmptyState 组件按钮样式为 primary 主题色&#10;- 调整全局滚动条样式适配主题色和深色模式&#10;- 修改 NavigationHeader 中所有按钮为 primary 主题色&#10;- 更新 SearchFilters 组件搜索图标和清除按钮颜色&#10;- 重构 SettingsModal 组件增加颜色组合选择功能&#10;- 添加更多预设颜色和推荐颜色组合选项&#10;- 优化设置模态框布局和交互体验" />
   </component>
 </project>

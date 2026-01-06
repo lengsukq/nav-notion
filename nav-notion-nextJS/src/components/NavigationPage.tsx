@@ -105,7 +105,6 @@ export function NavigationPage() {
 
         {/* Search and Filters */}
         <SearchFilters
-          searchTerm={searchTerm}
           selectedTag={selectedTag}
           tags={tags}
           filteredCount={filteredData.length}
@@ -113,10 +112,10 @@ export function NavigationPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
-          onSearchChange={setSearchTerm}
           onTagChange={setSelectedTag}
           onClearFilters={clearFilters}
           onPageChange={handlePageChange}
+          onSearch={setSearchTerm}
         />
 
         {/* Navigation Cards */}

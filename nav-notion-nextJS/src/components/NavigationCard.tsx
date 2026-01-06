@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardBody } from '@heroui/react'
+import { Card, CardBody, Chip } from '@heroui/react'
 import { Link } from '@heroui/react'
 import { NavigationItem } from '@/lib/notion'
 
@@ -17,16 +17,29 @@ export function NavigationCard({
   return (
     <Card 
       key={item.id} 
-      className="group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer overflow-hidden p-0 hover:shadow-xl hover:-translate-y-1"
+      className="group relative overflow-hidden p-0 cursor-pointer transition-all duration-500 ease-out animate-fade-in"
       style={{
         animationDelay: `${index * 30}ms`,
-        '--hover-shadow-color': 'rgba(var(--primary-color-rgb), 0.1)'
-      } as React.CSSProperties & { '--hover-shadow-color': string }}
+        backdropFilter: 'blur(20px) saturate(150%)',
+        background: `
+          linear-gradient(145deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 100%),
+          linear-gradient(to bottom right, rgba(var(--primary-color-rgb), 0.03), transparent)
+        `,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.05)',
+        willChange: 'transform',
+        transform: 'translateZ(0)'
+      } as React.CSSProperties}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = `0 20px 25px -5px rgba(var(--primary-color-rgb), 0.1), 0 10px 10px -5px rgba(var(--primary-color-rgb), 0.04)`
+        e.currentTarget.style.transform = 'translateY(-4px) translateZ(0)'
+        e.currentTarget.style.boxShadow = `
+          0 20px 40px -5px rgba(var(--primary-color-rgb), 0.2),
+          0 10px 20px -5px rgba(var(--primary-color-rgb), 0.1)
+        `
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = ''
+        e.currentTarget.style.transform = 'translateY(0) translateZ(0)'
+        e.currentTarget.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.05)'
       }}
       isPressable
       as={Link}
@@ -34,79 +47,92 @@ export function NavigationCard({
       target="_blank"
       rel="noopener noreferrer"
     >
-      {/* 动态背景光效 */}
+      {/* 背景光效层 */}
       <div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
         style={{
-          background: `linear-gradient(to bottom right, rgba(var(--primary-color-rgb), 0.05), transparent, rgba(var(--secondary-color-rgb), 0.05))`
+          background: `radial-gradient(circle at 50% 0%, rgba(var(--primary-color-rgb), 0.15), transparent 70%)`
         }}
-      ></div>
+      />
       
-      <CardBody className="relative h-full flex flex-col p-3 md:p-4 lg:p-5">
-        {/* 标题和状态 */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm md:text-base lg:text-lg font-bold text-foreground line-clamp-2 transition-all duration-300">
+      {/* 边框高光 - 使用伪元素方法实现圆角渐变边框 */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          borderRadius: 'inherit'
+        }}
+      >
+        <div 
+          className="absolute inset-0"
+          style={{
+            borderRadius: 'inherit',
+            padding: '1px',
+            background: `linear-gradient(135deg, var(--primary-color), var(--secondary-color))`,
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            maskComposite: 'exclude'
+          } as React.CSSProperties & { WebkitMask: string; WebkitMaskComposite: string; mask: string; maskComposite: string }}
+        />
+      </div>
+      
+      <CardBody className="relative z-10 h-full flex flex-col p-4 md:p-5 min-h-[200px]">
+        {/* 标题区域 */}
+        <div className="flex-1 min-h-0 mb-2">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-base md:text-lg lg:text-xl font-bold leading-tight line-clamp-2 text-foreground transition-all duration-300">
               {item.title}
             </h3>
-            <div className="flex items-center gap-1 ml-2">
-              {/* 状态指示器 */}
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+            {/* 状态指示器 */}
+            <div className="flex items-center gap-1 shrink-0 mt-0.5">
+              <div 
+                className="w-2 h-2 rounded-full animate-pulse shadow-lg"
+                style={{
+                  backgroundColor: 'var(--primary-color)',
+                  boxShadow: '0 0 8px rgba(var(--primary-color-rgb), 0.6)'
+                }}
+              />
             </div>
           </div>
           
-          {/* 装饰线 - 仅桌面端 */}
+          {/* 装饰线 */}
           <div 
-            className="hidden lg:block w-6 h-0.5 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 mt-1"
+            className="w-8 h-0.5 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 mt-2"
             style={{
               background: `linear-gradient(to right, var(--primary-color), var(--secondary-color))`
             }}
-          ></div>
+          />
         </div>
         
         {/* 描述区域 */}
-        <p className="hidden md:block text-xs lg:text-sm text-default-600 mt-2 lg:mt-3 leading-relaxed line-clamp-1 lg:line-clamp-2">
+        <p className="text-xs md:text-sm text-default-600 leading-relaxed line-clamp-2 mb-3 flex-shrink-0">
           {item.description}
         </p>
         
-        {/* 标签区域 - 仅桌面端 */}
-        <div className="hidden lg:block mt-auto">
-          <div className="flex flex-wrap gap-1">
-            {item.tags.slice(0, 2).map(tag => (
-              <span
-                key={tag}
-                className="text-xs text-default-500 hover:text-foreground transition-colors duration-200"
-              >
-                {tag}
-              </span>
-            ))}
-            {item.tags.length > 2 && (
-              <span className="text-xs text-default-500">
-                +{item.tags.length - 2}
-              </span>
-            )}
-          </div>
+        {/* 标签区域 */}
+        <div className="mt-auto pt-2 flex flex-wrap gap-1.5 shrink-0">
+          {item.tags.slice(0, 3).map((tag) => (
+            <Chip
+              key={tag}
+              size="sm"
+              variant="flat"
+              color="primary"
+              className="text-[10px] md:text-xs h-5 px-2 border border-primary/30 bg-primary/10 hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 hover:scale-105"
+            >
+              {tag}
+            </Chip>
+          ))}
+          {item.tags.length > 3 && (
+            <Chip
+              size="sm"
+              variant="flat"
+              color="default"
+              className="text-[10px] md:text-xs h-5 px-2 text-default-500 bg-default-100/30 border border-default-200"
+            >
+              +{item.tags.length - 3}
+            </Chip>
+          )}
         </div>
-        
-        {/* 移动端简单标签 */}
-        <div className="block lg:hidden mt-2">
-          <div className="flex items-center gap-1">
-            {item.tags.slice(0, 1).map(tag => (
-              <span
-                key={tag}
-                className="text-xs text-default-500"
-              >
-                {tag}
-              </span>
-            ))}
-            {item.tags.length > 1 && (
-              <span className="text-xs text-default-500">
-                +{item.tags.length - 1}
-              </span>
-            )}
-          </div>
-        </div>
-
       </CardBody>
     </Card>
   )
