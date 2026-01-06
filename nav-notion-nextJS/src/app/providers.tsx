@@ -30,7 +30,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <HeroUIProvider navigate={router.push} theme={theme}>
+    <HeroUIProvider navigate={router.push}>
       {children}
     </HeroUIProvider>
   )

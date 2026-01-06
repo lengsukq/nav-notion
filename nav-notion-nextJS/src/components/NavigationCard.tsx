@@ -3,6 +3,7 @@
 import { Card, CardBody, Chip } from '@heroui/react'
 import { Link } from '@heroui/react'
 import { NavigationItem } from '@/lib/notion'
+import { theme, glassStyle } from '@/lib/theme'
 
 interface NavigationCardProps {
   item: NavigationItem
@@ -17,15 +18,11 @@ export function NavigationCard({
   return (
     <Card 
       key={item.id} 
-      className="group relative overflow-hidden p-0 cursor-pointer transition-all duration-500 ease-out animate-fade-in"
+      className={`group relative overflow-hidden p-0 cursor-pointer transition-all duration-500 ease-out animate-fade-in ${theme.classes.rounded.card}`}
+      classNames={{ base: theme.classes.rounded.card }}
       style={{
         animationDelay: `${index * 30}ms`,
-        backdropFilter: 'blur(20px) saturate(150%)',
-        background: `
-          linear-gradient(145deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 100%),
-          linear-gradient(to bottom right, rgba(var(--primary-color-rgb), 0.03), transparent)
-        `,
-        borderColor: 'rgba(255, 255, 255, 0.3)',
+        ...glassStyle,
         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.05)',
         willChange: 'transform',
         transform: 'translateZ(0)'

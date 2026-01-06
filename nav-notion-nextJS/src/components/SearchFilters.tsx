@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Card, CardBody, Button, Chip, Input, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
 import { Pagination } from '@heroui/react'
 import { Search, ChevronDown, X, Clock } from 'lucide-react'
+import { theme } from '@/lib/theme'
 
 // 搜索引擎配置类型
 interface SearchEngineConfig {
@@ -203,14 +204,14 @@ export function SearchFilters({
 
   return (
     <div className="sticky top-2 md:top-4 z-40 mb-4 md:mb-6">
-      <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl shadow-white/10">
+      <Card className={`${theme.classes.card} ${theme.classes.rounded.card} shadow-2xl shadow-white/10`} classNames={{ base: theme.classes.rounded.card }}>
         <CardBody className="p-3 md:p-4">
           {/* 搜索框 */}
           <div 
             ref={searchContainerRef}
             className={`
               flex items-center gap-2 md:gap-3 mb-3 md:mb-4
-              bg-white/10 dark:bg-white/5 backdrop-blur-xl backdrop-saturate-150
+              ${theme.classes.card} ${theme.classes.glassBg}
               border border-white/20 dark:border-white/10
               rounded-2xl md:rounded-3xl p-2 md:p-3
               shadow-xl transition-all duration-500

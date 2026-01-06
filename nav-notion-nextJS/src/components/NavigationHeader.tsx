@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownItem, DropdownTrigger } from '@heroui/react'
 import { Github, RefreshCw, Clock, MoreVertical, Settings, Sun, Moon } from 'lucide-react'
 import { Link } from '@heroui/react'
 import { useTheme } from '@/hooks/useTheme'
+import { theme as themeConfig } from '@/lib/theme'
 
 interface NavigationHeaderProps {
   currentTime: Date
@@ -36,7 +37,7 @@ export function NavigationHeader({
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
+    <Card className={`${themeConfig.classes.card} ${themeConfig.classes.rounded.card} overflow-hidden`} classNames={{ base: themeConfig.classes.rounded.card }}>
       <CardBody className="p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
